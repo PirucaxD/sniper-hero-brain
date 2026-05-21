@@ -1,0 +1,19 @@
+# Other heroes and archived work - not part of the Sniper repo
+Pudge/
+hero_brains/
+
+# Internal working docs - kept local, not published
+Sniper/changelog.md
+Sniper/notes.md
+Sniper/BRIDGE_FOR_NEXT_CHAT.md
+HERO_PROMPT.md
+
+# Logs and OS noise
+*.log
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Python bytecode (the generators in tools/ are plain scripts)
+__pycache__/
+*.pyc
