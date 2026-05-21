@@ -35,6 +35,143 @@ problems in the post-mortem. The brain and the native subsystems both issue
 orders to the same unit, and they do not coordinate through any API. Living
 with that is a recurring theme.
 
+## Features
+
+What the brain adds on top of the native Sniper script:
+
+**Offense, on the combo key:**
+
+- An adaptive close-gap peel combo - Concussive Grenade (or Hurricane Pike
+  when grenade is down) plus Assassinate, Shrapnel and Take Aim - fired when
+  an enemy commits onto Sniper.
+- An Assassinate finisher on fleeing or out-of-range targets, kill-value
+  gated so it is not spent on a full-HP carry.
+- Shrapnel and Take Aim chip pressure as the fallback when nothing
+  higher-value applies.
+- Heavy Starter: a fire-on-command Take Aim and Assassinate on a quick tap.
+- A Team Fight mode that adds target focus and Shrapnel spread, and runs the
+  same peel combo against a diver.
+- Optional speculative fog snipe: auto-Assassinate on a high-value enemy that
+  just entered fog while still in cast range.
+
+**Defense, always on, no key:**
+
+- An auto-save layer that fires Hurricane Pike, Concussive Grenade, BKB, Eul,
+  Glimmer, Lotus, Force Staff, blinks and similar against incoming lethal
+  threats, choosing a save that actually counters the threat in question.
+- Channel and teleport punish: auto-Assassinate or grenade an enemy that
+  begins a channel or a TP.
+- Pre-facing: a brief rotation to beat fast enemy cast points.
+- Optional standalone auto-grenade on a rushing enemy, and smoke /
+  fog-ambush detection.
+
+**Feedback:**
+
+- A live status panel in the menu: the current decision, candidate scoring,
+  the last refused combo and why, and cooldown readiness.
+- A structured debug log for post-match review, at four verbosity levels.
+
+## Installing
+
+The brain is two parts that deploy together:
+
+1. Copy `Sniper/Sniper.lua` into the framework's script directory.
+2. Copy the `lib/` directory alongside it. The brain `require`s `lib.order`,
+   `lib.damage`, `lib.anim` and the rest; without `lib/` it will not load.
+3. Reload scripts. On load the brain prints a version banner to the debug
+   log.
+
+Leave the framework's native Sniper script enabled. The brain is a companion
+to it, not a replacement (see "The augmentation model" above).
+
+## Using the brain
+
+Everything offensive runs off one key. Defense needs no key and no input.
+
+**The combo key** (default Mouse5, rebindable in the menu):
+
+- **Tap** it (release in under 0.18s) for **Heavy Starter**: Take Aim then
+  Assassinate, fired on command with no kill check. You tapped, the brain
+  commits.
+- **Hold** it with **1-2 enemies** near Sniper for the **Starter loop**. Each
+  tick the brain re-reads the fight and picks the right response on its own.
+- **Hold** it with **3+ enemies** near Sniper for **Team Fight** mode. The
+  mode is latched when you start holding, so one unit crossing the count
+  boundary cannot flip the brain mid-combo.
+
+Two more keys are unbound by default; set them on the Core page if you want
+them:
+
+- **Force-commit key** - hold it while pressing the combo key to make the
+  brain commit even when its kill check would otherwise refuse.
+- **Panic-save key** - press it to force the defense layer to fire its next
+  save immediately.
+
+### What to expect
+
+- With the master toggle on and no input, the brain is **silent**. It acts
+  only when you press the combo key or when a real threat appears.
+- **Hold the key with an enemy attacking you up close** - the peel combo:
+  grenade (or Pike) knocks them back, Assassinate commits the kill, Shrapnel
+  drops a slow zone on their return path, Take Aim buffs the follow-up.
+- **Hold the key on a fleeing low-HP target** - Assassinate alone, but only
+  if the brain's math says R alone is lethal.
+- **Hold the key with nothing worth killing** - Shrapnel and Take Aim chip
+  damage, no wasted ultimate.
+- **An enemy gap-closes, hard-disables or ults you**, at any time and with no
+  key held - the defense layer fires the save that counters that specific
+  threat.
+- **You are about to die and the save layer did not pick what you wanted** -
+  tap the panic-save key.
+
+The Diagnostics page carries a live status panel showing what the brain is
+deciding, and when it refuses a combo, why.
+
+## Menu settings
+
+The brain's settings are under **Heroes -> Hero List -> Sniper -> Brain**,
+split across three pages.
+
+### Core
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Enable Sniper brain | on | Master toggle. When off the brain issues nothing and the native Sniper runs alone. |
+| Combo key | Mouse5 | Hold for the adaptive Starter / Team Fight loop; tap for Heavy Starter. |
+| Speculative fog snipe | off | Auto-cast Assassinate at a recently-fogged high-value enemy that is still in cast range. |
+| R commit floor | 100 (40-150) | Kill-value gate for Assassinate. 40 fishes for any kill, 100 is strict, 150 is conservative. |
+| Starter R finisher min range % | 70 (50-150) | In a 1-2 enemy fight, fire the R finisher only when the target is past this percentage of attack range. Higher values reserve R for escaping targets. |
+| Force-commit key | unbound | Hold to force a combo when the kill check would refuse it. |
+| Panic-save key | unbound | Press to force the defense layer to fire its next save immediately. |
+
+### Defense
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Enable auto-defense (Layer 2) | on | The always-on save layer: Pike, grenade, BKB, Eul, Lotus and similar, fired on incoming lethal threats. |
+| Auto-punish enemy channels | on | Auto-fire Assassinate or Concussive Grenade when an enemy starts a channel or a teleport. |
+| Pre-face imminent threats | on | Briefly rotates Sniper to beat fast enemy cast points. |
+| Lotus first vs single-target burst | off | Prefer Lotus Orb as the first save against a single-target burst ultimate. |
+| Smoke / fog-ambush detection | off | Warn, and pre-fire BKB below 60% HP, when an ambush looks likely. |
+| Ally HP for grenade-save-ally | 30% (10-60) | Ally HP threshold below which Sniper will grenade an ally clear of danger. |
+| Auto-grenade on enemy proximity | off | Standalone Concussive Grenade on a rushing enemy, independent of the combo key. |
+
+The **Auto-grenade settings** gear on that last switch adds four tuning
+knobs: trigger radius (200-800u, default 500), predicted smart-cast position
+(on), skip already-slowed targets (on), and a low-HP extra radius (0-400u,
+0 = off).
+
+### Diagnostics
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Log verbosity | 1 (0-3) | 0 silent, 1 decisions, 2 adds skipped decisions, 3 full trace. Written to the debug log. |
+| Show raw-API debug panel | off | Extra read-only labels exposing raw framework reads. A research aid; leave off in normal play. |
+
+The page also carries a live, read-only status panel: current Layer 1 and
+Layer 2 actions, candidate counts and scoring, the last refused combo and its
+reason, cooldown readiness, and active reservations.
+
 ## Repository layout
 
 ```
