@@ -43,14 +43,11 @@ Sniper/
   LIQUIPEDIA_REF.md     Sniper ability reference (cast points, ranges, CDs)
 lib/                    shared Lua libraries (see "The library set")
 tools/                  KV-data generators + log/test tooling
-BRAIN_PROJECT.md        the overall brain architecture
 COMBO_PATTERN.md        the offensive combo/sequence dispatch pattern
 DEFENSE_PATTERN.md      the defensive save-layer pattern
 DEFENSE_CATEGORIES.md   threat-category -> save-chain mapping
 API_GOTCHAS.md          UCZone API quirks found the hard way
 API_REFERENCE.md        condensed API reference
-TIER1_BOOTSTRAP.md      how the four foundation libraries were built
-TIER2_PROMPT.md         the Tier 2 module-extraction spec
 ```
 
 The brain is deployed by copying `Sniper/Sniper.lua` (and `lib/` when a
@@ -59,8 +56,8 @@ are kept in sync; the repository is the source.
 
 ## Architecture
 
-The full treatment is in `BRAIN_PROJECT.md`, `COMBO_PATTERN.md`, and
-`DEFENSE_PATTERN.md`. This is the map.
+The full treatment of each layer is in `COMBO_PATTERN.md` and
+`DEFENSE_PATTERN.md`. This section is the map.
 
 ### The combo key
 
@@ -381,14 +378,11 @@ A few rules that are not obvious from the code:
 
 ## Where to read more
 
-- `BRAIN_PROJECT.md` - the brain architecture in full.
 - `COMBO_PATTERN.md` - the offensive combo/sequence dispatch pattern,
   reusable for other heroes.
 - `DEFENSE_PATTERN.md` and `DEFENSE_CATEGORIES.md` - the defensive save
   layer and the threat-to-save mapping.
 - `API_GOTCHAS.md` - every UCZone API quirk found the hard way, with the
   symptom and the fix.
-- `TIER1_BOOTSTRAP.md` and `TIER2_PROMPT.md` - how the shared libraries were
-  built and how to extend them.
+- `API_REFERENCE.md` - the condensed, brain-task-organized API reference.
 - `tools/README.md` - the KV generators and the log/test tooling.
-- `lib/CHANGELOG.md` - the shared-library changelog.

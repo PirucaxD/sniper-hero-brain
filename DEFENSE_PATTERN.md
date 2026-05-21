@@ -211,7 +211,7 @@ This generalizes to any save where the self-fallback is useless against a specif
 
 ### Tier 2 extraction roadmap — `lib/defense.lua`
 
-The two-hero rule (per `TIER2_PROMPT.md`) says extract a Tier 2 module only when a second hero's inline implementation matches the first hero's. The 2026-05-11 audit of `Sniper.lua` identified the candidates that will move when Hero #2 lands. **Pre-listing them here** so extraction is mechanical when triggered.
+The two-hero rule says extract a Tier 2 module only when a second hero's inline implementation matches the first hero's. The 2026-05-11 audit of `Sniper.lua` identified the candidates that will move when Hero #2 lands. **Pre-listing them here** so extraction is mechanical when triggered.
 
 **Already extractable today (lift to `lib/order.lua` extensions or `lib/threat_data.lua`):**
 - `save_item_pending_on_target(target)` → `Order.SaveItemPendingOnTarget`
@@ -273,7 +273,7 @@ Defense.OnModifierDestroy(spec, npc, modifier)
 Defense.ArmThreat(spec, key, data)
 ```
 
-If after extracting, Sniper.lua doesn't shrink by ≈600 LOC, the interface is wrong (per TIER2_PROMPT.md Phase 4).
+If after extracting, Sniper.lua doesn't shrink by ≈600 LOC, the interface is wrong.
 
 ### Document each save closure's cast geometry
 For every hero-specific save closure, write a comment specifying:

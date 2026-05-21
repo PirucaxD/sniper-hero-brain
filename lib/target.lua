@@ -9,9 +9,8 @@
 ---numeric helpers). Eliminates nil-checks at call sites.
 ---
 ---Protection helpers use framework primitives (`NPC.IsLinkensProtected`,
----`NPC.IsMirrorProtected`, `NPC.HasAegis`, `Humanizer.IsSafeTarget`) per
----the audit-corrected conventions in BRAIN_PROJECT.md — these supersede
----hand-rolled `has-item + cooldown` composition.
+---`NPC.IsMirrorProtected`, `NPC.HasAegis`, `Humanizer.IsSafeTarget`); these
+---supersede hand-rolled `has-item + cooldown` composition.
 
 local Target = {}
 

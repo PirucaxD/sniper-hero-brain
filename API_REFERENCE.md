@@ -3,7 +3,7 @@
 **Purpose:** brain-task-organized quick reference. Not a re-export of the canonical docs — a curated index from the brain's perspective.
 
 **Sources of truth:**
-- **Raw API signatures:** `C:\Users\arcos\uczone-api-v2.0` (canonical, 16k lines)
+- **Raw API signatures:** the UCZone API v2.0 docs (canonical, 16k lines)
 - **In-editor autocomplete:** Umbrella VS Code extension (`ILKA.umbrella-vscode`) — 97 LuaCATS definition files
 - **This file:** brain-task → API mapping, curated enum subsets, Dota-mechanics gotchas
 
@@ -55,7 +55,7 @@ local d = NPC.GetStatesDuration(target, {
 | `MODIFIER_STATE_NIGHTMARED` | Bane Nightmare — wakes on damage | Damage-first decision |
 | `MODIFIER_STATE_FROZEN` | Special freeze (rare) | Edge case |
 
-Full list: `C:\Users\arcos\uczone-api-v2.0\cheats-types-and-callbacks\enums.md` § Enum.ModifierState (64 entries, lines 229-296).
+Full list: the UCZone API v2.0 docs, `cheats-types-and-callbacks/enums.md` § Enum.ModifierState (64 entries, lines 229-296).
 
 ---
 
@@ -744,4 +744,4 @@ Add entries as you build heroes:
 - A new enum value used repeatedly → add to the relevant curated table
 - A new "brain-task → API" pattern → add to the quick index
 
-Don't dump full enum lists — those live in `C:\Users\arcos\uczone-api-v2.0\cheats-types-and-callbacks\enums.md`. This file is the curated subset that matters for brain work.
+Don't dump full enum lists. Those live in the UCZone API v2.0 docs (`cheats-types-and-callbacks/enums.md`). This file is the curated subset that matters for brain work.

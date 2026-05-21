@@ -10,9 +10,6 @@
 ---Two layers:
 ---  Layer 1 — aggressive, key-activated via CMenuBind
 ---  Layer 2 — defensive, always-on, fires after framework Dodger
----
----See `notes.md` for Phase 0–3 rationale and the per-matchup animation→ability
----map. See `lib/CHANGELOG.md` for Tier 1 limitations carried forward here.
 
 local Order  = require("lib.order")
 local Damage = require("lib.damage")

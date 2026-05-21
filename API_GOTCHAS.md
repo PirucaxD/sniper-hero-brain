@@ -1,10 +1,11 @@
----
-name: UCZone Lua API gotchas (doc-verified additions)
-description: Surprising API contracts in UCZone Lua (the Dota 2 hero-brain framework) that contradict their own docs, return inverted semantics, or are silently broken — saved 2026-05-12 after a sweep of the 101-file API tree. Consult before assuming an API behaves as named.
-type: reference
-originSessionId: 6b3b3286-2889-47eb-8cbe-f66c9ced0fb8
----
-The canonical hero-brain project memory (`project_dota_hero_brains.md`) already lists ~20 framework quirks. This file captures **new findings from the 2026-05-12 sweep of `C:\Users\arcos\uczone-api-v2.0\`** plus the LuaCATS library at `C:\Users\arcos\.vscode\extensions\ilka.umbrella-vscode-1.2.1\plugin\library\natives\umbrella\`.
+# UCZone Lua API gotchas
+
+Surprising API contracts in UCZone Lua (the Dota 2 hero-brain framework) that
+contradict their own docs, return inverted semantics, or are silently broken.
+Consult before assuming an API behaves as named.
+
+This file captures findings from a sweep of the UCZone API v2.0 documentation
+tree plus the LuaCATS library bundled with the umbrella-vscode extension.
 
 **Why:** the v6.12 Sniper crash on `NPC.GetAttackDamage` (a real-looking but non-existent API) exposed a class of bug — assuming a name. The fixes below catch the others before they bite.
 
@@ -119,4 +120,4 @@ Add an entry whenever a UCZone API call surprises you in any of these ways:
 - Callback table has nilable fields that crash on access
 - Same conceptual flag has different names across sibling functions
 
-Don't add entries for: normal-but-undocumented behavior (those go in `project_dota_hero_brains.md`'s framework-quirks section), or for things that any reader would catch by re-reading the doc page.
+Don't add entries for: normal-but-undocumented behavior, or for things that any reader would catch by re-reading the doc page.

@@ -4,19 +4,18 @@
 -- UCZone API v2.0 — Discovered (undocumented) function stubs for VS Code
 --
 -- These are real APIs used in third-party UCZone scripts (Sniper, KotL, Ogre
--- Magi, Meepo, Tusk, etc.) that aren't in the official documentation tree
--- at C:\Users\arcos\uczone-api-v2.0\.
+-- Magi, Meepo, Tusk, etc.) that aren't in the official UCZone API v2.0
+-- documentation tree.
 --
 -- The signatures below are inferred from call-site usage. Confidence levels
--- are noted per entry. See `C:\Users\arcos\uczone-api-v2.0\DISCOVERED_APIs.md`
--- for full context, source citations, and code examples.
+-- are noted per entry. See the UCZone API v2.0 `DISCOVERED_APIs.md` for full
+-- context, source citations, and code examples.
 --
--- This file complements the existing stubs at
--- C:\Users\arcos\.vscode\extensions\ilka.umbrella-vscode-1.2.1\plugin\library\
+-- This file complements the stubs bundled with the umbrella-vscode extension
 -- and provides VS Code autocomplete for these missing entries.
 --
--- To enable: add `C:/Users/arcos/dota-hero-brains/types` to your
--- workspace's `Lua.workspace.library` setting in .vscode/settings.json.
+-- To enable: add this `types/` directory to your workspace's
+-- `Lua.workspace.library` setting in .vscode/settings.json.
 -- ============================================================================
 
 -- ============================================================================
