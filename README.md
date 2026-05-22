@@ -80,9 +80,18 @@ The brain is two parts that deploy together:
    `lib.damage`, `lib.anim` and the rest; without `lib/` it will not load.
 3. Reload scripts. On load the brain prints a version banner to the debug
    log.
+4. **Hand ability casting to the brain.** Open `Sniper -> Main Settings` and
+   turn **off every ability icon** there - both the row under `Hero Settings
+   -> Abilities` and the row under `Kill Stealer -> Abilities`. A disabled
+   icon shows red. This step is required: any ability left enabled lets the
+   native script cast Shrapnel / Take Aim / Assassinate / Grenade on its own,
+   racing the brain for the same spell.
 
-Leave the framework's native Sniper script enabled. The brain is a companion
-to it, not a replacement (see "The augmentation model" above).
+Leave the rest of the native Sniper script enabled. Items Settings, Hit &
+Run, Orb Walker and Target Selection are the routine work the brain delegates
+to and relies on; the brain only needs to be the *sole caster of Sniper's
+abilities*. It is a companion to the native script, not a replacement (see
+"The augmentation model" above).
 
 ## Using the brain
 
