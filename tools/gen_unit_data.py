@@ -344,6 +344,12 @@ return UnitData
 
 def main():
     entries = build()
+    # v6.15.234 (lesson #127): regression guard against a KV schema shift
+    # silently shrinking the table. npc_units.json has 300+ entries.
+    if len(entries) < 300:
+        raise SystemExit("REGRESSION: only %d unit entries (expected 300+) "
+                         "- npc_units.json schema may have changed"
+                         % len(entries))
 
     out = [HEADER]
     out.append("")

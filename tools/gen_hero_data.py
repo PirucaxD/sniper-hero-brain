@@ -295,6 +295,12 @@ return HeroData
 
 def main():
     entries = build()
+    # v6.15.234 (lesson #127): regression guard against a KV schema shift
+    # silently shrinking the table. npc_heroes.json has 110+ heroes.
+    if len(entries) < 110:
+        raise SystemExit("REGRESSION: only %d hero entries (expected 110+) "
+                         "- npc_heroes.json schema may have changed"
+                         % len(entries))
     out = [HEADER]
     out.append("")
     out.append("-" * 76)

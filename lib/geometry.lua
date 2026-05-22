@@ -16,6 +16,7 @@ function Geometry.dist_between(a, b)
     if not a or not b then return math.huge end
     local pa = Entity.GetAbsOrigin(a)
     local pb = Entity.GetAbsOrigin(b)
+    if not pa or not pb then return math.huge end
     -- Distance2D over (pa - pb):Length2D(): one native call, no temp Vector.
     return pa:Distance2D(pb)
 end

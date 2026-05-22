@@ -434,6 +434,12 @@ return ItemData
 
 def main():
     entries, tiers = build()
+    # v6.15.234 (lesson #127): regression guard. A KV schema shift that
+    # breaks the parse would silently emit a tiny table; items.json has
+    # had 500+ entries every patch. Abort loudly instead of shipping it.
+    if len(entries) < 500:
+        raise SystemExit("REGRESSION: only %d item entries (expected 500+) "
+                         "- items.json schema may have changed" % len(entries))
 
     out = [HEADER]
     out.append("")

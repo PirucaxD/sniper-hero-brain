@@ -125,6 +125,7 @@ end
 function Target.InRange(target, source, range, hull)
     if not target or not source then return false end
     local pos = Entity.GetAbsOrigin(target)
+    if not pos then return false end
     return NPC.IsPositionInRange(source, pos, range, hull or 0)
 end
 
@@ -403,7 +404,11 @@ function Target.IsRightClicking(target, me)
     if not NPC.IsAttacking(target) then return false end
     local t_pos = Entity.GetAbsOrigin(target)
     local m_pos = Entity.GetAbsOrigin(me)
-    local atk_range = NPC.GetAttackRange(target) or 600
+    if not t_pos or not m_pos then return false end
+    -- v6.15.234: GetAttackRange is BASE only; add the item/talent bonus
+    -- (Dragon Lance, Hurricane Pike) so a ranged carry is not under-ranged.
+    local atk_range = (NPC.GetAttackRange(target) or 600)
+        + (NPC.GetAttackRangeBonus and NPC.GetAttackRangeBonus(target) or 0)
     local dx = t_pos.x - m_pos.x
     local dy = t_pos.y - m_pos.y
     return (dx*dx + dy*dy) <= (atk_range + 100) * (atk_range + 100)

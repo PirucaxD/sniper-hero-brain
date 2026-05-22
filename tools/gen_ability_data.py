@@ -417,6 +417,12 @@ return AbilityData
 
 def main():
     entries = build()
+    # v6.15.234 (lesson #127): regression guard against a KV schema shift
+    # silently shrinking the table. npc_abilities.json has 1900+ entries.
+    if len(entries) < 1800:
+        raise SystemExit("REGRESSION: only %d ability entries (expected "
+                         "1800+) - npc_abilities.json schema may have changed"
+                         % len(entries))
 
     out = [HEADER]
     out.append("")
