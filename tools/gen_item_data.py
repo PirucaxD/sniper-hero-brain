@@ -124,11 +124,11 @@ def emit_entry(fields):
 
 def short_behavior(beh):
     out = []
-    for f in beh.split("|"):
-        f = f.strip()
-        if not f:
-            continue
-        out.append(f.replace("DOTA_ABILITY_BEHAVIOR_", "").lower())
+    for chunk in beh.split("|"):
+        for f in chunk.split():        # tolerate malformed " "-joined flags
+            f = f.strip()
+            if f:
+                out.append(f.replace("DOTA_ABILITY_BEHAVIOR_", "").lower())
     return out
 
 

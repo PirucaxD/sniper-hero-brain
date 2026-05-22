@@ -834,11 +834,14 @@ ThreatData.RECOMMENDED_SAVES = {
     },
     -- v6.15.10: Disruptor Kinetic Field. Wall blocks forced movement, blink,
     -- and cyclone displacement. Only knockback (Concussive Grenade) crosses.
-    -- grenade_self preferred over grenade_at_caster — directional push in
-    -- Sniper's facing reliably moves him out if the user is aimed outward.
+    -- v6.15.237: grenade_at_caster dropped — it knocks the Disruptor, not
+    -- Sniper, so it never frees Sniper from the field; SaveCounters rejected
+    -- it anyway (its kinds channel_break / displacement_at_source do not
+    -- intersect the field's only counter-kind, displacement_perp).
+    -- grenade_self is the real escape: a directional push in Sniper's
+    -- facing moves him out when the user is aimed outward.
     modifier_disruptor_kinetic_field_remnant = {
         "grenade_self",
-        "grenade_at_caster",
     },
     modifier_treant_overgrowth = {
         "item_black_king_bar", "item_blink", "item_swift_blink",
