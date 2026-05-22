@@ -461,6 +461,30 @@ and closed for the standalone R finishers as well. Two code paths that look
 equivalent were not, and the difference was one flag that one of them
 silently dropped.
 
+### Beating the flood: copy the native script
+
+`execute_fast` wins the cast-point race only against native orders queued the
+same tick. In a real teamfight the flood is denser than that, and
+Assassinate's 2-second cast point is interruptible for its whole duration, so
+R is exposed far longer than one tick. The fix came from studying the
+framework's own hero script. Captured with the brain off and the native
+Sniper script left to cast on its own, the order log shows the native script
+does one thing: it re-issues the R cast order every frame, about thirty times
+a second, until R enters its cast point, then stops. Bursts of up to six
+identical cast orders, then silence.
+
+The brain now copies that. When R has been dispatched but has not yet locked,
+the abort monitor re-issues it every tick until it locks (or a give-up cap).
+A combo's later steps are re-anchored to R's actual lock time so a slow lock
+cannot make a follow-up step cancel R.
+
+Two lessons sit underneath this. First: when the problem is "the framework
+fights me", the framework's own scripts are a worked solution worth reading.
+Second: a channel is reliable because a channelling unit cannot be orbwalked,
+so the native subsystems go quiet, while a long *cast point* like
+Assassinate's gets no such protection and has to be brute-forced. Exposure
+time, not cast location, decides reliability.
+
 ### The fresh-item engine quirk
 
 The engine silently drops the *first* cast of a freshly-acquired item. The

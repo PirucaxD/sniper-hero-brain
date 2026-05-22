@@ -53,6 +53,10 @@ tree plus the LuaCATS library bundled with the umbrella-vscode extension.
 
 - **`Ability.IsCastable(ability, mana)`** takes a `mana` parameter — you pass the mana budget you have and it returns whether the ability is castable at that mana. Not `IsCastable(ability)` as the name might suggest. Source: `ability.md:151`.
 
+- **`Ability.GetName(ab)` throws on a valid non-ability entity.** When `ab` is a real entity (`Entity.IsEntity(ab)` true) that is not an ability, `Ability.GetName` raises `bad argument #1 to 'GetName' (arg is not an Ability)`. The trap: resolving a native order-queue entry's `abilityIndex` with `Entity.Get` -- that index can point at an ITEM (ward dispenser, neutral item, consumable), not an ability. `Entity.IsEntity` is not enough of a guard. Wrap the call in `pcall`, or gate on an is-ability check. It threw 4 times in one ranked match and aborted the diagnostic tick each time. Sniper v6.15.224.
+
+- **`Ability.CastTarget` / `CastNoTarget` / `CastPosition` are the SAME order pipeline as `Player.PrepareUnitOrders`, not a faster or more direct path.** They take the identical optional params: `queue`, `push` (this is `PrepareUnitOrders`' `callback` flag under a different name), `execute_fast`, `identifier` (`CastPosition` adds `force_minimap`). `Ability.CastTarget(ab, tgt, false, false, true)` is behaviorally identical to `Player.PrepareUnitOrders(DOTA_UNIT_ORDER_CAST_TARGET, ..., execute_fast=true)` -- a convenience signature over the same order list and humanizer. Switching a cast off `PrepareUnitOrders` onto `Ability.Cast*` buys nothing against the native-order flood; `execute_fast` (front of the order list) is the whole toolbox. Source: `ability.md` + the LuaCATS stub; Sniper v6.15.228 investigation.
+
 ## Callback data shapes that surprise
 
 Verified against `cheats-types-and-callbacks/callbacks.md`:
