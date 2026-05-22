@@ -110,14 +110,11 @@ end
 -- internal: target_self computation
 ----------------------------------------------------------------------------
 
--- Facing threshold for "is the caster aimed at me?" UCZone v2.0 docs declare
--- NPC.FindRotationAngle's return as plain `number` without specifying
--- degrees vs radians. The Source-derived engine convention is degrees.
--- Failure mode if the API actually returns radians: |angle| will cap at π
--- (~3.14), so `angle > 30` is never true and the gate degrades to
--- always-pass. That biases the dispatcher toward firing target_self=true
--- more often, which over-triggers Layer 2 defenses (cheap) rather than
--- under-triggers them (potential death). Acceptable.
+-- Facing threshold for "is the caster aimed at me?" NPC.FindRotationAngle
+-- returns RADIANS (established v6.15.215 in the Sniper brain: comparing the
+-- raw value to a degree threshold capped |angle| at pi, so `angle > 30` was
+-- never true and the gate degraded to always-pass). math.deg converts
+-- before the 30-degree compare.
 local DEFAULT_ANGLE_DEG = 30
 local DEFAULT_RANGE = 1200
 
@@ -129,8 +126,8 @@ local function compute_target_self(caster, ability_range)
     local me_pos = Entity.GetAbsOrigin(me)
     local range = ability_range or DEFAULT_RANGE
     if not NPC.IsPositionInRange(caster, me_pos, range) then return false end
-    -- facing gate (degrees assumed; see comment above)
-    local angle = math.abs(NPC.FindRotationAngle(caster, me_pos))
+    -- facing gate (FindRotationAngle is radians — math.deg before compare)
+    local angle = math.deg(math.abs(NPC.FindRotationAngle(caster, me_pos)))
     if angle > DEFAULT_ANGLE_DEG then return false end
     return true
 end

@@ -354,7 +354,9 @@ function Target.IsKitingUs(target, me)
     if not target or not me or not Entity.IsNPC(target) then return false end
     if not NPC.IsRunning(target) then return false end
     local m_pos = Entity.GetAbsOrigin(me)
-    local angle_to_me = math.abs(NPC.FindRotationAngle(target, m_pos))
+    if not m_pos then return false end
+    -- v6.15.232: FindRotationAngle is radians — math.deg before the compare.
+    local angle_to_me = math.deg(math.abs(NPC.FindRotationAngle(target, m_pos)))
     if angle_to_me <= 90 then return false end  -- not even facing away
 
     -- Velocity check: is distance from me increasing over the last ~0.25s?
