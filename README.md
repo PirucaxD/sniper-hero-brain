@@ -13,10 +13,10 @@ on (`lib/`), the code generators that build the data libraries from Valve's
 game files (`tools/`), and the architecture and reference documents written
 alongside it over development.
 
-It is also a long case study. The brain went through 222 tracked versions;
-the post-mortem section below records the problems, the dead ends, and the
-workarounds. If you are reading this to learn how to build something
-similar, the failures are the more useful half.
+It is also a long case study. The brain went through over 240 tracked
+versions; the post-mortem section below records the problems, the dead
+ends, and the workarounds. If you are reading this to learn how to build
+something similar, the failures are the more useful half.
 
 ## The augmentation model
 
