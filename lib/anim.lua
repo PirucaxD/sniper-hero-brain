@@ -33,6 +33,9 @@ local maps = {}  -- unit_name → activity_key → entry
 ---@type table<integer, {ability:string, role:string, on_target_field:string|nil}>
 local particles = {}  -- particle_name_index → entry
 
+---@type {substr:string, ability:string, role:string, on_target_field:string|nil}[]
+local particle_patterns = {}  -- v6.15.241 (clue C2): substring-name fallback
+
 ---@type table<string, fun(event:table)[]>
 local subscribers = {}  -- role → [callback]
 
@@ -91,6 +94,25 @@ function Anim.RegisterParticle(particle_path, signature)
         return
     end
     particles[idx] = signature
+end
+
+---Register a particle SUBSTRING pattern -- a rot-resistant fallback for
+---OnParticleCreate when the exact resource path is not registered (or a
+---Valve patch versions the path). `substr` is matched lowercased + plain
+---against the particle's full name; use a stable distinctive ability token
+---(e.g. "black_hole", "chronosphere"). Same signature shape as
+---RegisterParticle. The integer-index path stays the primary fast route;
+---this fallback runs only on a miss, and only for enemy-side particles.
+---@param substr     string
+---@param signature  {ability:string, role:string, on_target_field:string|nil}
+function Anim.RegisterParticlePattern(substr, signature)
+    if type(substr) ~= "string" or substr == "" then return end
+    particle_patterns[#particle_patterns + 1] = {
+        substr  = substr:lower(),
+        ability = signature.ability,
+        role    = signature.role,
+        on_target_field = signature.on_target_field,
+    }
 end
 
 ---Subscribe to a role. Multiple subscribers per role are allowed.
@@ -199,10 +221,35 @@ function Anim.OnUnitAnimation_handler(data)
     reap_dispatched()
 end
 
+-- v6.15.241 (clue C2): substring-name fallback for OnParticleCreate. The
+-- integer-index lookup is the primary fast path; this runs only on a miss,
+-- only when patterns are registered, and only for an enemy-side particle
+-- (the team gate keeps it off the bulk of the particle firehose). Matches
+-- the particle's full name -- substring-tolerant against a Valve rename.
+local function match_particle_pattern(data)
+    if #particle_patterns == 0 then return nil end
+    local nm = data.fullName or data.name
+    if type(nm) ~= "string" or nm == "" then return nil end
+    local owner = data.entity or data.entityForModifiers
+    if not owner then return nil end
+    local me = Heroes.GetLocal()
+    if not me or Entity.IsSameTeam(me, owner) then return nil end
+    local low = nm:lower()
+    for i = 1, #particle_patterns do
+        if low:find(particle_patterns[i].substr, 1, true) then
+            return particle_patterns[i]
+        end
+    end
+    return nil
+end
+
 function Anim.OnParticleCreate_handler(data)
     if not data then return end
     local sig = particles[data.particleNameIndex]
-    if not sig then return end
+    if not sig then
+        sig = match_particle_pattern(data)
+        if not sig then return end
+    end
 
     -- v6.14.1 H5: `data.entity` is the cast SOURCE; `data.entityForModifiers`
     -- is who the spell HITS. The prior code aliased `caster` to
