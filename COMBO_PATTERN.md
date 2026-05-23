@@ -9,8 +9,7 @@ Last updated: 2026-05-12 (Sniper v6.12 baseline).
 > appraisal loop or Team Fight mode on HOLD) instead of score-ranking a fixed
 > catalog of pre-authored combos. The per-tick re-evaluation is the state
 > machine. The legacy `SNIPER_COMBOS`/`SNIPER_SEQUENCES` catalog + `layer1_tick`
-> are being retired. See `Sniper/BRIDGE_FOR_NEXT_CHAT.md` for the current
-> design and HERO_PROMPT.md lesson #86. The dispatch *primitives* below
+> are being retired. The dispatch *primitives* below
 > (`fire_steps`, step kinds, `commit_pred`, the throttle, cast verification)
 > are still in use and still correct — only the catalog-vs-archetype top
 > layer changed.

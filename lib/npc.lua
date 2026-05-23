@@ -4,7 +4,7 @@
 ---Hero-agnostic. Each function takes an npc handle as the first argument.
 ---Extracted from Sniper.lua v6.15.112 to reduce main-chunk local count
 ---(Lua 5.4's 200-locals-per-function hard limit was hit twice in
----v6.15.110 and v6.15.111 — see Lesson 7 in Sniper's BRIDGE_FOR_NEXT_CHAT.md).
+---v6.15.110 and v6.15.111).
 ---
 ---Two extracted areas:
 ---  - Aghanim's Shard / Scepter ownership checks

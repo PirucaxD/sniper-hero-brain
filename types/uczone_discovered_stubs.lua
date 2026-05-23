@@ -56,7 +56,7 @@ function Entity.GetAbsRotation(entity) end
 -- ============================================================================
 
 ---Returns the CPlayer that owns/controls this hero. Returns nil for illusions
----or AI bots without an associated player slot.
+---or bot units without an associated player slot.
 ---Alternative to `Players.GetLocal()` when iterating allies (each ally's owner
 ---is needed individually). Use `Players.GetLocal()` for the local player path.
 ---Confidence: MEDIUM. Tusk script wraps in pcall; availability may vary.
@@ -119,7 +119,7 @@ function NPC.GetForwardVector(npc) end
 function NPC.GetMagicalResist(npc) end
 
 ---Returns the CPlayer that owns the unit (works on heroes, summons, wards).
----Returns nil for neutral units, fountain, or AI without a player slot.
+---Returns nil for neutral units, fountain, or bots without a player slot.
 ---Identical use case to `Hero.GetPlayer` but works on any CNPC.
 ---Confidence: MEDIUM. Tusk script wraps in pcall.
 ---@param npc userdata

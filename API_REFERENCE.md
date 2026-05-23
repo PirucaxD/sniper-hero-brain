@@ -158,7 +158,7 @@ Use the per-matchup animation→ability map (Phase 0.5/D) to translate `activity
 ### Channel 3 — Particle spawn (when animation+activity isn't reliable)
 `OnParticleCreate(data)` with `name` matching a known signature.
 - Some abilities are most reliably detected by particle (Bloodseeker Rupture start, Doom ult cast, Roshan aggro, smoke-of-deceit application)
-- Add to hero `notes.md` particle catalog alongside the animation→ability map
+- Add to your hero's particle catalog alongside the animation→ability map
 
 ### Channel 4 — Modifier appearance (lowest latency, hard confirm)
 `OnModifierCreate(target_npc, modifier)` fires when a debuff lands.

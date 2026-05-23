@@ -82,8 +82,7 @@ This file is the cross-reference for brain code that depends on Sniper ability m
   bonus) — present every tick once E is leveled. `modifier_sniper_take_aim_active`
   is the **3s ACTIVE buff**. An "is Take Aim active" check MUST test only
   `_active` — testing the bare name is permanently true (it broke
-  `self_take_aim_state` — the Team Fight E never fired). See HERO_PROMPT
-  lesson #107.
+  `self_take_aim_state` — the Team Fight E never fired).
 
 ---
 
