@@ -10,16 +10,16 @@ Re-run after every catalog batch to track progress.
 | Metric | Count | % |
 |---|---|---|
 | Heroes in 7.41C (`npc_heroes.json`) | 128 | 100% |
-| Heroes with anim RegisterMap entries | 86 | 67% |
-| Heroes with **any** catalog entry | 95 | 74% |
-| Heroes with **zero** coverage | 33 | 26% |
-| THREATS_ON_SELF entries | 121 | — |
-| ABILITY_TO_THREAT entries | 133 | — |
-| THREAT_CATEGORY entries | 118 | — |
-| `(verify)` flags in threat_data.lua | 83 | — |
-| `instant_target` flagged anim entries | 23 | — |
+| Heroes with anim RegisterMap entries | 92 | 72% |
+| Heroes with **any** catalog entry | 101 | 79% |
+| Heroes with **zero** coverage | 27 | 21% |
+| THREATS_ON_SELF entries | 128 | — |
+| ABILITY_TO_THREAT entries | 142 | — |
+| THREAT_CATEGORY entries | 125 | — |
+| `(verify)` flags in threat_data.lua | 97 | — |
+| `instant_target` flagged anim entries | 27 | — |
 
-## Heroes with zero catalog coverage (33)
+## Heroes with zero catalog coverage (27)
 
 Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lua table. Listed alphabetically with their threat-relevant abilities (UNIT_TARGET / POINT_AOE / skill-shots, excluding passives and self-buffs).
 
@@ -30,7 +30,6 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | arc_warden | `arc_warden_flux` (unit-target), `arc_warden_magnetic_field` (point-aoe), `arc_warden_spark_wraith` (point-aoe) |
 | bounty_hunter | `bounty_hunter_shuriken_toss` (unit-target), `bounty_hunter_jinada` (unit-target), `bounty_hunter_wind_walk_ally` (unit-target), `bounty_hunter_track` (unit-target) |
 | brewmaster | `brewmaster_cinder_brew` (point-aoe) |
-| bristleback | `bristleback_viscous_nasal_goo` (unit-target instant), `bristleback_hairball` (point-aoe) |
 | broodmother | `broodmother_spin_web` (point-aoe), `broodmother_sticky_snare` (channelled), `broodmother_spawn_spiderlings` (unit-target) |
 | centaur | `centaur_double_edge` (unit-target), `centaur_mount` (unit-target instant) |
 | chen | `chen_penitence` (unit-target), `chen_holy_persuasion` (unit-target), `chen_divine_favor` (unit-target), `chen_zealot` (unit-target) |
@@ -39,18 +38,13 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | ember_spirit | `ember_spirit_sleight_of_fist` (point-aoe) |
 | enchantress | `enchantress_impetus` (unit-target), `enchantress_enchant` (unit-target), `enchantress_little_friends` (unit-target instant) |
 | invoker | `invoker_cold_snap` (unit-target instant), `invoker_emp` (point-aoe), `invoker_alacrity` (unit-target instant), `invoker_sun_strike` (point-aoe) |
-| juggernaut | `juggernaut_healing_ward` (point-aoe), `juggernaut_swift_slash` (unit-target), `juggernaut_omni_slash` (unit-target) |
 | largo | `largo_catchy_lick` (unit-target), `largo_frogstomp` (point-aoe), `largo_croak_of_genius` (unit-target) |
 | lone_druid | `lone_druid_entangle` (point-aoe) |
 | lycan | `lycan_wolf_bite` (unit-target) |
 | medusa | `medusa_mystic_snake` (unit-target), `medusa_gorgon_grasp` (point-aoe) |
-| meepo | `meepo_earthbind` (point-aoe), `meepo_poof` (unit-target instant), `meepo_megameepo_fling` (unit-target) |
-| monkey_king | `monkey_king_tree_dance` (unit-target), `monkey_king_primal_spring` (channelled), `monkey_king_wukongs_command` (point-aoe) |
 | omniknight | `omniknight_purification` (unit-target), `omniknight_martyr` (unit-target), `omniknight_hammer_of_purity` (unit-target) |
-| phantom_lancer | `phantom_lancer_spirit_lance` (unit-target), `phantom_lancer_doppelwalk` (point-aoe) |
 | phoenix | `phoenix_launch_fire_spirit` (point-aoe) |
 | shredder | `shredder_chakram` (point-aoe) |
-| slardar | `slardar_amplify_damage` (unit-target) |
 | sniper | `sniper_shrapnel` (point-aoe), `sniper_concussive_grenade` (point-aoe), `sniper_assassinate` (unit-target) |
 | target_dummy | — |
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
@@ -59,7 +53,7 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | weaver | `weaver_geminate_attack` (unit-target) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (59)
+## Heroes with partial coverage (64)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
@@ -93,8 +87,8 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | tusk | 2 | tusk_snowball, tusk_drinking_buddies, tusk_walrus_kick, tusk_walrus_punch | tusk_snowball |
 | earth_spirit | 2 | earth_spirit_boulder_smash, earth_spirit_geomagnetic_grip, earth_spirit_petrify | — |
 | winter_wyvern | 2 | winter_wyvern_splinter_blast, winter_wyvern_cold_embrace, winter_wyvern_winters_curse | winter_wyvern_winters_curse |
+| monkey_king | 2 | monkey_king_tree_dance, monkey_king_primal_spring, monkey_king_wukongs_command | monkey_king_wukongs_command |
 | grimstroke | 2 | grimstroke_ink_creature, grimstroke_spirit_walk, grimstroke_dark_portrait, grimstroke_soul_chain | grimstroke_ink_creature, grimstroke_soul_chain |
-| snapfire | 2 | snapfire_firesnap_cookie, snapfire_gobble_up, snapfire_spit_creep, snapfire_mortimer_kisses | snapfire_mortimer_kisses |
 
 ## Anim entries missing `instant_target` candidates
 
@@ -120,6 +114,7 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 | lion | `lion_voodoo` | 0 0 0 0 | hard_disable | — |
 | lion | `lion_mana_drain` | 0.3 0.3 0.3 0.3 | channel_start | IGNORE_BACKSWING, CHANNELLED |
 | lion | `lion_finger_of_death` | 0.3 0.3 0.3 | ult_burst | — |
+| meepo | `meepo_poof` | 1.5 | gap_close | IGNORE_BACKSWING |
 | morphling | `morphling_adaptive_strike_agi` | 0.25 | hard_disable | — |
 | muerta | `muerta_dead_shot` | 0.15 | hard_disable | — |
 | naga_siren | `naga_siren_ensnare` | 0.3 | hard_disable | — |
@@ -172,6 +167,13 @@ modifier_furion_sprout                    = { role = "hard_disable", save = "bkb
 modifier_visage_grave_chill               = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — slow + silence steal
 modifier_venomancer_venomous_gale         = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + dot line; dispel ...
 modifier_spectre_spectral_dagger          = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + can-chase-through...
+modifier_juggernaut_omni_slash            = { role = "channel_on_me", save = "bkb_or_eul" },       -- (verify) — 4s channel, target locke...
+modifier_phantom_lancer_spirit_lance      = { role = "kiting_slow",  save = "informational" },     -- (verify) — slow + damage proc, reco...
+modifier_meepo_earthbind                  = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — 2s root delayed AoE, dis...
+modifier_monkey_king_wukongs_command_aura = { role = "delayed_aoe",  save = "displacement" },      -- (verify) — cage area, clones attack...
+modifier_slardar_amplify_damage           = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction debuff, ...
+modifier_slardar_slithereen_crush         = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — AoE stun around Slardar
+modifier_bristleback_hairball_slow        = { role = "kiting_slow",  save = "informational" },     -- (verify) — line of goo slows, recov...
 -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
 modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
 modifier_zuus_lightning_bolt         = { role = "magic_burst",   save = "bkb_or_lotus" },          -- (verify)
@@ -228,6 +230,13 @@ furion_sprout                       = "modifier_furion_sprout",                 
 visage_grave_chill                  = "modifier_visage_grave_chill",                  -- (verify) — v6.15.265
 venomancer_venomous_gale            = "modifier_venomancer_venomous_gale",            -- (verify) — v6.15.265
 spectre_spectral_dagger             = "modifier_spectre_spectral_dagger",             -- (verify) — v6.15.265
+juggernaut_omni_slash               = "modifier_juggernaut_omni_slash",               -- (verify) — v6.15.266
+phantom_lancer_spirit_lance         = "modifier_phantom_lancer_spirit_lance",         -- (verify) — v6.15.266
+meepo_earthbind                     = "modifier_meepo_earthbind",                     -- (verify) — v6.15.266
+monkey_king_wukongs_command         = "modifier_monkey_king_wukongs_command_aura",    -- (verify) — v6.15.266
+slardar_slithereen_crush            = "modifier_slardar_slithereen_crush",            -- (verify) — v6.15.266
+slardar_amplify_damage              = "modifier_slardar_amplify_damage",              -- (verify) — v6.15.266
+bristleback_hairball                = "modifier_bristleback_hairball_slow",           -- (verify) — v6.15.266
 modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
 modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
 modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit

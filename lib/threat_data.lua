@@ -457,6 +457,14 @@ ThreatData.THREATS_ON_SELF = {
     modifier_visage_grave_chill               = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — slow + silence steal
     modifier_venomancer_venomous_gale         = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + dot line; dispel removes
     modifier_spectre_spectral_dagger          = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + can-chase-through-walls debuff
+    -- v6.15.266 zero-coverage fill batch 4: carry / active threats
+    modifier_juggernaut_omni_slash            = { role = "channel_on_me", save = "bkb_or_eul" },       -- (verify) — 4s channel, target locked + massive damage; BKB / Aeon / Manta dispel
+    modifier_phantom_lancer_spirit_lance      = { role = "kiting_slow",  save = "informational" },     -- (verify) — slow + damage proc, recoverable
+    modifier_meepo_earthbind                  = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — 2s root delayed AoE, dispel removes
+    modifier_monkey_king_wukongs_command_aura = { role = "delayed_aoe",  save = "displacement" },      -- (verify) — cage area, clones attack inside
+    modifier_slardar_amplify_damage           = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction debuff, dispellable
+    modifier_slardar_slithereen_crush         = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — AoE stun around Slardar
+    modifier_bristleback_hairball_slow        = { role = "kiting_slow",  save = "informational" },     -- (verify) — line of goo slows, recoverable
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -673,6 +681,16 @@ ThreatData.ABILITY_TO_THREAT = {
     venomancer_venomous_gale            = "modifier_venomancer_venomous_gale",            -- (verify) — v6.15.265
     luna_lucent_beam                    = nil,                                            -- v6.15.265: no Sniper modifier (instant mini-stun); anim-path only
     spectre_spectral_dagger             = "modifier_spectre_spectral_dagger",             -- (verify) — v6.15.265
+    -- v6.15.266 zero-coverage fill batch 4
+    juggernaut_omni_slash               = "modifier_juggernaut_omni_slash",               -- (verify) — v6.15.266
+    juggernaut_swift_slash              = nil,                                            -- v6.15.266: no Sniper modifier (gap-close attacks); anim-path only
+    phantom_lancer_spirit_lance         = "modifier_phantom_lancer_spirit_lance",         -- (verify) — v6.15.266
+    meepo_earthbind                     = "modifier_meepo_earthbind",                     -- (verify) — v6.15.266
+    meepo_poof                          = nil,                                            -- v6.15.266: no Sniper modifier (caster gap-close channel); anim-path only
+    monkey_king_wukongs_command         = "modifier_monkey_king_wukongs_command_aura",    -- (verify) — v6.15.266
+    slardar_slithereen_crush            = "modifier_slardar_slithereen_crush",            -- (verify) — v6.15.266
+    slardar_amplify_damage              = "modifier_slardar_amplify_damage",              -- (verify) — v6.15.266
+    bristleback_hairball                = "modifier_bristleback_hairball_slow",           -- (verify) — v6.15.266
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1371,6 +1389,14 @@ ThreatData.THREAT_CATEGORY = {
     modifier_visage_grave_chill                = "targeted_disable",  -- v6.15.265 (slow + silence)
     modifier_venomancer_venomous_gale          = "line_projectile",   -- v6.15.265 (line aoe slow+dot)
     modifier_spectre_spectral_dagger           = "line_projectile",   -- v6.15.265 (gap-close debuff)
+    -- v6.15.266 zero-coverage fill batch 4
+    modifier_juggernaut_omni_slash             = "channel_on_self",   -- v6.15.266 (target-locked channel)
+    modifier_phantom_lancer_spirit_lance       = "kiting_slow",       -- v6.15.266 (slow + damage proc)
+    modifier_meepo_earthbind                   = "targeted_disable",  -- v6.15.266 (delayed AoE root)
+    modifier_monkey_king_wukongs_command_aura  = "delayed_aoe",       -- v6.15.266 (cage area)
+    modifier_slardar_amplify_damage            = "kiting_slow",       -- v6.15.266 (armor reduction setup)
+    modifier_slardar_slithereen_crush          = "targeted_disable",  -- v6.15.266 (AoE stun)
+    modifier_bristleback_hairball_slow         = "kiting_slow",       -- v6.15.266 (slow line)
 }
 
 ---@param threat_mod string|nil
@@ -1519,6 +1545,14 @@ ThreatData.THREAT_SEVERITY = {
     modifier_visage_grave_chill           = "medium", -- v6.15.265 4s slow+silence
     modifier_venomancer_venomous_gale     = "low",    -- v6.15.265 slow + dot
     modifier_spectre_spectral_dagger      = "low",    -- v6.15.265 slow + chase debuff
+    -- v6.15.266
+    modifier_juggernaut_omni_slash        = "high",   -- v6.15.266 4s invuln + massive damage, kill threat
+    modifier_phantom_lancer_spirit_lance  = "low",    -- v6.15.266 instant slow proc
+    modifier_meepo_earthbind              = "medium", -- v6.15.266 2s AoE root sets up Poof gank
+    modifier_monkey_king_wukongs_command_aura = "high", -- v6.15.266 cage prevents leaving + clones attack
+    modifier_slardar_amplify_damage       = "low",    -- v6.15.266 armor debuff alone, setup-only
+    modifier_slardar_slithereen_crush     = "medium", -- v6.15.266 AoE stun around Slardar
+    modifier_bristleback_hairball_slow    = "low",    -- v6.15.266 slow + damage line, recoverable
 }
 
 ----------------------------------------------------------------------------
