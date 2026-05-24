@@ -710,7 +710,9 @@ ThreatData.RECOMMENDED_SAVES = {
     -- Channel-tethers: prefer cheap displacement, fall through to dispel/invuln.
     -- Blink always works (1200u >> any tether).
     modifier_pudge_dismember_pull = {
-        "grenade_self", "item_hurricane_pike", "item_force_staff",
+        -- v6.15.261: hero-agnostic; hero brains insert their own knockback
+        -- saves via *_THREAT_PATCHES if applicable. Sniper prepends grenade_self.
+        "item_hurricane_pike", "item_force_staff",
         "item_blink", "item_swift_blink", "item_arcane_blink", "item_overwhelming_blink",
         "item_cyclone", "item_wind_waker", "item_manta", "item_disperser",
     },
@@ -724,9 +726,10 @@ ThreatData.RECOMMENDED_SAVES = {
         "item_hurricane_pike", "item_force_staff",
     },
     modifier_shadow_shaman_shackles = {
+        -- v6.15.261: hero-agnostic.
         "item_cyclone", "item_wind_waker", "item_manta", "item_satanic",
         "item_disperser", "item_blink",
-        "grenade_self", "item_hurricane_pike", "item_force_staff",
+        "item_hurricane_pike", "item_force_staff",
     },
     modifier_witch_doctor_death_ward = {
         -- v6.7: ward attack range is 650 at level 3 (was using fictional 1100).
@@ -751,13 +754,15 @@ ThreatData.RECOMMENDED_SAVES = {
     -- hit; BKB blocks the slow and keeps Sniper attacking; Pike / grenade
     -- push the caster off (Kez is not displacement-immune).
     modifier_kez_grappling_claw = {
+        -- v6.15.261: hero-agnostic.
         "item_cyclone", "item_wind_waker", "item_black_king_bar",
-        "item_hurricane_pike", "item_force_staff", "grenade_self",
+        "item_hurricane_pike", "item_force_staff",
         "item_manta", "item_aeon_disk",
     },
     -- Delayed AoEs: displacement works (target the EFFECT, not the entity)
     modifier_lina_light_strike_array = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self", "item_blink",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff", "item_blink",
         "item_cyclone", "item_wind_waker", "item_black_king_bar",
         "item_manta",
     },
@@ -767,34 +772,40 @@ ThreatData.RECOMMENDED_SAVES = {
         "item_cyclone", "item_wind_waker", "item_manta",
     },
     modifier_crystal_maiden_freezing_field = {
+        -- v6.15.261: hero-agnostic.
         "item_black_king_bar", "item_hurricane_pike", "item_force_staff",
-        "item_blink", "grenade_self", "item_pipe_of_insight",
+        "item_blink", "item_pipe_of_insight",
     },
     -- Line projectiles: perpendicular displacement
     modifier_pudge_meat_hook = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self", "item_blink",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff", "item_blink",
         "item_cyclone", "item_wind_waker",
     },
     -- v6.14.1 M9: Tusk Ice Shards — slow-moving line projectile, perp
     -- displacement / blink avoids. Mirrors hook ordering.
     modifier_tusk_ice_shards_thinker = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self", "item_blink",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff", "item_blink",
         "item_cyclone", "item_wind_waker",
     },
     modifier_slark_pounce = {
-        "item_force_staff", "item_hurricane_pike", "grenade_self", "item_blink",
+        -- v6.15.261: hero-agnostic.
+        "item_force_staff", "item_hurricane_pike", "item_blink",
         "item_cyclone", "item_wind_waker", "item_manta", "item_black_king_bar",
     },
     modifier_mirana_arrow = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self", "item_blink",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff", "item_blink",
         "item_cyclone",
     },
     -- Physical chase: invis breaks target-lock; BKB doesn't help. Ghost makes
     -- attacks miss entirely. Blade Mail returns damage. Crimson blocks.
     modifier_phantom_assassin_phantom_strike_target = {
+        -- v6.15.261: hero-agnostic.
         "item_glimmer_cape", "item_ghost", "item_blade_mail",
         "item_hurricane_pike", "item_force_staff", "item_blink",
-        "grenade_self", "item_cyclone", "item_crimson_guard", "item_solar_crest",
+        "item_cyclone", "item_crimson_guard", "item_solar_crest",
     },
     modifier_ursa_overpower = {
         "item_glimmer_cape", "item_ghost", "item_blade_mail",
@@ -807,9 +818,9 @@ ThreatData.RECOMMENDED_SAVES = {
         "item_hurricane_pike", "item_force_staff", "item_blink",
     },
     modifier_lion_mana_drain = {
+        -- v6.15.261: hero-agnostic.
         "item_cyclone", "item_wind_waker", "item_manta",
         "item_hurricane_pike", "item_force_staff", "item_blink",
-        "grenade_self",
     },
     -- Lockdown — Satanic for lifesteal-tank, Blade Mail returns Duel damage
     modifier_legion_commander_duel = {
@@ -863,39 +874,35 @@ ThreatData.RECOMMENDED_SAVES = {
         "item_pipe_of_insight",
     },
     -- v6.15.10: Disruptor Kinetic Field. Wall blocks forced movement, blink,
-    -- and cyclone displacement. Only knockback (Concussive Grenade) crosses.
-    -- v6.15.237: grenade_at_caster dropped — it knocks the Disruptor, not
-    -- Sniper, so it never frees Sniper from the field; SaveCounters rejected
-    -- it anyway (its kinds channel_break / displacement_at_source do not
-    -- intersect the field's only counter-kind, displacement_perp).
-    -- grenade_self is the real escape: a directional push in Sniper's
-    -- facing moves him out when the user is aimed outward.
-    modifier_disruptor_kinetic_field_remnant = {
-        "grenade_self",
-    },
+    -- and cyclone displacement. Only KNOCKBACK crosses -- which no item
+    -- provides, only hero-specific abilities (Sniper Concussive Grenade,
+    -- etc.). v6.15.261: lib entry is empty (no item works); hero brains
+    -- inject knockback via *_THREAT_PATCHES. The dispatcher falls through to
+    -- the trap category chain (blinks) if no patch is registered -- blinks
+    -- also do not work against KF in practice, but the failure is silent.
+    modifier_disruptor_kinetic_field_remnant = {},
     -- v6.15.256: Underlord Pit of Malice. Same trap escape posture as
-    -- Kinetic Field; grenade-self knocks Sniper out of the 400u pit in
-    -- the user's facing direction. grenade-at-caster fallback applies
-    -- when Underlord himself is close enough (push both apart from
-    -- the midpoint).
-    modifier_abyssal_underlord_pit_of_malice = {
-        "grenade_self",
-    },
+    -- Kinetic Field; only hero-knockback escapes the snare reliably.
+    -- v6.15.261: hero-agnostic empty chain; hero patches inject knockback.
+    modifier_abyssal_underlord_pit_of_malice = {},
     modifier_treant_overgrowth = {
         "item_black_king_bar", "item_blink", "item_swift_blink",
         "item_cyclone", "item_wind_waker", "item_manta",
         "item_aeon_disk",
     },
     modifier_magnataur_skewer = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff",
         "item_blink", "item_black_king_bar", "item_cyclone",
     },
     modifier_sven_storm_bolt = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff",
         "item_blink", "item_cyclone",
     },
     modifier_earth_spirit_rolling_boulder = {
-        "item_hurricane_pike", "item_force_staff", "grenade_self",
+        -- v6.15.261: hero-agnostic.
+        "item_hurricane_pike", "item_force_staff",
         "item_blink", "item_cyclone",
     },
     modifier_life_stealer_open_wounds = {
@@ -904,8 +911,9 @@ ThreatData.RECOMMENDED_SAVES = {
         "item_crimson_guard",
     },
     modifier_pugna_life_drain = {
+        -- v6.15.261: hero-agnostic.
         "item_cyclone", "item_wind_waker", "item_manta", "item_blink",
-        "item_hurricane_pike", "item_force_staff", "grenade_self",
+        "item_hurricane_pike", "item_force_staff",
     },
 }
 
