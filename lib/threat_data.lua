@@ -481,6 +481,12 @@ ThreatData.THREATS_ON_SELF = {
     modifier_dark_seer_vacuum                 = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — pulls Sniper to vacuum point; BKB blocks
     modifier_dark_seer_ion_shell              = { role = "kiting_slow",  save = "informational" },     -- (verify) — area damage aura around target; doesn't stop kiting
     modifier_ember_spirit_sleight_of_fist_caster = { role = "kiting_slow", save = "informational" }, -- (verify) — Ember in untargetable phase; informational
+    -- v6.15.269 zero-coverage fill batch 7: remaining mid-impact threats
+    modifier_bounty_hunter_shuriken_toss      = { role = "kiting_slow",  save = "informational" },     -- (verify) — slow + damage proc, recoverable
+    modifier_brewmaster_cinder_brew           = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — POINT-AOE slow + dot, ignites on damage; dispel removes
+    modifier_phoenix_sun_ray                  = { role = "kiting_slow",  save = "informational" },     -- (verify) — line beam damage + slow (Phoenix channels)
+    modifier_shredder_chakram                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — chakram line slow + disarm
+    modifier_arc_warden_flux                  = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — damage-when-isolated debuff; dispel breaks the lone-target check
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -729,6 +735,12 @@ ThreatData.ABILITY_TO_THREAT = {
     dark_seer_vacuum                    = "modifier_dark_seer_vacuum",                    -- (verify) — v6.15.268
     dark_seer_ion_shell                 = "modifier_dark_seer_ion_shell",                 -- (verify) — v6.15.268
     ember_spirit_sleight_of_fist        = "modifier_ember_spirit_sleight_of_fist_caster", -- (verify) — v6.15.268 (caster-side phase marker)
+    -- v6.15.269 zero-coverage fill batch 7
+    bounty_hunter_shuriken_toss         = "modifier_bounty_hunter_shuriken_toss",        -- (verify) — v6.15.269
+    brewmaster_cinder_brew              = "modifier_brewmaster_cinder_brew",              -- (verify) — v6.15.269
+    phoenix_sun_ray                     = "modifier_phoenix_sun_ray",                     -- (verify) — v6.15.269
+    shredder_chakram                    = "modifier_shredder_chakram",                    -- (verify) — v6.15.269
+    arc_warden_flux                     = "modifier_arc_warden_flux",                     -- (verify) — v6.15.269
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1451,6 +1463,12 @@ ThreatData.THREAT_CATEGORY = {
     modifier_dark_seer_vacuum                  = "targeted_disable",  -- v6.15.268 (pull AoE)
     modifier_dark_seer_ion_shell               = "kiting_slow",       -- v6.15.268 (damage aura around target)
     modifier_ember_spirit_sleight_of_fist_caster = "kiting_slow",     -- v6.15.268 (caster phase marker)
+    -- v6.15.269 zero-coverage fill batch 7
+    modifier_bounty_hunter_shuriken_toss       = "kiting_slow",       -- v6.15.269 (slow + damage)
+    modifier_brewmaster_cinder_brew            = "kiting_slow",       -- v6.15.269 (slow + dot AoE)
+    modifier_phoenix_sun_ray                   = "kiting_slow",       -- v6.15.269 (line beam DoT)
+    modifier_shredder_chakram                  = "kiting_slow",       -- v6.15.269 (line slow + disarm)
+    modifier_arc_warden_flux                   = "kiting_slow",       -- v6.15.269 (isolated-target debuff)
 }
 
 ---@param threat_mod string|nil
@@ -1623,6 +1641,12 @@ ThreatData.THREAT_SEVERITY = {
     modifier_dark_seer_vacuum              = "medium",-- v6.15.268 pull sets up combo
     modifier_dark_seer_ion_shell           = "low",   -- v6.15.268 aura damage
     modifier_ember_spirit_sleight_of_fist_caster = "low", -- v6.15.268 informational
+    -- v6.15.269
+    modifier_bounty_hunter_shuriken_toss   = "low",  -- v6.15.269 slow + minor damage
+    modifier_brewmaster_cinder_brew        = "low",  -- v6.15.269 slow + dot, dispel removes
+    modifier_phoenix_sun_ray               = "low",  -- v6.15.269 line beam DoT, Phoenix channels
+    modifier_shredder_chakram              = "low",  -- v6.15.269 slow + disarm line
+    modifier_arc_warden_flux               = "low",  -- v6.15.269 isolated-target debuff
 }
 
 ----------------------------------------------------------------------------

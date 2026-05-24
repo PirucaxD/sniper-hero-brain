@@ -10,37 +10,33 @@ Re-run after every catalog batch to track progress.
 | Metric | Count | % |
 |---|---|---|
 | Heroes in 7.41C (`npc_heroes.json`) | 128 | 100% |
-| Heroes with anim RegisterMap entries | 99 | 77% |
-| Heroes with **any** catalog entry | 114 | 89% |
-| Heroes with **zero** coverage | 14 | 11% |
-| THREATS_ON_SELF entries | 142 | — |
-| ABILITY_TO_THREAT entries | 162 | — |
-| THREAT_CATEGORY entries | 139 | — |
-| `(verify)` flags in threat_data.lua | 125 | — |
-| `instant_target` flagged anim entries | 30 | — |
+| Heroes with anim RegisterMap entries | 104 | 81% |
+| Heroes with **any** catalog entry | 118 | 92% |
+| Heroes with **zero** coverage | 10 | 8% |
+| THREATS_ON_SELF entries | 147 | — |
+| ABILITY_TO_THREAT entries | 167 | — |
+| THREAT_CATEGORY entries | 144 | — |
+| `(verify)` flags in threat_data.lua | 135 | — |
+| `instant_target` flagged anim entries | 32 | — |
 
-## Heroes with zero catalog coverage (14)
+## Heroes with zero catalog coverage (10)
 
 Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lua table. Listed alphabetically with their threat-relevant abilities (UNIT_TARGET / POINT_AOE / skill-shots, excluding passives and self-buffs).
 
 | Hero | Active-threat abilities (per KV) |
 |---|---|
 | abaddon | `abaddon_death_coil` (unit-target), `abaddon_aphotic_shield` (unit-target) |
-| arc_warden | `arc_warden_flux` (unit-target), `arc_warden_magnetic_field` (point-aoe), `arc_warden_spark_wraith` (point-aoe) |
-| bounty_hunter | `bounty_hunter_shuriken_toss` (unit-target), `bounty_hunter_jinada` (unit-target), `bounty_hunter_wind_walk_ally` (unit-target), `bounty_hunter_track` (unit-target) |
-| brewmaster | `brewmaster_cinder_brew` (point-aoe) |
 | chen | `chen_penitence` (unit-target), `chen_holy_persuasion` (unit-target), `chen_divine_favor` (unit-target), `chen_zealot` (unit-target) |
 | enchantress | `enchantress_impetus` (unit-target), `enchantress_enchant` (unit-target), `enchantress_little_friends` (unit-target instant) |
 | largo | `largo_catchy_lick` (unit-target), `largo_frogstomp` (point-aoe), `largo_croak_of_genius` (unit-target) |
 | lycan | `lycan_wolf_bite` (unit-target) |
 | omniknight | `omniknight_purification` (unit-target), `omniknight_martyr` (unit-target), `omniknight_hammer_of_purity` (unit-target) |
-| shredder | `shredder_chakram` (point-aoe) |
 | sniper | `sniper_shrapnel` (point-aoe), `sniper_concussive_grenade` (point-aoe), `sniper_assassinate` (unit-target) |
 | target_dummy | — |
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (70)
+## Heroes with partial coverage (72)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
@@ -54,6 +50,7 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | shadow_shaman | 3 | shadow_shaman_ether_shock, shadow_shaman_voodoo, shadow_shaman_shackles, shadow_shaman_urnaconda, shadow_shaman_mass_serpent_ward | shadow_shaman_voodoo, shadow_shaman_shackles |
 | warlock | 3 | warlock_fatal_bonds, warlock_shadow_word, warlock_upheaval, warlock_rain_of_chaos | warlock_upheaval |
 | furion | 3 | furion_sprout, furion_teleportation, furion_force_of_nature, furion_wrath_of_nature | furion_sprout |
+| bounty_hunter | 3 | bounty_hunter_shuriken_toss, bounty_hunter_jinada, bounty_hunter_wind_walk_ally, bounty_hunter_track | bounty_hunter_shuriken_toss |
 | shadow_demon | 3 | shadow_demon_disruption, shadow_demon_disseminate, shadow_demon_shadow_poison, shadow_demon_demonic_cleanse, shadow_demon_demonic_purge | shadow_demon_disruption, shadow_demon_demonic_purge |
 | ogre_magi | 3 | ogre_magi_fireblast, ogre_magi_ignite, ogre_magi_bloodlust, ogre_magi_unrefined_fireblast, ogre_magi_smash | ogre_magi_fireblast, ogre_magi_unrefined_fireblast |
 | oracle | 3 | oracle_fortunes_end, oracle_fates_edict, oracle_purifying_flames, oracle_rain_of_destiny, oracle_false_promise | oracle_fortunes_end, oracle_purifying_flames |
@@ -75,7 +72,6 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | tusk | 2 | tusk_snowball, tusk_drinking_buddies, tusk_walrus_kick, tusk_walrus_punch | tusk_snowball |
 | earth_spirit | 2 | earth_spirit_boulder_smash, earth_spirit_geomagnetic_grip, earth_spirit_petrify | — |
 | winter_wyvern | 2 | winter_wyvern_splinter_blast, winter_wyvern_cold_embrace, winter_wyvern_winters_curse | winter_wyvern_winters_curse |
-| monkey_king | 2 | monkey_king_tree_dance, monkey_king_primal_spring, monkey_king_wukongs_command | monkey_king_wukongs_command |
 
 ## Anim entries missing `instant_target` candidates
 
@@ -176,6 +172,11 @@ modifier_troll_warlord_whirling_axes_ranged = { role = "silence_on_me", save = "
 modifier_dark_seer_vacuum                 = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — pulls Sniper to vacuum p...
 modifier_dark_seer_ion_shell              = { role = "kiting_slow",  save = "informational" },     -- (verify) — area damage aura around ...
 modifier_ember_spirit_sleight_of_fist_caster = { role = "kiting_slow", save = "informational" }, -- (verify) — Ember in untargetable phas...
+modifier_bounty_hunter_shuriken_toss      = { role = "kiting_slow",  save = "informational" },     -- (verify) — slow + damage proc, reco...
+modifier_brewmaster_cinder_brew           = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — POINT-AOE slow + dot, ig...
+modifier_phoenix_sun_ray                  = { role = "kiting_slow",  save = "informational" },     -- (verify) — line beam damage + slow ...
+modifier_shredder_chakram                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — chakram line slow + disarm
+modifier_arc_warden_flux                  = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — damage-when-isolated deb...
 -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
 modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
 modifier_zuus_lightning_bolt         = { role = "magic_burst",   save = "bkb_or_lotus" },          -- (verify)
@@ -253,6 +254,11 @@ troll_warlord_whirling_axes_ranged  = "modifier_troll_warlord_whirling_axes_rang
 dark_seer_vacuum                    = "modifier_dark_seer_vacuum",                    -- (verify) — v6.15.268
 dark_seer_ion_shell                 = "modifier_dark_seer_ion_shell",                 -- (verify) — v6.15.268
 ember_spirit_sleight_of_fist        = "modifier_ember_spirit_sleight_of_fist_caster", -- (verify) — v6.15.268 (caster-side phase marker)
+bounty_hunter_shuriken_toss         = "modifier_bounty_hunter_shuriken_toss",        -- (verify) — v6.15.269
+brewmaster_cinder_brew              = "modifier_brewmaster_cinder_brew",              -- (verify) — v6.15.269
+phoenix_sun_ray                     = "modifier_phoenix_sun_ray",                     -- (verify) — v6.15.269
+shredder_chakram                    = "modifier_shredder_chakram",                    -- (verify) — v6.15.269
+arc_warden_flux                     = "modifier_arc_warden_flux",                     -- (verify) — v6.15.269
 modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
 modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
 modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
