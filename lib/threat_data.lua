@@ -421,6 +421,15 @@ ThreatData.THREATS_ON_SELF = {
     modifier_pangolier_gyroshell                    = { role = "gap_close",        save = "pike_or_grenade" },
     modifier_nyx_assassin_vendetta                  = { role = "gap_close",        save = "pike_or_grenade" },
     modifier_slark_pounce                = { role = "gap_close", save = "force_or_pike" },
+    -- v6.15.258 zero-coverage fill batch 1: single-target stuns / silences
+    -- from heroes Sniper actually faces. All modifier names are (verify) --
+    -- guessed from KV ability names; demos will confirm via threat_unrecognized.
+    modifier_dragon_knight_dragon_tail   = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.45 cast, 1.7-2.75s stun
+    modifier_night_stalker_void          = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.3 cast, mini-stun + slow (full stun at night)
+    modifier_ogre_magi_fireblast         = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.45 cast, 1.5-2.4s stun
+    modifier_rubick_telekinesis          = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.1 cast, lift+land stun
+    modifier_silencer_last_word          = { role = "silence_on_me", save = "bkb_or_dispel" },      -- (verify) — silence on cast / 4s timer
+    modifier_death_prophet_silence       = { role = "silence_on_me", save = "bkb_or_dispel" },      -- (verify) — point-AOE 5-6s silence
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -611,6 +620,14 @@ ThreatData.ABILITY_TO_THREAT = {
     pugna_life_drain                    = "modifier_pugna_life_drain",                 -- (verify)
     disruptor_kinetic_field             = "modifier_disruptor_kinetic_field_remnant",  -- (verify) — v6.15.10
     abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice",   -- (verify) — v6.15.256
+    -- v6.15.258 zero-coverage fill batch 1
+    dragon_knight_dragon_tail           = "modifier_dragon_knight_dragon_tail",          -- (verify) — v6.15.258
+    night_stalker_void                  = "modifier_night_stalker_void",                 -- (verify) — v6.15.258
+    ogre_magi_fireblast                 = "modifier_ogre_magi_fireblast",                -- (verify) — v6.15.258
+    ogre_magi_unrefined_fireblast       = "modifier_ogre_magi_fireblast",                -- (verify) — v6.15.258 (shares modifier with fireblast)
+    rubick_telekinesis                  = "modifier_rubick_telekinesis",                 -- (verify) — v6.15.258
+    silencer_last_word                  = "modifier_silencer_last_word",                 -- (verify) — v6.15.258
+    death_prophet_silence               = "modifier_death_prophet_silence",              -- (verify) — v6.15.258
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1175,6 +1192,13 @@ ThreatData.THREAT_CATEGORY = {
     modifier_pugna_life_drain                  = "drain",
     modifier_disruptor_kinetic_field_remnant   = "trap",         -- v6.15.10
     modifier_abyssal_underlord_pit_of_malice   = "trap",         -- v6.15.256
+    -- v6.15.258 zero-coverage fill batch 1
+    modifier_dragon_knight_dragon_tail         = "targeted_disable",  -- v6.15.258
+    modifier_night_stalker_void                = "targeted_disable",  -- v6.15.258
+    modifier_ogre_magi_fireblast               = "targeted_disable",  -- v6.15.258
+    modifier_rubick_telekinesis                = "targeted_disable",  -- v6.15.258
+    modifier_silencer_last_word                = "targeted_disable",  -- v6.15.258 (silence is a disable)
+    modifier_death_prophet_silence             = "targeted_disable",  -- v6.15.258 (silence)
 }
 
 ---@param threat_mod string|nil
@@ -1301,6 +1325,13 @@ ThreatData.THREAT_SEVERITY = {
     modifier_pugna_life_drain            = "medium", -- HP drain channel
     modifier_disruptor_kinetic_field_remnant = "high", -- v6.15.10 trap usually paired with Static Storm
     modifier_abyssal_underlord_pit_of_malice = "medium", -- v6.15.256 1.5-1.8s root, recurring; less lethal than KF
+    -- v6.15.258 zero-coverage fill batch 1
+    modifier_dragon_knight_dragon_tail   = "medium",  -- v6.15.258 1.7-2.75s stun, recoverable
+    modifier_night_stalker_void          = "medium",  -- v6.15.258 1-2.5s stun (longer at night)
+    modifier_ogre_magi_fireblast         = "medium",  -- v6.15.258 1.5-2.4s stun
+    modifier_rubick_telekinesis          = "medium",  -- v6.15.258 lift+land ~2.5s total disable
+    modifier_silencer_last_word          = "low",     -- v6.15.258 silence -- annoying but not lethal alone
+    modifier_death_prophet_silence       = "low",     -- v6.15.258 silence AOE -- locks BKB but not lethal alone
 }
 
 ----------------------------------------------------------------------------
