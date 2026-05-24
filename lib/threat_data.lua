@@ -487,6 +487,10 @@ ThreatData.THREATS_ON_SELF = {
     modifier_phoenix_sun_ray                  = { role = "kiting_slow",  save = "informational" },     -- (verify) — line beam damage + slow (Phoenix channels)
     modifier_shredder_chakram                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — chakram line slow + disarm
     modifier_arc_warden_flux                  = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — damage-when-isolated debuff; dispel breaks the lone-target check
+    -- v6.15.270 zero-coverage final mop-up
+    modifier_chen_penitence                   = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + damage amp on Sniper
+    modifier_omniknight_hammer_of_purity      = { role = "kiting_slow",  save = "informational" },     -- (verify) — autocast purity attack proc, single-target damage
+    modifier_largo_catchy_lick                = { role = "kiting_slow",  save = "informational" },     -- (verify) — Largo lick debuff, single-target proc
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -741,6 +745,15 @@ ThreatData.ABILITY_TO_THREAT = {
     phoenix_sun_ray                     = "modifier_phoenix_sun_ray",                     -- (verify) — v6.15.269
     shredder_chakram                    = "modifier_shredder_chakram",                    -- (verify) — v6.15.269
     arc_warden_flux                     = "modifier_arc_warden_flux",                     -- (verify) — v6.15.269
+    -- v6.15.270 final mop-up
+    abaddon_aphotic_shield              = nil,                                            -- v6.15.270: cast on ALLY; explosion AOE damage is the threat but no Sniper modifier
+    centaur_double_edge                 = nil,                                            -- v6.15.270: instant burst; no Sniper modifier; anim-only
+    chen_penitence                      = "modifier_chen_penitence",                      -- (verify) — v6.15.270
+    enchantress_impetus                 = nil,                                            -- v6.15.270: autocast passive proc damage; no specific modifier (raw projectile damage)
+    omniknight_hammer_of_purity         = "modifier_omniknight_hammer_of_purity",         -- (verify) — v6.15.270
+    largo_catchy_lick                   = "modifier_largo_catchy_lick",                   -- (verify) — v6.15.270
+    largo_frogstomp                     = nil,                                            -- v6.15.270: POINT-AOE stomp; modifier name unverified
+    largo_croak_of_genius               = nil,                                            -- v6.15.270: UNIT_TARGET debuff; modifier name unverified
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1469,6 +1482,10 @@ ThreatData.THREAT_CATEGORY = {
     modifier_phoenix_sun_ray                   = "kiting_slow",       -- v6.15.269 (line beam DoT)
     modifier_shredder_chakram                  = "kiting_slow",       -- v6.15.269 (line slow + disarm)
     modifier_arc_warden_flux                   = "kiting_slow",       -- v6.15.269 (isolated-target debuff)
+    -- v6.15.270 final mop-up
+    modifier_chen_penitence                    = "kiting_slow",       -- v6.15.270 (slow + dmg amp)
+    modifier_omniknight_hammer_of_purity       = "kiting_slow",       -- v6.15.270 (autocast nuke)
+    modifier_largo_catchy_lick                 = "kiting_slow",       -- v6.15.270 (Largo lick debuff)
 }
 
 ---@param threat_mod string|nil
@@ -1647,6 +1664,10 @@ ThreatData.THREAT_SEVERITY = {
     modifier_phoenix_sun_ray               = "low",  -- v6.15.269 line beam DoT, Phoenix channels
     modifier_shredder_chakram              = "low",  -- v6.15.269 slow + disarm line
     modifier_arc_warden_flux               = "low",  -- v6.15.269 isolated-target debuff
+    -- v6.15.270 final mop-up
+    modifier_chen_penitence                = "low",  -- v6.15.270 slow + dmg amp, dispellable
+    modifier_omniknight_hammer_of_purity   = "low",  -- v6.15.270 autocast nuke proc
+    modifier_largo_catchy_lick             = "low",  -- v6.15.270 lick debuff
 }
 
 ----------------------------------------------------------------------------
@@ -1830,6 +1851,19 @@ ThreatData.ENEMY_BUFF_THREATS = {
     modifier_earth_spirit_rolling_boulder_caster = {
         category = "line_projectile", role = "line_projectile",
         severity = "medium",
+    },
+    -- v6.15.270: Centaur Stampede + Lycan Howl. Team-buff ults that
+    -- enable enemy team to gank Sniper (Stampede: global MS + phasing;
+    -- Howl: team damage buff). Sniper response: defensive item or
+    -- reposition; informational-grade since saves don't directly cancel
+    -- the buff, but the brain should be on alert.
+    modifier_centaur_stampede = {
+        category = "team_mobility_buff", role = "informational",
+        severity = "medium", verify = true,
+    },
+    modifier_lycan_howl = {
+        category = "team_damage_buff", role = "informational",
+        severity = "medium", verify = true,
     },
 }
 

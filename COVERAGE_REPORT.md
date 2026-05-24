@@ -10,33 +10,27 @@ Re-run after every catalog batch to track progress.
 | Metric | Count | % |
 |---|---|---|
 | Heroes in 7.41C (`npc_heroes.json`) | 128 | 100% |
-| Heroes with anim RegisterMap entries | 104 | 81% |
-| Heroes with **any** catalog entry | 118 | 92% |
-| Heroes with **zero** coverage | 10 | 8% |
-| THREATS_ON_SELF entries | 147 | — |
-| ABILITY_TO_THREAT entries | 167 | — |
-| THREAT_CATEGORY entries | 144 | — |
-| `(verify)` flags in threat_data.lua | 135 | — |
-| `instant_target` flagged anim entries | 32 | — |
+| Heroes with anim RegisterMap entries | 110 | 86% |
+| Heroes with **any** catalog entry | 124 | 97% |
+| Heroes with **zero** coverage | 4 | 3% |
+| THREATS_ON_SELF entries | 150 | — |
+| ABILITY_TO_THREAT entries | 174 | — |
+| THREAT_CATEGORY entries | 147 | — |
+| `(verify)` flags in threat_data.lua | 141 | — |
+| `instant_target` flagged anim entries | 35 | — |
 
-## Heroes with zero catalog coverage (10)
+## Heroes with zero catalog coverage (4)
 
 Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lua table. Listed alphabetically with their threat-relevant abilities (UNIT_TARGET / POINT_AOE / skill-shots, excluding passives and self-buffs).
 
 | Hero | Active-threat abilities (per KV) |
 |---|---|
-| abaddon | `abaddon_death_coil` (unit-target), `abaddon_aphotic_shield` (unit-target) |
-| chen | `chen_penitence` (unit-target), `chen_holy_persuasion` (unit-target), `chen_divine_favor` (unit-target), `chen_zealot` (unit-target) |
-| enchantress | `enchantress_impetus` (unit-target), `enchantress_enchant` (unit-target), `enchantress_little_friends` (unit-target instant) |
-| largo | `largo_catchy_lick` (unit-target), `largo_frogstomp` (point-aoe), `largo_croak_of_genius` (unit-target) |
-| lycan | `lycan_wolf_bite` (unit-target) |
-| omniknight | `omniknight_purification` (unit-target), `omniknight_martyr` (unit-target), `omniknight_hammer_of_purity` (unit-target) |
 | sniper | `sniper_shrapnel` (point-aoe), `sniper_concussive_grenade` (point-aoe), `sniper_assassinate` (unit-target) |
 | target_dummy | — |
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (72)
+## Heroes with partial coverage (76)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
@@ -51,6 +45,7 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | warlock | 3 | warlock_fatal_bonds, warlock_shadow_word, warlock_upheaval, warlock_rain_of_chaos | warlock_upheaval |
 | furion | 3 | furion_sprout, furion_teleportation, furion_force_of_nature, furion_wrath_of_nature | furion_sprout |
 | bounty_hunter | 3 | bounty_hunter_shuriken_toss, bounty_hunter_jinada, bounty_hunter_wind_walk_ally, bounty_hunter_track | bounty_hunter_shuriken_toss |
+| chen | 3 | chen_penitence, chen_holy_persuasion, chen_divine_favor, chen_zealot | chen_penitence |
 | shadow_demon | 3 | shadow_demon_disruption, shadow_demon_disseminate, shadow_demon_shadow_poison, shadow_demon_demonic_cleanse, shadow_demon_demonic_purge | shadow_demon_disruption, shadow_demon_demonic_purge |
 | ogre_magi | 3 | ogre_magi_fireblast, ogre_magi_ignite, ogre_magi_bloodlust, ogre_magi_unrefined_fireblast, ogre_magi_smash | ogre_magi_fireblast, ogre_magi_unrefined_fireblast |
 | oracle | 3 | oracle_fortunes_end, oracle_fates_edict, oracle_purifying_flames, oracle_rain_of_destiny, oracle_false_promise | oracle_fortunes_end, oracle_purifying_flames |
@@ -62,6 +57,8 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | dragon_knight | 2 | dragon_knight_breathe_fire, dragon_knight_dragon_tail, dragon_knight_fireball | dragon_knight_dragon_tail |
 | dazzle | 2 | dazzle_poison_touch, dazzle_shallow_grave, dazzle_shadow_wave | dazzle_poison_touch |
 | clinkz | 2 | clinkz_searing_arrows, clinkz_death_pact, clinkz_burning_barrage | clinkz_burning_barrage |
+| omniknight | 2 | omniknight_purification, omniknight_martyr, omniknight_hammer_of_purity | omniknight_hammer_of_purity |
+| enchantress | 2 | enchantress_impetus, enchantress_enchant, enchantress_little_friends | enchantress_impetus |
 | broodmother | 2 | broodmother_spin_web, broodmother_sticky_snare, broodmother_spawn_spiderlings | broodmother_sticky_snare |
 | jakiro | 2 | jakiro_dual_breath, jakiro_liquid_fire, jakiro_liquid_ice | — |
 | batrider | 2 | batrider_sticky_napalm, batrider_flamebreak, batrider_flaming_lasso | batrider_flaming_lasso |
@@ -69,9 +66,6 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | silencer | 2 | silencer_curse_of_the_silent, silencer_glaives_of_wisdom, silencer_last_word | silencer_last_word |
 | treant | 2 | treant_leech_seed, treant_living_armor, treant_eyes_in_the_forest | — |
 | disruptor | 2 | disruptor_thunder_strike, disruptor_glimpse, disruptor_kinetic_field, disruptor_static_storm | disruptor_kinetic_field, disruptor_static_storm |
-| tusk | 2 | tusk_snowball, tusk_drinking_buddies, tusk_walrus_kick, tusk_walrus_punch | tusk_snowball |
-| earth_spirit | 2 | earth_spirit_boulder_smash, earth_spirit_geomagnetic_grip, earth_spirit_petrify | — |
-| winter_wyvern | 2 | winter_wyvern_splinter_blast, winter_wyvern_cold_embrace, winter_wyvern_winters_curse | winter_wyvern_winters_curse |
 
 ## Anim entries missing `instant_target` candidates
 
@@ -79,12 +73,14 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 
 | Hero | Ability | Cast point | Role | KV note |
 |---|---|---|---|---|
+| abaddon | `abaddon_aphotic_shield` | 0.3 | hard_disable | — |
 | bane | `bane_nightmare` | 0.4 | hard_disable | — |
 | batrider | `batrider_flaming_lasso` | 0.3 | hard_disable | — |
 | beastmaster | `beastmaster_primal_roar` | 0.5 0.5 0.5 | hard_disable | — |
 | bloodseeker | `bloodseeker_rupture` | 0.4 | ult_burst | — |
 | chaos_knight | `chaos_knight_chaos_bolt` | 0.4 0.4 0.4 0.4 | hard_disable | — |
 | chaos_knight | `chaos_knight_reality_rift` | 0.25 | gap_close | — |
+| chen | `chen_penitence` | 0.3 0.3 0.3 0.3 | hard_disable | — |
 | dark_willow | `dark_willow_cursed_crown` | 0.2 | hard_disable | — |
 | dragon_knight | `dragon_knight_dragon_tail` | 0.0 0.0 0.0 0.0 | hard_disable | — |
 | enigma | `enigma_malefice` | 0.3 0.3 0.3 0.3 | hard_disable | — |
@@ -177,6 +173,9 @@ modifier_brewmaster_cinder_brew           = { role = "kiting_slow",  save = "bkb
 modifier_phoenix_sun_ray                  = { role = "kiting_slow",  save = "informational" },     -- (verify) — line beam damage + slow ...
 modifier_shredder_chakram                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — chakram line slow + disarm
 modifier_arc_warden_flux                  = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — damage-when-isolated deb...
+modifier_chen_penitence                   = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + damage amp on Sniper
+modifier_omniknight_hammer_of_purity      = { role = "kiting_slow",  save = "informational" },     -- (verify) — autocast purity attack p...
+modifier_largo_catchy_lick                = { role = "kiting_slow",  save = "informational" },     -- (verify) — Largo lick debuff, singl...
 -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
 modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
 modifier_zuus_lightning_bolt         = { role = "magic_burst",   save = "bkb_or_lotus" },          -- (verify)
@@ -259,6 +258,9 @@ brewmaster_cinder_brew              = "modifier_brewmaster_cinder_brew",        
 phoenix_sun_ray                     = "modifier_phoenix_sun_ray",                     -- (verify) — v6.15.269
 shredder_chakram                    = "modifier_shredder_chakram",                    -- (verify) — v6.15.269
 arc_warden_flux                     = "modifier_arc_warden_flux",                     -- (verify) — v6.15.269
+chen_penitence                      = "modifier_chen_penitence",                      -- (verify) — v6.15.270
+omniknight_hammer_of_purity         = "modifier_omniknight_hammer_of_purity",         -- (verify) — v6.15.270
+largo_catchy_lick                   = "modifier_largo_catchy_lick",                   -- (verify) — v6.15.270
 modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
 modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
 modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
