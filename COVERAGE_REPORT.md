@@ -10,16 +10,16 @@ Re-run after every catalog batch to track progress.
 | Metric | Count | % |
 |---|---|---|
 | Heroes in 7.41C (`npc_heroes.json`) | 128 | 100% |
-| Heroes with anim RegisterMap entries | 80 | 62% |
-| Heroes with **any** catalog entry | 90 | 70% |
-| Heroes with **zero** coverage | 38 | 30% |
-| THREATS_ON_SELF entries | 116 | — |
-| ABILITY_TO_THREAT entries | 126 | — |
-| THREAT_CATEGORY entries | 113 | — |
-| `(verify)` flags in threat_data.lua | 73 | — |
-| `instant_target` flagged anim entries | 17 | — |
+| Heroes with anim RegisterMap entries | 86 | 67% |
+| Heroes with **any** catalog entry | 95 | 74% |
+| Heroes with **zero** coverage | 33 | 26% |
+| THREATS_ON_SELF entries | 121 | — |
+| ABILITY_TO_THREAT entries | 133 | — |
+| THREAT_CATEGORY entries | 118 | — |
+| `(verify)` flags in threat_data.lua | 83 | — |
+| `instant_target` flagged anim entries | 23 | — |
 
-## Heroes with zero catalog coverage (38)
+## Heroes with zero catalog coverage (33)
 
 Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lua table. Listed alphabetically with their threat-relevant abilities (UNIT_TARGET / POINT_AOE / skill-shots, excluding passives and self-buffs).
 
@@ -38,12 +38,10 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | dazzle | `dazzle_poison_touch` (unit-target), `dazzle_shallow_grave` (unit-target instant), `dazzle_shadow_wave` (unit-target) |
 | ember_spirit | `ember_spirit_sleight_of_fist` (point-aoe) |
 | enchantress | `enchantress_impetus` (unit-target), `enchantress_enchant` (unit-target), `enchantress_little_friends` (unit-target instant) |
-| furion | `furion_sprout` (unit-target), `furion_teleportation` (point-aoe), `furion_force_of_nature` (point-aoe), `furion_wrath_of_nature` (unit-target) |
 | invoker | `invoker_cold_snap` (unit-target instant), `invoker_emp` (point-aoe), `invoker_alacrity` (unit-target instant), `invoker_sun_strike` (point-aoe) |
 | juggernaut | `juggernaut_healing_ward` (point-aoe), `juggernaut_swift_slash` (unit-target), `juggernaut_omni_slash` (unit-target) |
 | largo | `largo_catchy_lick` (unit-target), `largo_frogstomp` (point-aoe), `largo_croak_of_genius` (unit-target) |
 | lone_druid | `lone_druid_entangle` (point-aoe) |
-| luna | `luna_lucent_beam` (unit-target) |
 | lycan | `lycan_wolf_bite` (unit-target) |
 | medusa | `medusa_mystic_snake` (unit-target), `medusa_gorgon_grasp` (point-aoe) |
 | meepo | `meepo_earthbind` (point-aoe), `meepo_poof` (unit-target instant), `meepo_megameepo_fling` (unit-target) |
@@ -54,17 +52,14 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | shredder | `shredder_chakram` (point-aoe) |
 | slardar | `slardar_amplify_damage` (unit-target) |
 | sniper | `sniper_shrapnel` (point-aoe), `sniper_concussive_grenade` (point-aoe), `sniper_assassinate` (unit-target) |
-| spectre | `spectre_spectral_dagger` (unit-target), `spectre_shadow_step` (unit-target) |
 | target_dummy | — |
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
 | troll_warlord | `troll_warlord_whirling_axes_ranged` (unit-target instant) |
 | undying | `undying_decay` (point-aoe), `undying_soul_rip` (unit-target instant) |
-| venomancer | `venomancer_venomous_gale` (point-aoe), `venomancer_snakebite` (unit-target), `venomancer_noxious_plague` (unit-target) |
-| visage | `visage_grave_chill` (unit-target), `visage_soul_assumption` (unit-target) |
 | weaver | `weaver_geminate_attack` (unit-target) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (56)
+## Heroes with partial coverage (59)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
@@ -77,19 +72,20 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | keeper_of_the_light | 4 | keeper_of_the_light_illuminate, keeper_of_the_light_blinding_light, keeper_of_the_light_chakra_magic, keeper_of_the_light_radiant_bind, keeper_of_the_light_will_o_wisp | keeper_of_the_light_illuminate |
 | shadow_shaman | 3 | shadow_shaman_ether_shock, shadow_shaman_voodoo, shadow_shaman_shackles, shadow_shaman_urnaconda, shadow_shaman_mass_serpent_ward | shadow_shaman_voodoo, shadow_shaman_shackles |
 | warlock | 3 | warlock_fatal_bonds, warlock_shadow_word, warlock_upheaval, warlock_rain_of_chaos | warlock_upheaval |
+| furion | 3 | furion_sprout, furion_teleportation, furion_force_of_nature, furion_wrath_of_nature | furion_sprout |
 | shadow_demon | 3 | shadow_demon_disruption, shadow_demon_disseminate, shadow_demon_shadow_poison, shadow_demon_demonic_cleanse, shadow_demon_demonic_purge | shadow_demon_disruption, shadow_demon_demonic_purge |
 | ogre_magi | 3 | ogre_magi_fireblast, ogre_magi_ignite, ogre_magi_bloodlust, ogre_magi_unrefined_fireblast, ogre_magi_smash | ogre_magi_fireblast, ogre_magi_unrefined_fireblast |
 | oracle | 3 | oracle_fortunes_end, oracle_fates_edict, oracle_purifying_flames, oracle_rain_of_destiny, oracle_false_promise | oracle_fortunes_end, oracle_purifying_flames |
 | crystal_maiden | 2 | crystal_maiden_crystal_nova, crystal_maiden_frostbite, crystal_maiden_freezing_field | crystal_maiden_freezing_field |
 | witch_doctor | 2 | witch_doctor_paralyzing_cask, witch_doctor_maledict, witch_doctor_death_ward | witch_doctor_death_ward |
 | riki | 2 | riki_smoke_screen, riki_blink_strike, riki_tricks_of_the_trade | riki_tricks_of_the_trade |
+| venomancer | 2 | venomancer_venomous_gale, venomancer_snakebite, venomancer_noxious_plague | venomancer_venomous_gale |
 | death_prophet | 2 | death_prophet_carrion_swarm, death_prophet_silence, death_prophet_spirit_siphon | death_prophet_silence |
 | pugna | 2 | pugna_nether_blast, pugna_decrepify, pugna_life_drain | pugna_life_drain |
 | dragon_knight | 2 | dragon_knight_breathe_fire, dragon_knight_dragon_tail, dragon_knight_fireball | dragon_knight_dragon_tail |
 | clinkz | 2 | clinkz_searing_arrows, clinkz_death_pact, clinkz_burning_barrage | clinkz_burning_barrage |
 | jakiro | 2 | jakiro_dual_breath, jakiro_liquid_fire, jakiro_liquid_ice | — |
 | batrider | 2 | batrider_sticky_napalm, batrider_flamebreak, batrider_flaming_lasso | batrider_flaming_lasso |
-| doom_bringer | 2 | doom_bringer_devour, doom_bringer_infernal_blade, doom_bringer_doom | doom_bringer_doom |
 | ancient_apparition | 2 | ancient_apparition_cold_feet, ancient_apparition_ice_vortex, ancient_apparition_chilling_touch, ancient_apparition_ice_blast | ancient_apparition_cold_feet, ancient_apparition_ice_blast |
 | silencer | 2 | silencer_curse_of_the_silent, silencer_glaives_of_wisdom, silencer_last_word | silencer_last_word |
 | treant | 2 | treant_leech_seed, treant_living_armor, treant_eyes_in_the_forest | — |
@@ -99,7 +95,6 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | winter_wyvern | 2 | winter_wyvern_splinter_blast, winter_wyvern_cold_embrace, winter_wyvern_winters_curse | winter_wyvern_winters_curse |
 | grimstroke | 2 | grimstroke_ink_creature, grimstroke_spirit_walk, grimstroke_dark_portrait, grimstroke_soul_chain | grimstroke_ink_creature, grimstroke_soul_chain |
 | snapfire | 2 | snapfire_firesnap_cookie, snapfire_gobble_up, snapfire_spit_creep, snapfire_mortimer_kisses | snapfire_mortimer_kisses |
-| hoodwink | 2 | hoodwink_acorn_shot, hoodwink_bushwhack, hoodwink_hunters_boomerang | hoodwink_bushwhack |
 
 ## Anim entries missing `instant_target` candidates
 
@@ -172,6 +167,11 @@ modifier_kunkka_torrent_thinker           = { role = "delayed_aoe",  save = "dis
 modifier_kunkka_torrent_stun              = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — stun applied at geyser i...
 modifier_kunkka_x_marks_the_spot          = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — drag-back debuff, remova...
 modifier_nevermore_requiem                = { role = "magic_burst",  save = "bkb_or_lotus" },      -- (verify) — fear + magic damage radial
+modifier_doom_bringer_infernal_blade      = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — autocast mini-stun + dam...
+modifier_furion_sprout                    = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — root cage; basic dispel ...
+modifier_visage_grave_chill               = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — slow + silence steal
+modifier_venomancer_venomous_gale         = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + dot line; dispel ...
+modifier_spectre_spectral_dagger          = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + can-chase-through...
 -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
 modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
 modifier_zuus_lightning_bolt         = { role = "magic_burst",   save = "bkb_or_lotus" },          -- (verify)
@@ -223,6 +223,11 @@ gyrocopter_call_down                = "modifier_gyrocopter_call_down_slow",     
 kunkka_torrent                      = "modifier_kunkka_torrent_thinker",             -- (verify) — v6.15.263 (thinker entity for AOE warn...
 kunkka_x_marks_the_spot             = "modifier_kunkka_x_marks_the_spot",            -- (verify) — v6.15.263
 nevermore_requiem_of_souls          = "modifier_nevermore_requiem",                  -- (verify) — v6.15.263
+doom_bringer_infernal_blade         = "modifier_doom_bringer_infernal_blade",        -- (verify) — v6.15.265
+furion_sprout                       = "modifier_furion_sprout",                       -- (verify) — v6.15.265
+visage_grave_chill                  = "modifier_visage_grave_chill",                  -- (verify) — v6.15.265
+venomancer_venomous_gale            = "modifier_venomancer_venomous_gale",            -- (verify) — v6.15.265
+spectre_spectral_dagger             = "modifier_spectre_spectral_dagger",             -- (verify) — v6.15.265
 modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
 modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
 modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit

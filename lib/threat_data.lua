@@ -451,6 +451,12 @@ ThreatData.THREATS_ON_SELF = {
     modifier_kunkka_torrent_stun              = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — stun applied at geyser impact
     modifier_kunkka_x_marks_the_spot          = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — drag-back debuff, removable by dispel
     modifier_nevermore_requiem                = { role = "magic_burst",  save = "bkb_or_lotus" },      -- (verify) — fear + magic damage radial
+    -- v6.15.265 zero-coverage fill batch 3: mid-game mixed threats
+    modifier_doom_bringer_infernal_blade      = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — autocast mini-stun + damage on Doom right-clicks
+    modifier_furion_sprout                    = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — root cage; basic dispel (Manta) removes the trees
+    modifier_visage_grave_chill               = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — slow + silence steal
+    modifier_venomancer_venomous_gale         = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + dot line; dispel removes
+    modifier_spectre_spectral_dagger          = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + can-chase-through-walls debuff
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -659,6 +665,14 @@ ThreatData.ABILITY_TO_THREAT = {
     kunkka_x_marks_the_spot             = "modifier_kunkka_x_marks_the_spot",            -- (verify) — v6.15.263
     nevermore_requiem_of_souls          = "modifier_nevermore_requiem",                  -- (verify) — v6.15.263
     terrorblade_sunder                  = nil,                                            -- v6.15.263: no Sniper modifier (instant HP swap); anim-path only
+    -- v6.15.265 zero-coverage fill batch 3
+    doom_bringer_infernal_blade         = "modifier_doom_bringer_infernal_blade",        -- (verify) — v6.15.265
+    furion_sprout                       = "modifier_furion_sprout",                       -- (verify) — v6.15.265
+    visage_grave_chill                  = "modifier_visage_grave_chill",                  -- (verify) — v6.15.265
+    visage_soul_assumption              = nil,                                            -- v6.15.265: no Sniper modifier (instant burst); anim-path only
+    venomancer_venomous_gale            = "modifier_venomancer_venomous_gale",            -- (verify) — v6.15.265
+    luna_lucent_beam                    = nil,                                            -- v6.15.265: no Sniper modifier (instant mini-stun); anim-path only
+    spectre_spectral_dagger             = "modifier_spectre_spectral_dagger",             -- (verify) — v6.15.265
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1351,6 +1365,12 @@ ThreatData.THREAT_CATEGORY = {
     modifier_nevermore_requiem                 = "delayed_aoe",       -- v6.15.263 (fear radial)
     -- v6.15.264: ES Rolling Boulder caster-side -- routed via ENEMY_BUFF_THREATS
     modifier_earth_spirit_rolling_boulder_caster = "line_projectile",  -- v6.15.264
+    -- v6.15.265 zero-coverage fill batch 3
+    modifier_doom_bringer_infernal_blade       = "targeted_disable",  -- v6.15.265 (mini-stun)
+    modifier_furion_sprout                     = "targeted_disable",  -- v6.15.265 (root cage)
+    modifier_visage_grave_chill                = "targeted_disable",  -- v6.15.265 (slow + silence)
+    modifier_venomancer_venomous_gale          = "line_projectile",   -- v6.15.265 (line aoe slow+dot)
+    modifier_spectre_spectral_dagger           = "line_projectile",   -- v6.15.265 (gap-close debuff)
 }
 
 ---@param threat_mod string|nil
@@ -1493,6 +1513,12 @@ ThreatData.THREAT_SEVERITY = {
     modifier_nevermore_requiem            = "high",   -- v6.15.263 high magic damage + fear
     -- v6.15.264
     modifier_earth_spirit_rolling_boulder_caster = "medium", -- v6.15.264 1.5-2s stun on hit
+    -- v6.15.265
+    modifier_doom_bringer_infernal_blade  = "low",    -- v6.15.265 0.4s mini-stun per autocast
+    modifier_furion_sprout                = "medium", -- v6.15.265 3-5s root, dispellable
+    modifier_visage_grave_chill           = "medium", -- v6.15.265 4s slow+silence
+    modifier_venomancer_venomous_gale     = "low",    -- v6.15.265 slow + dot
+    modifier_spectre_spectral_dagger      = "low",    -- v6.15.265 slow + chase debuff
 }
 
 ----------------------------------------------------------------------------
