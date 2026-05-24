@@ -17,7 +17,7 @@ Re-run after every catalog batch to track progress.
 | ABILITY_TO_THREAT entries | 110 | — |
 | THREAT_CATEGORY entries | 99 | — |
 | `(verify)` flags in threat_data.lua | 44 | — |
-| `instant_target` flagged anim entries | 6 | — |
+| `instant_target` flagged anim entries | 12 | — |
 
 ## Heroes with zero catalog coverage (49)
 
@@ -119,7 +119,6 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 | Hero | Ability | Cast point | Role | KV note |
 |---|---|---|---|---|
 | bane | `bane_nightmare` | 0.4 | hard_disable | — |
-| bane | `bane_fiends_grip` | 0.2 | channel_start | CHANNELLED |
 | batrider | `batrider_flaming_lasso` | 0.3 | hard_disable | — |
 | beastmaster | `beastmaster_primal_roar` | 0.5 0.5 0.5 | hard_disable | — |
 | bloodseeker | `bloodseeker_rupture` | 0.4 | ult_burst | — |
@@ -128,9 +127,7 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 | dark_willow | `dark_willow_cursed_crown` | 0.2 | hard_disable | — |
 | enigma | `enigma_malefice` | 0.3 0.3 0.3 0.3 | hard_disable | — |
 | grimstroke | `grimstroke_ink_creature` | 0 | hard_disable | IGNORE_BACKSWING, instant cast |
-| grimstroke | `grimstroke_soul_chain` | 0.15 | channel_start | — |
 | huskar | `huskar_life_break` | 0.3 0.3 0.3 | gap_close | — |
-| lich | `lich_sinister_gaze` | 0 | channel_start | CHANNELLED, instant cast |
 | lich | `lich_chain_frost` | 0.3 | ult_burst | — |
 | life_stealer | `life_stealer_open_wounds` | 0.2 | hard_disable | — |
 | lina | `lina_laguna_blade` | 0.3 | ult_burst | — |
@@ -142,12 +139,9 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 | muerta | `muerta_dead_shot` | 0.15 | hard_disable | — |
 | naga_siren | `naga_siren_ensnare` | 0.3 | hard_disable | — |
 | necrolyte | `necrolyte_reapers_scythe` | 0.45 | ult_burst | — |
-| oracle | `oracle_fortunes_end` | 0 | channel_start | CHANNELLED, instant cast |
-| pugna | `pugna_life_drain` | 0.2 0.2 0.2 | channel_start | IGNORE_BACKSWING, CHANNELLED |
 | shadow_demon | `shadow_demon_disruption` | 0.3 | hard_disable | — |
 | shadow_demon | `shadow_demon_demonic_purge` | 0.3 0.3 0.3 | hard_disable | — |
 | shadow_shaman | `shadow_shaman_voodoo` | 0 0 0 0 | hard_disable | — |
-| shadow_shaman | `shadow_shaman_shackles` | 0.3 0.3 0.3 0.3 | channel_start | CHANNELLED |
 | skywrath_mage | `skywrath_mage_ancient_seal` | 0.1 0.1 0.1 0.1 | hard_disable | — |
 | spirit_breaker | `spirit_breaker_charge_of_darkness` | 0.1 | gap_close | — |
 | spirit_breaker | `spirit_breaker_nether_strike` | 1 | hard_disable | IGNORE_BACKSWING |
