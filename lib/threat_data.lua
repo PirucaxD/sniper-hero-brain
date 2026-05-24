@@ -186,8 +186,8 @@ ThreatData.THREAT_COUNTER = {
     -- MS-slows them on hook collision, then lands a lifesteal hit. Gap-close
     -- profile; unlike Tusk's snowball Kez is NOT displacement-immune, so
     -- pushing the caster (or self) is viable. (verify modifier name —
-    -- modseen harvest; modifier_kez_grappling_claw is the best guess.)
-    modifier_kez_grappling_claw          = {
+    -- modseen harvest; modifier_kez_grappling_claw_slow is the best guess.)
+    modifier_kez_grappling_claw_slow          = {
         "invuln", "magic_immune", "dispel_basic",
         "displacement_at_source", "displacement_perp", "displacement_far",
     },
@@ -347,6 +347,16 @@ ThreatData.THREAT_TETHER_RANGE = {
 ThreatData.THREATS_ON_SELF = {
     modifier_bane_nightmare              = { role = "hard_disable",  save = "eul_or_bkb" },
     modifier_lion_voodoo                 = { role = "hard_disable",  save = "pre_arm" },
+    -- v6.15.262: Lion Mana Drain (channel modifier on Sniper). Catalog gap
+    -- caught by v6.15.261 demo log: anim_channel_start fires correctly but
+    -- OnModifierCreate skips because THREATS_ON_SELF lookup returns nil ->
+    -- threat_unrecognized event, no save dispatched. At 1000u tether range,
+    -- Lion can drain Sniper from outside grenade_at_caster's 600u cast
+    -- range, so Layer 1.5 grenade-on-source also fails -- the reactive
+    -- self-save chain is the only one that fires. Force-self (600u) and
+    -- pike-self (425u) push Sniper toward the tether-break radius;
+    -- grenade-self is the 475u-push fallback.
+    modifier_lion_mana_drain             = { role = "drain",         save = "force_or_pike" },
     modifier_shadow_shaman_shackles      = { role = "channel_on_me", save = "bkb_or_grenade_source" },
     modifier_pudge_dismember_pull             = { role = "channel_on_me", save = "bkb_or_grenade_source" },
     modifier_bane_fiends_grip            = { role = "channel_on_me", save = "bkb_or_grenade_source" },
@@ -358,7 +368,7 @@ ThreatData.THREATS_ON_SELF = {
     modifier_phantom_assassin_phantom_strike_target = { role = "gap_close", save = "glimmer_or_pike" },
     modifier_spirit_breaker_charge_of_darkness      = { role = "gap_close", save = "pike_or_grenade" },
     modifier_tusk_snowball_movement                 = { role = "gap_close", save = "pike_or_grenade" },
-    modifier_kez_grappling_claw                     = { role = "gap_close", save = "pike_or_grenade" },  -- v6.15.162 (verify) — Kez Grappling Claw
+    modifier_kez_grappling_claw_slow                     = { role = "gap_close", save = "pike_or_grenade" },  -- v6.15.162 (verify) — Kez Grappling Claw
     -- v6.15.163 batch 1 — modern hero pool (verify modifier names via modseen)
     modifier_ringmaster_impalement                  = { role = "line_projectile", save = "perp_displacement" },
     modifier_marci_grapple                          = { role = "gap_close",       save = "pike_or_grenade" },
@@ -516,7 +526,7 @@ ThreatData.ABILITY_TO_THREAT = {
     spirit_breaker_charge_of_darkness   = "modifier_spirit_breaker_charge_of_darkness",
     spirit_breaker_nether_strike        = "modifier_spirit_breaker_nether_strike",  -- v6.15.164 (verify) — promoted from nil: blink-strike ult
     tusk_snowball                       = "modifier_tusk_snowball_movement",
-    kez_grappling_claw                  = "modifier_kez_grappling_claw",       -- v6.15.162 (verify) — Kez gap-close swing
+    kez_grappling_claw                  = "modifier_kez_grappling_claw_slow",       -- v6.15.162 (verify) — Kez gap-close swing
     -- v6.15.163 — defense catalog refresh, batch 1: the modern hero pool.
     -- KV exposes no modifier names, so every modifier_<ability> below is a
     -- best-effort (verify) guess — confirm via the threat_unrecognized harvest
@@ -753,7 +763,7 @@ ThreatData.RECOMMENDED_SAVES = {
     -- can't kite). Eul / Wind Waker fully dodge the swing-in + the landing
     -- hit; BKB blocks the slow and keeps Sniper attacking; Pike / grenade
     -- push the caster off (Kez is not displacement-immune).
-    modifier_kez_grappling_claw = {
+    modifier_kez_grappling_claw_slow = {
         -- v6.15.261: hero-agnostic.
         "item_cyclone", "item_wind_waker", "item_black_king_bar",
         "item_hurricane_pike", "item_force_staff",
@@ -1055,7 +1065,7 @@ ThreatData.THREAT_TIMING = {
     modifier_crystal_maiden_freezing_field = "mid_channel",
     modifier_spirit_breaker_charge_of_darkness = "at_impact",
     modifier_tusk_snowball_movement      = "at_impact",
-    modifier_kez_grappling_claw          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
+    modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
     -- v6.15.163 batch 1 — modern hero pool
     modifier_ringmaster_impalement       = "pre_cast",
     modifier_marci_grapple               = "at_impact",
@@ -1194,7 +1204,7 @@ ThreatData.THREAT_CATEGORY = {
     -- Close-gap (homing)
     modifier_spirit_breaker_charge_of_darkness = "close_gap",
     modifier_tusk_snowball_movement            = "close_gap",
-    modifier_kez_grappling_claw                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
+    modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
     -- v6.15.163 batch 1 — modern hero pool
     modifier_ringmaster_impalement             = "line_projectile",
     modifier_marci_grapple                     = "close_gap",
@@ -1343,7 +1353,7 @@ ThreatData.THREAT_SEVERITY = {
     modifier_naga_siren_ensnare          = "medium",
     modifier_shadow_shaman_shackles      = "medium",
     modifier_tusk_snowball_movement      = "medium",
-    modifier_kez_grappling_claw          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
+    modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
     -- v6.15.163 batch 1 — modern hero pool
     modifier_ringmaster_impalement       = "medium",
     modifier_marci_grapple               = "high",

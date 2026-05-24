@@ -13,7 +13,7 @@ Re-run after every catalog batch to track progress.
 | Heroes with anim RegisterMap entries | 74 | 58% |
 | Heroes with **any** catalog entry | 85 | 66% |
 | Heroes with **zero** coverage | 43 | 34% |
-| THREATS_ON_SELF entries | 107 | — |
+| THREATS_ON_SELF entries | 108 | — |
 | ABILITY_TO_THREAT entries | 117 | — |
 | THREAT_CATEGORY entries | 105 | — |
 | `(verify)` flags in threat_data.lua | 58 | — |
@@ -161,7 +161,7 @@ Lines flagged for empirical confirmation via `threat_unrecognized` / modseen out
 -- v6.7 extrapolation entries (modifier names marked (verify) need in-game check)
 -- teleports). (verify) — modifier name from KV naming convention,
 modifier_pugna_life_drain          = 1100,   -- v6.7 (verify): typical channel tether
-modifier_kez_grappling_claw                     = { role = "gap_close", save = "pike_or_grenade" },  -- v6.15.162 (verify) — Kez Grapplin...
+modifier_kez_grappling_claw_slow                     = { role = "gap_close", save = "pike_or_grenade" },  -- v6.15.162 (verify) — Kez Gra...
 -- from heroes Sniper actually faces. All modifier names are (verify) --
 modifier_dragon_knight_dragon_tail   = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.45 cast, 1.7-2.75s stun
 modifier_night_stalker_void          = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.3 cast, mini-stun + slow ...
@@ -187,7 +187,7 @@ modifier_disruptor_kinetic_field_remnant = { role = "trapped",   save = "knockba
 modifier_abyssal_underlord_pit_of_malice = { role = "trapped",   save = "knockback_only" },         -- (verify)
 -- (verify) caveat for any entry that's confirmed via repeat hits.
 spirit_breaker_nether_strike        = "modifier_spirit_breaker_nether_strike",  -- v6.15.164 (verify) — promoted from nil: blink-strike ult
-kez_grappling_claw                  = "modifier_kez_grappling_claw",       -- v6.15.162 (verify) — Kez gap-close swing
+kez_grappling_claw                  = "modifier_kez_grappling_claw_slow",       -- v6.15.162 (verify) — Kez gap-close swing
 -- best-effort (verify) guess — confirm via the threat_unrecognized harvest
 -- modifier_<ability> guesses, all (verify) — corrected via threat_unrecognized.
 -- v6.7 extrapolation (2026-05-11). Modifier names with (verify) need
@@ -213,9 +213,9 @@ ogre_magi_unrefined_fireblast       = "modifier_ogre_magi_fireblast",           
 rubick_telekinesis                  = "modifier_rubick_telekinesis",                 -- (verify) — v6.15.258
 silencer_last_word                  = "modifier_silencer_last_word",                 -- (verify) — v6.15.258
 death_prophet_silence               = "modifier_death_prophet_silence",              -- (verify) — v6.15.258
-modifier_kez_grappling_claw          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
-modifier_kez_grappling_claw                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
-modifier_kez_grappling_claw          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
+modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
+modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
+modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
 ```
 
 ## How to use this report
