@@ -8,15 +8,22 @@ baseline cannot make on its own - multi-spell combos, predictive defensive
 saves, target valuation for the ultimate, fog pickoffs, teamfight peeling.
 
 This repository is the full source: the brain itself
-(`Sniper/Sniper.lua`, around 10,000 lines), the shared Lua libraries it sits
+(`Sniper/Sniper.lua`, around 10,800 lines), the shared Lua libraries it sits
 on (`lib/`), the code generators that build the data libraries from Valve's
 game files (`tools/`), and the architecture and reference documents written
 alongside it over development.
 
-It is also a long case study. The brain went through over 240 tracked
+It is also a long case study. The brain went through over 270 tracked
 versions; the post-mortem section below records the problems, the dead
 ends, and the workarounds. If you are reading this to learn how to build
 something similar, the failures are the more useful half.
+
+The threat catalog reached 97% of the 7.41C hero roster as of v6.15.270
+(124 of 128 heroes catalogued; the four uncatalogued are Sniper himself,
+the target-dummy non-hero, Wisp, and Techies). Coverage progress per
+batch is tracked by `tools/gen_coverage_report.py`, which writes
+`COVERAGE_REPORT.md` and `COVERAGE_DATA.csv` against the live Valve KV
+files.
 
 ## The augmentation model
 
