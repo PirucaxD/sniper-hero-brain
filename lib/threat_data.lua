@@ -472,6 +472,15 @@ ThreatData.THREATS_ON_SELF = {
     modifier_undying_decay                    = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — STR drain debuff (reduces Sniper max HP)
     modifier_dazzle_poison_touch              = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + delayed stun if not removed
     modifier_weaver_the_swarm                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction + attack-trigger damage
+    -- v6.15.268 zero-coverage fill batch 6: stuns + snares + nukes
+    modifier_alchemist_unstable_concoction    = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — variable stun (1-4s based on charge), instant when thrown
+    modifier_broodmother_sticky_snare         = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — 2s root from placed snare; dispellable
+    modifier_medusa_gorgon_grasp              = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — point-AOE stun
+    modifier_medusa_mystic_snake              = { role = "kiting_slow",  save = "informational" },     -- (verify) — bouncing damage + mana drain, recoverable
+    modifier_troll_warlord_whirling_axes_ranged = { role = "silence_on_me", save = "bkb_or_dispel" }, -- (verify) — multi-axe silence + damage
+    modifier_dark_seer_vacuum                 = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — pulls Sniper to vacuum point; BKB blocks
+    modifier_dark_seer_ion_shell              = { role = "kiting_slow",  save = "informational" },     -- (verify) — area damage aura around target; doesn't stop kiting
+    modifier_ember_spirit_sleight_of_fist_caster = { role = "kiting_slow", save = "informational" }, -- (verify) — Ember in untargetable phase; informational
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -711,6 +720,15 @@ ThreatData.ABILITY_TO_THREAT = {
     weaver_the_swarm                    = "modifier_weaver_the_swarm",                    -- (verify) — v6.15.267
     centaur_double_edge                 = nil,                                            -- v6.15.267: no Sniper modifier (instant burst); anim path
     phoenix_launch_fire_spirit          = nil,                                            -- v6.15.267: no Sniper modifier (line projectile); anim path (ACT_INVALID -- may not fire)
+    -- v6.15.268 zero-coverage fill batch 6
+    alchemist_unstable_concoction_throw = "modifier_alchemist_unstable_concoction",      -- (verify) — v6.15.268
+    broodmother_sticky_snare            = "modifier_broodmother_sticky_snare",            -- (verify) — v6.15.268
+    medusa_gorgon_grasp                 = "modifier_medusa_gorgon_grasp",                 -- (verify) — v6.15.268
+    medusa_mystic_snake                 = "modifier_medusa_mystic_snake",                 -- (verify) — v6.15.268
+    troll_warlord_whirling_axes_ranged  = "modifier_troll_warlord_whirling_axes_ranged",  -- (verify) — v6.15.268
+    dark_seer_vacuum                    = "modifier_dark_seer_vacuum",                    -- (verify) — v6.15.268
+    dark_seer_ion_shell                 = "modifier_dark_seer_ion_shell",                 -- (verify) — v6.15.268
+    ember_spirit_sleight_of_fist        = "modifier_ember_spirit_sleight_of_fist_caster", -- (verify) — v6.15.268 (caster-side phase marker)
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1424,6 +1442,15 @@ ThreatData.THREAT_CATEGORY = {
     modifier_undying_decay                     = "kiting_slow",       -- v6.15.267 (STR drain)
     modifier_dazzle_poison_touch               = "kiting_slow",       -- v6.15.267 (slow + dot + delayed stun)
     modifier_weaver_the_swarm                  = "kiting_slow",       -- v6.15.267 (armor reduction + attack proc)
+    -- v6.15.268 zero-coverage fill batch 6
+    modifier_alchemist_unstable_concoction     = "targeted_disable",  -- v6.15.268 (variable stun on hit)
+    modifier_broodmother_sticky_snare          = "targeted_disable",  -- v6.15.268 (placed snare root)
+    modifier_medusa_gorgon_grasp               = "targeted_disable",  -- v6.15.268 (point-AOE stun)
+    modifier_medusa_mystic_snake               = "kiting_slow",       -- v6.15.268 (bouncing damage)
+    modifier_troll_warlord_whirling_axes_ranged = "targeted_disable", -- v6.15.268 (multi-axe silence)
+    modifier_dark_seer_vacuum                  = "targeted_disable",  -- v6.15.268 (pull AoE)
+    modifier_dark_seer_ion_shell               = "kiting_slow",       -- v6.15.268 (damage aura around target)
+    modifier_ember_spirit_sleight_of_fist_caster = "kiting_slow",     -- v6.15.268 (caster phase marker)
 }
 
 ---@param threat_mod string|nil
@@ -1587,6 +1614,15 @@ ThreatData.THREAT_SEVERITY = {
     modifier_undying_decay                = "low",    -- v6.15.267 temporary STR drain
     modifier_dazzle_poison_touch          = "low",    -- v6.15.267 slow + dot, dispellable
     modifier_weaver_the_swarm             = "low",    -- v6.15.267 armor reduction, dispellable
+    -- v6.15.268
+    modifier_alchemist_unstable_concoction = "high",  -- v6.15.268 4-5s stun at full charge, kill setup
+    modifier_broodmother_sticky_snare      = "medium",-- v6.15.268 2s root, dispellable
+    modifier_medusa_gorgon_grasp           = "medium",-- v6.15.268 point-AOE stun
+    modifier_medusa_mystic_snake           = "low",   -- v6.15.268 bouncing damage, recoverable
+    modifier_troll_warlord_whirling_axes_ranged = "medium", -- v6.15.268 silence prevents BKB
+    modifier_dark_seer_vacuum              = "medium",-- v6.15.268 pull sets up combo
+    modifier_dark_seer_ion_shell           = "low",   -- v6.15.268 aura damage
+    modifier_ember_spirit_sleight_of_fist_caster = "low", -- v6.15.268 informational
 }
 
 ----------------------------------------------------------------------------

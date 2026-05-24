@@ -10,43 +10,37 @@ Re-run after every catalog batch to track progress.
 | Metric | Count | % |
 |---|---|---|
 | Heroes in 7.41C (`npc_heroes.json`) | 128 | 100% |
-| Heroes with anim RegisterMap entries | 93 | 73% |
-| Heroes with **any** catalog entry | 108 | 84% |
-| Heroes with **zero** coverage | 20 | 16% |
-| THREATS_ON_SELF entries | 134 | — |
-| ABILITY_TO_THREAT entries | 154 | — |
-| THREAT_CATEGORY entries | 131 | — |
-| `(verify)` flags in threat_data.lua | 109 | — |
-| `instant_target` flagged anim entries | 28 | — |
+| Heroes with anim RegisterMap entries | 99 | 77% |
+| Heroes with **any** catalog entry | 114 | 89% |
+| Heroes with **zero** coverage | 14 | 11% |
+| THREATS_ON_SELF entries | 142 | — |
+| ABILITY_TO_THREAT entries | 162 | — |
+| THREAT_CATEGORY entries | 139 | — |
+| `(verify)` flags in threat_data.lua | 125 | — |
+| `instant_target` flagged anim entries | 30 | — |
 
-## Heroes with zero catalog coverage (20)
+## Heroes with zero catalog coverage (14)
 
 Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lua table. Listed alphabetically with their threat-relevant abilities (UNIT_TARGET / POINT_AOE / skill-shots, excluding passives and self-buffs).
 
 | Hero | Active-threat abilities (per KV) |
 |---|---|
 | abaddon | `abaddon_death_coil` (unit-target), `abaddon_aphotic_shield` (unit-target) |
-| alchemist | `alchemist_acid_spray` (point-aoe), `alchemist_berserk_potion` (unit-target), `alchemist_unstable_concoction_throw` (unit-target) |
 | arc_warden | `arc_warden_flux` (unit-target), `arc_warden_magnetic_field` (point-aoe), `arc_warden_spark_wraith` (point-aoe) |
 | bounty_hunter | `bounty_hunter_shuriken_toss` (unit-target), `bounty_hunter_jinada` (unit-target), `bounty_hunter_wind_walk_ally` (unit-target), `bounty_hunter_track` (unit-target) |
 | brewmaster | `brewmaster_cinder_brew` (point-aoe) |
-| broodmother | `broodmother_spin_web` (point-aoe), `broodmother_sticky_snare` (channelled), `broodmother_spawn_spiderlings` (unit-target) |
 | chen | `chen_penitence` (unit-target), `chen_holy_persuasion` (unit-target), `chen_divine_favor` (unit-target), `chen_zealot` (unit-target) |
-| dark_seer | `dark_seer_vacuum` (point-aoe), `dark_seer_ion_shell` (unit-target), `dark_seer_surge` (unit-target) |
-| ember_spirit | `ember_spirit_sleight_of_fist` (point-aoe) |
 | enchantress | `enchantress_impetus` (unit-target), `enchantress_enchant` (unit-target), `enchantress_little_friends` (unit-target instant) |
 | largo | `largo_catchy_lick` (unit-target), `largo_frogstomp` (point-aoe), `largo_croak_of_genius` (unit-target) |
 | lycan | `lycan_wolf_bite` (unit-target) |
-| medusa | `medusa_mystic_snake` (unit-target), `medusa_gorgon_grasp` (point-aoe) |
 | omniknight | `omniknight_purification` (unit-target), `omniknight_martyr` (unit-target), `omniknight_hammer_of_purity` (unit-target) |
 | shredder | `shredder_chakram` (point-aoe) |
 | sniper | `sniper_shrapnel` (point-aoe), `sniper_concussive_grenade` (point-aoe), `sniper_assassinate` (unit-target) |
 | target_dummy | — |
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
-| troll_warlord | `troll_warlord_whirling_axes_ranged` (unit-target instant) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (67)
+## Heroes with partial coverage (70)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
@@ -71,6 +65,7 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | dragon_knight | 2 | dragon_knight_breathe_fire, dragon_knight_dragon_tail, dragon_knight_fireball | dragon_knight_dragon_tail |
 | dazzle | 2 | dazzle_poison_touch, dazzle_shallow_grave, dazzle_shadow_wave | dazzle_poison_touch |
 | clinkz | 2 | clinkz_searing_arrows, clinkz_death_pact, clinkz_burning_barrage | clinkz_burning_barrage |
+| broodmother | 2 | broodmother_spin_web, broodmother_sticky_snare, broodmother_spawn_spiderlings | broodmother_sticky_snare |
 | jakiro | 2 | jakiro_dual_breath, jakiro_liquid_fire, jakiro_liquid_ice | — |
 | batrider | 2 | batrider_sticky_napalm, batrider_flamebreak, batrider_flaming_lasso | batrider_flaming_lasso |
 | ancient_apparition | 2 | ancient_apparition_cold_feet, ancient_apparition_ice_vortex, ancient_apparition_chilling_touch, ancient_apparition_ice_blast | ancient_apparition_cold_feet, ancient_apparition_ice_blast |
@@ -81,7 +76,6 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | earth_spirit | 2 | earth_spirit_boulder_smash, earth_spirit_geomagnetic_grip, earth_spirit_petrify | — |
 | winter_wyvern | 2 | winter_wyvern_splinter_blast, winter_wyvern_cold_embrace, winter_wyvern_winters_curse | winter_wyvern_winters_curse |
 | monkey_king | 2 | monkey_king_tree_dance, monkey_king_primal_spring, monkey_king_wukongs_command | monkey_king_wukongs_command |
-| grimstroke | 2 | grimstroke_ink_creature, grimstroke_spirit_walk, grimstroke_dark_portrait, grimstroke_soul_chain | grimstroke_ink_creature, grimstroke_soul_chain |
 
 ## Anim entries missing `instant_target` candidates
 
@@ -107,6 +101,7 @@ Entries in Sniper.lua RegisterMap that are UNIT_TARGET (per KV) and don't have `
 | lion | `lion_voodoo` | 0 0 0 0 | hard_disable | — |
 | lion | `lion_mana_drain` | 0.3 0.3 0.3 0.3 | channel_start | IGNORE_BACKSWING, CHANNELLED |
 | lion | `lion_finger_of_death` | 0.3 0.3 0.3 | ult_burst | — |
+| medusa | `medusa_mystic_snake` | 0 | hard_disable | instant cast |
 | meepo | `meepo_poof` | 1.5 | gap_close | IGNORE_BACKSWING |
 | morphling | `morphling_adaptive_strike_agi` | 0.25 | hard_disable | — |
 | muerta | `muerta_dead_shot` | 0.15 | hard_disable | — |
@@ -173,6 +168,14 @@ modifier_lone_druid_entangle_effect       = { role = "hard_disable", save = "bkb
 modifier_undying_decay                    = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — STR drain debuff (reduce...
 modifier_dazzle_poison_touch              = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + delayed stun if n...
 modifier_weaver_the_swarm                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction + attack...
+modifier_alchemist_unstable_concoction    = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — variable stun (1-4s base...
+modifier_broodmother_sticky_snare         = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — 2s root from placed snar...
+modifier_medusa_gorgon_grasp              = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — point-AOE stun
+modifier_medusa_mystic_snake              = { role = "kiting_slow",  save = "informational" },     -- (verify) — bouncing damage + mana d...
+modifier_troll_warlord_whirling_axes_ranged = { role = "silence_on_me", save = "bkb_or_dispel" }, -- (verify) — multi-axe silence + damage
+modifier_dark_seer_vacuum                 = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — pulls Sniper to vacuum p...
+modifier_dark_seer_ion_shell              = { role = "kiting_slow",  save = "informational" },     -- (verify) — area damage aura around ...
+modifier_ember_spirit_sleight_of_fist_caster = { role = "kiting_slow", save = "informational" }, -- (verify) — Ember in untargetable phas...
 -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
 modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
 modifier_zuus_lightning_bolt         = { role = "magic_burst",   save = "bkb_or_lotus" },          -- (verify)
@@ -242,6 +245,14 @@ lone_druid_spirit_bear_entangle     = "modifier_lone_druid_entangle_effect",    
 undying_decay                       = "modifier_undying_decay",                       -- (verify) — v6.15.267
 dazzle_poison_touch                 = "modifier_dazzle_poison_touch",                 -- (verify) — v6.15.267
 weaver_the_swarm                    = "modifier_weaver_the_swarm",                    -- (verify) — v6.15.267
+alchemist_unstable_concoction_throw = "modifier_alchemist_unstable_concoction",      -- (verify) — v6.15.268
+broodmother_sticky_snare            = "modifier_broodmother_sticky_snare",            -- (verify) — v6.15.268
+medusa_gorgon_grasp                 = "modifier_medusa_gorgon_grasp",                 -- (verify) — v6.15.268
+medusa_mystic_snake                 = "modifier_medusa_mystic_snake",                 -- (verify) — v6.15.268
+troll_warlord_whirling_axes_ranged  = "modifier_troll_warlord_whirling_axes_ranged",  -- (verify) — v6.15.268
+dark_seer_vacuum                    = "modifier_dark_seer_vacuum",                    -- (verify) — v6.15.268
+dark_seer_ion_shell                 = "modifier_dark_seer_ion_shell",                 -- (verify) — v6.15.268
+ember_spirit_sleight_of_fist        = "modifier_ember_spirit_sleight_of_fist_caster", -- (verify) — v6.15.268 (caster-side phase marker)
 modifier_kez_grappling_claw_slow          = "at_impact",  -- v6.15.162 (verify) — fire as Kez swings in
 modifier_kez_grappling_claw_slow                = "close_gap",       -- v6.15.162 (verify) — Kez Grappling Claw
 modifier_kez_grappling_claw_slow          = "medium",  -- v6.15.162 (verify) — gap-close + 80% slow + lifesteal hit
