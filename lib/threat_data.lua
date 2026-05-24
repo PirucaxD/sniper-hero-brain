@@ -465,6 +465,13 @@ ThreatData.THREATS_ON_SELF = {
     modifier_slardar_amplify_damage           = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction debuff, dispellable
     modifier_slardar_slithereen_crush         = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — AoE stun around Slardar
     modifier_bristleback_hairball_slow        = { role = "kiting_slow",  save = "informational" },     -- (verify) — line of goo slows, recoverable
+    -- v6.15.267 zero-coverage fill batch 5: reactive-detectable threats
+    modifier_invoker_cold_snap_freeze         = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — recurring mini-stun on damage; dispel removes
+    modifier_riki_smoke_screen                = { role = "silence_on_me", save = "bkb_or_dispel" },    -- (verify) — AoE silence + miss chance
+    modifier_lone_druid_entangle_effect       = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — bear-attack root proc (1.5s)
+    modifier_undying_decay                    = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — STR drain debuff (reduces Sniper max HP)
+    modifier_dazzle_poison_touch              = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — slow + delayed stun if not removed
+    modifier_weaver_the_swarm                 = { role = "kiting_slow",  save = "bkb_or_dispel" },     -- (verify) — armor reduction + attack-trigger damage
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -691,6 +698,19 @@ ThreatData.ABILITY_TO_THREAT = {
     slardar_slithereen_crush            = "modifier_slardar_slithereen_crush",            -- (verify) — v6.15.266
     slardar_amplify_damage              = "modifier_slardar_amplify_damage",              -- (verify) — v6.15.266
     bristleback_hairball                = "modifier_bristleback_hairball_slow",           -- (verify) — v6.15.266
+    -- v6.15.267 zero-coverage fill batch 5
+    invoker_cold_snap                   = "modifier_invoker_cold_snap_freeze",            -- (verify) — v6.15.267
+    invoker_sun_strike                  = nil,                                            -- v6.15.267: no Sniper modifier (delayed AoE burst); needs OnParticleCreate
+    invoker_emp                         = nil,                                            -- v6.15.267: no Sniper modifier (delayed AoE mana burn); needs OnParticleCreate
+    riki_smoke_screen                   = "modifier_riki_smoke_screen",                   -- (verify) — v6.15.267
+    riki_blink_strike                   = nil,                                            -- v6.15.267: no Sniper modifier (gap-close); anim path
+    lone_druid_spirit_bear_entangle     = "modifier_lone_druid_entangle_effect",          -- (verify) — v6.15.267 (bear passive root proc)
+    lone_druid_savage_roar              = nil,                                            -- v6.15.267: no Sniper modifier (NO_TARGET fear AoE); anim path
+    undying_decay                       = "modifier_undying_decay",                       -- (verify) — v6.15.267
+    dazzle_poison_touch                 = "modifier_dazzle_poison_touch",                 -- (verify) — v6.15.267
+    weaver_the_swarm                    = "modifier_weaver_the_swarm",                    -- (verify) — v6.15.267
+    centaur_double_edge                 = nil,                                            -- v6.15.267: no Sniper modifier (instant burst); anim path
+    phoenix_launch_fire_spirit          = nil,                                            -- v6.15.267: no Sniper modifier (line projectile); anim path (ACT_INVALID -- may not fire)
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1397,6 +1417,13 @@ ThreatData.THREAT_CATEGORY = {
     modifier_slardar_amplify_damage            = "kiting_slow",       -- v6.15.266 (armor reduction setup)
     modifier_slardar_slithereen_crush          = "targeted_disable",  -- v6.15.266 (AoE stun)
     modifier_bristleback_hairball_slow         = "kiting_slow",       -- v6.15.266 (slow line)
+    -- v6.15.267 zero-coverage fill batch 5
+    modifier_invoker_cold_snap_freeze          = "targeted_disable",  -- v6.15.267 (recurring mini-stun)
+    modifier_riki_smoke_screen                 = "targeted_disable",  -- v6.15.267 (AoE silence)
+    modifier_lone_druid_entangle_effect        = "targeted_disable",  -- v6.15.267 (bear attack root proc)
+    modifier_undying_decay                     = "kiting_slow",       -- v6.15.267 (STR drain)
+    modifier_dazzle_poison_touch               = "kiting_slow",       -- v6.15.267 (slow + dot + delayed stun)
+    modifier_weaver_the_swarm                  = "kiting_slow",       -- v6.15.267 (armor reduction + attack proc)
 }
 
 ---@param threat_mod string|nil
@@ -1553,6 +1580,13 @@ ThreatData.THREAT_SEVERITY = {
     modifier_slardar_amplify_damage       = "low",    -- v6.15.266 armor debuff alone, setup-only
     modifier_slardar_slithereen_crush     = "medium", -- v6.15.266 AoE stun around Slardar
     modifier_bristleback_hairball_slow    = "low",    -- v6.15.266 slow + damage line, recoverable
+    -- v6.15.267
+    modifier_invoker_cold_snap_freeze     = "medium", -- v6.15.267 mini-stun per damage instance
+    modifier_riki_smoke_screen            = "medium", -- v6.15.267 AOE silence + miss
+    modifier_lone_druid_entangle_effect   = "low",    -- v6.15.267 1.5s root on bear attack proc
+    modifier_undying_decay                = "low",    -- v6.15.267 temporary STR drain
+    modifier_dazzle_poison_touch          = "low",    -- v6.15.267 slow + dot, dispellable
+    modifier_weaver_the_swarm             = "low",    -- v6.15.267 armor reduction, dispellable
 }
 
 ----------------------------------------------------------------------------
