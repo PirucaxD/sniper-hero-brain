@@ -25,6 +25,22 @@ batch is tracked by `tools/gen_coverage_report.py`, which writes
 `COVERAGE_REPORT.md` and `COVERAGE_DATA.csv` against the live Valve KV
 files.
 
+## License + intended use
+
+Source available under the [PolyForm Noncommercial 1.0.0](LICENSE)
+license. Free for personal study, classroom teaching, academic research,
+hobby projects, and anything else that is not a commercial purpose. No
+warranty, no liability. The intent is for students poking at game AI,
+state machines, threat modeling, and brittle-API integration to be able
+to read the full thing, including the comments, and copy ideas (not
+re-sell). If you want to use this commercially, that is outside the
+license; reach out and we can talk.
+
+The hand-written modules under `lib/` are a snapshot of the upstream
+[uczone-toolkit](https://github.com/PirucaxD/uczone-toolkit), which is
+MIT-licensed. Pull `lib/` from the toolkit directly if you want it under
+MIT terms.
+
 ## The augmentation model
 
 The brain does not replace the framework's hero script. It is a sidecar.
