@@ -140,7 +140,7 @@ end
 local DEFAULT_ANGLE_DEG = 30
 local DEFAULT_RANGE = 1200
 
-local function compute_target_self(caster, ability_range)
+local function compute_target_self(caster, ability_range, instant_target)
     local me = Heroes.GetLocal()
     if not me or not caster or me == caster then return false end
     if Entity.IsSameTeam(me, caster) then return false end
@@ -148,6 +148,18 @@ local function compute_target_self(caster, ability_range)
     local me_pos = Entity.GetAbsOrigin(me)
     local range = ability_range or DEFAULT_RANGE
     if not NPC.IsPositionInRange(caster, me_pos, range) then return false end
+    -- v6.15.250: unit-target abilities (PA Phantom Strike, Pudge Dismember,
+    -- OD Astral Imprisonment, Primal Beast Pulverize, etc.) select their
+    -- target by REFERENCE, not by aim -- the caster does not face the
+    -- target before casting. Per-entry `instant_target = true` skips the
+    -- facing gate for these abilities. Without this flag, the v6.15.232
+    -- "polish 1/4" radians fix (math.deg added below) regressed PA's
+    -- gap-close detection: pre-v6.15.232 the gate accidentally always
+    -- passed (raw radians ~pi never > 30 degrees), letting PA Phantom
+    -- Strike fire saves. The math.deg fix is correct for aim-based
+    -- projectile abilities (Pudge Hook, Lina LSA, Skywrath bolts) where
+    -- the caster does face the target, so the gate stays for those.
+    if instant_target then return true end
     -- facing gate (FindRotationAngle is radians — math.deg before compare)
     local angle = math.deg(math.abs(NPC.FindRotationAngle(caster, me_pos)))
     if angle > DEFAULT_ANGLE_DEG then return false end
@@ -204,7 +216,9 @@ function Anim.OnUnitAnimation_handler(data)
     -- so short-range gap-closers don't fall back to DEFAULT_RANGE=1200 and
     -- false-positive across the map. RegisterMap entries may include
     -- `range = N` for per-ability gating.
-    local target_self = compute_target_self(caster, entry.range)
+    -- v6.15.250: also thread `instant_target` so unit-target abilities can
+    -- bypass the facing gate (see compute_target_self comment).
+    local target_self = compute_target_self(caster, entry.range, entry.instant_target)
     local event = {
         caster       = caster,
         ability_name = entry.ability,
