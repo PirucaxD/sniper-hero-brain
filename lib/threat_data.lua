@@ -910,6 +910,114 @@ ThreatData.RECOMMENDED_SAVES = {
 }
 
 ----------------------------------------------------------------------------
+-- CATEGORY_CHAINS — per-category fallback save chains
+----------------------------------------------------------------------------
+
+---Default save chain per THREAT_CATEGORY. Used by the resolver when a threat
+---has no entry in RECOMMENDED_SAVES and no hero-side override. These are the
+---chains validated on the tested heroes; new threats with a known category
+---get the canonical response for their behavioral class without per-modifier
+---tuning.
+---
+---v6.15.259: extracted from Sniper/Sniper.lua to the lib so other hero brains
+---can consume the same category-keyed defaults. v6.15.260 is the planned
+---decoupling pass to remove the remaining Sniper-specific names (`grenade_*`)
+---from these chains; entries currently flagged `-- (sniper-coupled)` are
+---safe to consume by other hero brains (the unknown save name is silently
+---skipped by the dispatcher) but will be cleaner after v6.15.260.
+---@type table<string, string[]>
+ThreatData.CATEGORY_CHAINS = {
+    -- Chase / gap-close (Bara, Tusk, PA Strike, Slark Pounce, Storm Ball
+    -- Lightning, Magnus Skewer/RP-prep, anything homing toward Sniper).
+    -- Pike-on-enemy radial-pushes them, grenade-at-caster stuns + knocks.
+    close_gap = {
+        "item_hurricane_pike",
+        "grenade_at_caster",  -- (sniper-coupled) — v6.15.260 cleanup target
+        "item_force_staff",
+        "item_black_king_bar", "item_cyclone", "item_wind_waker",
+        "item_lotus_orb", "item_manta", "item_aeon_disk", "item_ghost",
+    },
+    -- Tether channels on Sniper (Pudge Dismember, Bane Grip, Shaman Shackles,
+    -- WD Death Ward, Legion Duel, Pugna Life Drain -- anything that locks
+    -- Sniper at range from the caster). Grenade-at-caster's 0.4s stun
+    -- interrupts cast point + push breaks tether. Pike fallback.
+    channel_on_self = {
+        "grenade_at_caster",  -- (sniper-coupled)
+        "item_hurricane_pike",
+        "item_force_staff",
+        "item_manta", "item_satanic", "item_disperser",
+        "item_cyclone", "item_wind_waker", "item_aeon_disk",
+        "grenade_self",       -- (sniper-coupled)
+    },
+    -- Line projectiles (Mirana Arrow, Pudge Hook, Magnus Skewer, Sven Bolt,
+    -- Earth Spirit Boulder). Perpendicular displacement breaks the line.
+    line_projectile = {
+        "item_force_staff", "item_hurricane_pike",
+        "grenade_self",       -- (sniper-coupled)
+        "item_cyclone", "item_manta", "item_black_king_bar",
+    },
+    -- Single-target hard disable (Hex, Doom debuff cast, Lion Voodoo,
+    -- Shaman Voodoo). Instant-cast invuln (Eul/Wind Waker/Lotus) ideal.
+    targeted_disable = {
+        "item_cyclone", "item_wind_waker", "item_lotus_orb",
+        "item_manta", "item_aeon_disk", "item_black_king_bar",
+    },
+    -- AoE lockdown ults (Tide Ravage, ES Echo Slam, Magnus RP, Naga Siren,
+    -- Treant Overgrowth, Disruptor Static Storm). Blink/Pike out, BKB the
+    -- damage, Aeon trigger on health drop.
+    delayed_aoe = {
+        "item_hurricane_pike", "item_force_staff",
+        "item_blink", "item_arcane_blink", "item_swift_blink",
+        "item_black_king_bar", "item_cyclone", "item_wind_waker",
+        "item_pipe_of_insight", "item_aeon_disk",
+    },
+    -- Area-deny traps (Disruptor Kinetic Field, Underlord Pit of Malice,
+    -- Faceless Void Chrono edge). Forced movement blocked -- only knockback
+    -- escapes.
+    trap = {
+        "grenade_self",       -- (sniper-coupled)
+        "grenade_at_caster",  -- (sniper-coupled)
+    },
+    -- Drain channels (Pugna Life Drain, Lion Mana Drain). Force/Pike
+    -- breaks tether; grenade stuns caster.
+    drain = {
+        "item_force_staff", "item_hurricane_pike",
+        "grenade_at_caster",  -- (sniper-coupled)
+        "grenade_self",       -- (sniper-coupled)
+        "item_cyclone",
+    },
+    -- Physical-chase debuffs (Lifestealer Open Wounds, Slark Essence Shift).
+    -- Pike pushes chaser, Glimmer/Ghost break attack target-lock.
+    physical_chase = {
+        "item_hurricane_pike", "item_force_staff",
+        "item_glimmer_cape", "item_ghost",
+        "item_manta", "item_black_king_bar",
+    },
+    -- Lockdown buffs on enemy (Bristleback turn, Troll trance, Ursa Enrage).
+    -- The enemy is now extra-tanky -- defensive items rather than displacement.
+    lockdown = {
+        "item_cyclone", "item_wind_waker", "item_lotus_orb",
+        "item_manta", "item_aeon_disk", "item_black_king_bar",
+    },
+    -- Single-target burst (Lina Laguna, Lion Finger, Zeus Bolt, Sniper R'd,
+    -- single-target nukes). Lotus reflects, BKB blocks, magic_barrier eats.
+    targeted_burst = {
+        "item_lotus_orb",
+        "item_black_king_bar", "item_pipe_of_insight",
+        "item_cyclone", "item_wind_waker", "item_glimmer_cape",
+        "item_manta", "item_aeon_disk",
+    },
+}
+
+---Look up the default save chain for a category. Returns nil if no entry.
+---@param category string|nil
+---@return string[]|nil
+function ThreatData.CategoryChain(category)
+    if not category then return nil end
+    return ThreatData.CATEGORY_CHAINS[category]
+end
+
+----------------------------------------------------------------------------
 -- THREAT_TIMING — when to fire the save relative to the threat
 ----------------------------------------------------------------------------
 
