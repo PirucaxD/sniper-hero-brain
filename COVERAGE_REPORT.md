@@ -15,7 +15,7 @@ Re-run after every catalog batch to track progress.
 | Heroes with **zero** coverage | 38 | 30% |
 | THREATS_ON_SELF entries | 116 | — |
 | ABILITY_TO_THREAT entries | 126 | — |
-| THREAT_CATEGORY entries | 112 | — |
+| THREAT_CATEGORY entries | 113 | — |
 | `(verify)` flags in threat_data.lua | 73 | — |
 | `instant_target` flagged anim entries | 17 | — |
 
@@ -187,7 +187,7 @@ modifier_earth_spirit_rolling_boulder= { role = "line_projectile", save = "perp_
 modifier_life_stealer_open_wounds    = { role = "physical_burst", save = "manta_or_pike" },        -- (verify) — debuff
 modifier_pugna_life_drain            = { role = "drain",         save = "force_or_pike" },         -- (verify) — channel
 modifier_disruptor_kinetic_field_remnant = { role = "trapped",   save = "knockback_only" },         -- (verify)
-modifier_abyssal_underlord_pit_of_malice = { role = "trapped",   save = "knockback_only" },         -- (verify)
+modifier_abyssal_underlord_pit_of_malice_ensare = { role = "trapped",   save = "knockback_only" },         -- (verify)
 -- (verify) caveat for any entry that's confirmed via repeat hits.
 spirit_breaker_nether_strike        = "modifier_spirit_breaker_nether_strike",  -- v6.15.164 (verify) — promoted from nil: blink-strike ult
 kez_grappling_claw                  = "modifier_kez_grappling_claw_slow",       -- v6.15.162 (verify) — Kez gap-close swing
@@ -208,7 +208,7 @@ treant_overgrowth                   = "modifier_treant_overgrowth",             
 life_stealer_open_wounds            = "modifier_life_stealer_open_wounds",         -- (verify)
 pugna_life_drain                    = "modifier_pugna_life_drain",                 -- (verify)
 disruptor_kinetic_field             = "modifier_disruptor_kinetic_field_remnant",  -- (verify) — v6.15.10
-abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice",   -- (verify) — v6.15.256
+abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice_ensare",   -- (verify) — v6.15.256
 dragon_knight_dragon_tail           = "modifier_dragon_knight_dragon_tail",          -- (verify) — v6.15.258
 night_stalker_void                  = "modifier_night_stalker_void",                 -- (verify) — v6.15.258
 ogre_magi_fireblast                 = "modifier_ogre_magi_fireblast",                -- (verify) — v6.15.258

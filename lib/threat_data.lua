@@ -273,7 +273,7 @@ ThreatData.THREAT_COUNTER = {
     -- Sniper out of the pit. Blink works too (the pit doesn't block
     -- teleports). (verify) — modifier name from KV naming convention,
     -- not yet harvested from a real match.
-    modifier_abyssal_underlord_pit_of_malice = { "displacement_perp", "displacement_blink" },
+    modifier_abyssal_underlord_pit_of_malice_ensare = { "displacement_perp", "displacement_blink" },
 }
 
 ----------------------------------------------------------------------------
@@ -471,7 +471,7 @@ ThreatData.THREATS_ON_SELF = {
     -- v6.15.256: Underlord Pit of Malice — same trapped pattern as Kinetic
     -- Field. Snare ticks ~3.6s for 12s; escape via displacement breaks the
     -- root and removes Sniper from the 400u pit area.
-    modifier_abyssal_underlord_pit_of_malice = { role = "trapped",   save = "knockback_only" },         -- (verify)
+    modifier_abyssal_underlord_pit_of_malice_ensare = { role = "trapped",   save = "knockback_only" },         -- (verify)
     -- v6.15.198 harvest — modifier names captured from threat_unrecognized
     -- across three bot matches (post v6.15.194 / .195 / .197). All names
     -- below are HARVESTED (observed in real logs), not guessed; remove the
@@ -640,7 +640,7 @@ ThreatData.ABILITY_TO_THREAT = {
     life_stealer_open_wounds            = "modifier_life_stealer_open_wounds",         -- (verify)
     pugna_life_drain                    = "modifier_pugna_life_drain",                 -- (verify)
     disruptor_kinetic_field             = "modifier_disruptor_kinetic_field_remnant",  -- (verify) — v6.15.10
-    abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice",   -- (verify) — v6.15.256
+    abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice_ensare",   -- (verify) — v6.15.256
     -- v6.15.258 zero-coverage fill batch 1
     dragon_knight_dragon_tail           = "modifier_dragon_knight_dragon_tail",          -- (verify) — v6.15.258
     night_stalker_void                  = "modifier_night_stalker_void",                 -- (verify) — v6.15.258
@@ -915,7 +915,7 @@ ThreatData.RECOMMENDED_SAVES = {
     -- v6.15.256: Underlord Pit of Malice. Same trap escape posture as
     -- Kinetic Field; only hero-knockback escapes the snare reliably.
     -- v6.15.261: hero-agnostic empty chain; hero patches inject knockback.
-    modifier_abyssal_underlord_pit_of_malice = {},
+    modifier_abyssal_underlord_pit_of_malice_ensare = {},
     modifier_treant_overgrowth = {
         "item_black_king_bar", "item_blink", "item_swift_blink",
         "item_cyclone", "item_wind_waker", "item_manta",
@@ -1172,7 +1172,7 @@ ThreatData.THREAT_TIMING = {
     modifier_life_stealer_open_wounds    = "reactive",
     modifier_pugna_life_drain            = "reactive",
     modifier_disruptor_kinetic_field_remnant = "reactive",  -- v6.15.10 — fires once trapped
-    modifier_abyssal_underlord_pit_of_malice = "reactive",  -- v6.15.256 — fires once snared
+    modifier_abyssal_underlord_pit_of_malice_ensare = "reactive",  -- v6.15.256 — fires once snared
 }
 
 ----------------------------------------------------------------------------
@@ -1333,7 +1333,7 @@ ThreatData.THREAT_CATEGORY = {
     modifier_life_stealer_open_wounds          = "physical_chase",
     modifier_pugna_life_drain                  = "drain",
     modifier_disruptor_kinetic_field_remnant   = "trap",         -- v6.15.10
-    modifier_abyssal_underlord_pit_of_malice   = "trap",         -- v6.15.256
+    modifier_abyssal_underlord_pit_of_malice_ensare   = "trap",         -- v6.15.256
     -- v6.15.258 zero-coverage fill batch 1
     modifier_dragon_knight_dragon_tail         = "targeted_disable",  -- v6.15.258
     modifier_night_stalker_void                = "targeted_disable",  -- v6.15.258
@@ -1349,6 +1349,8 @@ ThreatData.THREAT_CATEGORY = {
     modifier_kunkka_torrent_stun               = "targeted_disable",  -- v6.15.263 (stun applied at impact)
     modifier_kunkka_x_marks_the_spot           = "targeted_disable",  -- v6.15.263 (drag-back debuff)
     modifier_nevermore_requiem                 = "delayed_aoe",       -- v6.15.263 (fear radial)
+    -- v6.15.264: ES Rolling Boulder caster-side -- routed via ENEMY_BUFF_THREATS
+    modifier_earth_spirit_rolling_boulder_caster = "line_projectile",  -- v6.15.264
 }
 
 ---@param threat_mod string|nil
@@ -1474,7 +1476,7 @@ ThreatData.THREAT_SEVERITY = {
     modifier_life_stealer_open_wounds    = "medium", -- chase enabler; depends on Naix HP
     modifier_pugna_life_drain            = "medium", -- HP drain channel
     modifier_disruptor_kinetic_field_remnant = "high", -- v6.15.10 trap usually paired with Static Storm
-    modifier_abyssal_underlord_pit_of_malice = "medium", -- v6.15.256 1.5-1.8s root, recurring; less lethal than KF
+    modifier_abyssal_underlord_pit_of_malice_ensare = "medium", -- v6.15.256 1.5-1.8s root, recurring; less lethal than KF
     -- v6.15.258 zero-coverage fill batch 1
     modifier_dragon_knight_dragon_tail   = "medium",  -- v6.15.258 1.7-2.75s stun, recoverable
     modifier_night_stalker_void          = "medium",  -- v6.15.258 1-2.5s stun (longer at night)
@@ -1489,6 +1491,8 @@ ThreatData.THREAT_SEVERITY = {
     modifier_kunkka_torrent_thinker       = "medium", -- v6.15.263 1.5s warning + delayed stun
     modifier_kunkka_x_marks_the_spot      = "low",    -- v6.15.263 mostly setup for combo, dispellable
     modifier_nevermore_requiem            = "high",   -- v6.15.263 high magic damage + fear
+    -- v6.15.264
+    modifier_earth_spirit_rolling_boulder_caster = "medium", -- v6.15.264 1.5-2s stun on hit
 }
 
 ----------------------------------------------------------------------------
@@ -1658,6 +1662,20 @@ ThreatData.ENEMY_BUFF_THREATS = {
     modifier_item_silver_edge_debuff = {
         category = "passive_break", role = "informational",
         severity = "low",    verify = true,
+    },
+    -- v6.15.264: Earth Spirit Rolling Boulder. The caster-side modifier
+    -- appears on ES when the boulder is rolling. Sniper-side modifier
+    -- from boulder hit is generic modifier_stunned (uncatchable). The
+    -- anim path doesn't fire reliably (POINT cast with 0 cast point, no
+    -- AbilityCastAnimation slot). Caster-side modifier dispatch is the
+    -- only reliable detector -- when ES is rolling, fire the
+    -- line_projectile chain (force / pike / grenade-self) to evade
+    -- regardless of whether Sniper is currently in the boulder line.
+    -- Worst case is wasted CD if the boulder rolls elsewhere; the
+    -- alternative is getting stunned with no save.
+    modifier_earth_spirit_rolling_boulder_caster = {
+        category = "line_projectile", role = "line_projectile",
+        severity = "medium",
     },
 }
 
