@@ -440,6 +440,17 @@ ThreatData.THREATS_ON_SELF = {
     modifier_rubick_telekinesis          = { role = "hard_disable",  save = "eul_or_bkb" },         -- (verify) — 0.1 cast, lift+land stun
     modifier_silencer_last_word          = { role = "silence_on_me", save = "bkb_or_dispel" },      -- (verify) — silence on cast / 4s timer
     modifier_death_prophet_silence       = { role = "silence_on_me", save = "bkb_or_dispel" },      -- (verify) — point-AOE 5-6s silence
+    -- v6.15.263 zero-coverage fill batch 2: AOE delayed killers + single-target
+    -- bursts Sniper actually faces. Anim-path detection is primary for abilities
+    -- without a Sniper-side modifier (Mana Void, Sunder).
+    modifier_ancient_apparition_cold_feet     = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — 4s timer, stun if Sniper hasn't moved 715u
+    modifier_ancient_apparition_ice_blast     = { role = "magic_burst",  save = "bkb_or_lotus" },      -- (verify) — frost mark, executes <12% HP. BKB blocks (SPELL_IMMUNITY_ENEMIES_YES)
+    modifier_gyrocopter_homing_missile        = { role = "line_projectile", save = "perp_displacement" },  -- (verify) — homing target debuff, missile is dodgeable
+    modifier_gyrocopter_call_down_slow        = { role = "kiting_slow",  save = "informational" },     -- (verify) — per-rocket slow proc
+    modifier_kunkka_torrent_thinker           = { role = "delayed_aoe",  save = "displacement" },      -- (verify) — geyser warning placed, hits ~1.5s later
+    modifier_kunkka_torrent_stun              = { role = "hard_disable", save = "eul_or_bkb" },        -- (verify) — stun applied at geyser impact
+    modifier_kunkka_x_marks_the_spot          = { role = "hard_disable", save = "bkb_or_dispel" },     -- (verify) — drag-back debuff, removable by dispel
+    modifier_nevermore_requiem                = { role = "magic_burst",  save = "bkb_or_lotus" },      -- (verify) — fear + magic damage radial
     -- v6.7 extrapolation (2026-05-11). Modifier names marked (verify) need
     -- in-game confirmation via :FindAllModifiers() print before relying on.
     modifier_shadow_shaman_voodoo        = { role = "hard_disable",  save = "lotus_or_eul" },           -- (verify) — Hex
@@ -638,6 +649,16 @@ ThreatData.ABILITY_TO_THREAT = {
     rubick_telekinesis                  = "modifier_rubick_telekinesis",                 -- (verify) — v6.15.258
     silencer_last_word                  = "modifier_silencer_last_word",                 -- (verify) — v6.15.258
     death_prophet_silence               = "modifier_death_prophet_silence",              -- (verify) — v6.15.258
+    -- v6.15.263 zero-coverage fill batch 2: AOE delayed killers
+    ancient_apparition_cold_feet        = "modifier_ancient_apparition_cold_feet",       -- (verify) — v6.15.263
+    ancient_apparition_ice_blast        = "modifier_ancient_apparition_ice_blast",       -- (verify) — v6.15.263
+    antimage_mana_void                  = nil,                                            -- v6.15.263: no Sniper modifier (instant burst); anim-path only
+    gyrocopter_homing_missile           = "modifier_gyrocopter_homing_missile",          -- (verify) — v6.15.263
+    gyrocopter_call_down                = "modifier_gyrocopter_call_down_slow",          -- (verify) — v6.15.263
+    kunkka_torrent                      = "modifier_kunkka_torrent_thinker",             -- (verify) — v6.15.263 (thinker entity for AOE warning)
+    kunkka_x_marks_the_spot             = "modifier_kunkka_x_marks_the_spot",            -- (verify) — v6.15.263
+    nevermore_requiem_of_souls          = "modifier_nevermore_requiem",                  -- (verify) — v6.15.263
+    terrorblade_sunder                  = nil,                                            -- v6.15.263: no Sniper modifier (instant HP swap); anim-path only
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -1320,6 +1341,14 @@ ThreatData.THREAT_CATEGORY = {
     modifier_rubick_telekinesis                = "targeted_disable",  -- v6.15.258
     modifier_silencer_last_word                = "targeted_disable",  -- v6.15.258 (silence is a disable)
     modifier_death_prophet_silence             = "targeted_disable",  -- v6.15.258 (silence)
+    -- v6.15.263 zero-coverage fill batch 2
+    modifier_ancient_apparition_cold_feet      = "targeted_disable",  -- v6.15.263 (delayed stun)
+    modifier_ancient_apparition_ice_blast      = "targeted_burst",    -- v6.15.263 (frost mark + magic burst, executes low HP)
+    modifier_gyrocopter_homing_missile         = "line_projectile",   -- v6.15.263 (homing but dodgeable)
+    modifier_kunkka_torrent_thinker            = "delayed_aoe",       -- v6.15.263 (geyser warning)
+    modifier_kunkka_torrent_stun               = "targeted_disable",  -- v6.15.263 (stun applied at impact)
+    modifier_kunkka_x_marks_the_spot           = "targeted_disable",  -- v6.15.263 (drag-back debuff)
+    modifier_nevermore_requiem                 = "delayed_aoe",       -- v6.15.263 (fear radial)
 }
 
 ---@param threat_mod string|nil
@@ -1453,6 +1482,13 @@ ThreatData.THREAT_SEVERITY = {
     modifier_rubick_telekinesis          = "medium",  -- v6.15.258 lift+land ~2.5s total disable
     modifier_silencer_last_word          = "low",     -- v6.15.258 silence -- annoying but not lethal alone
     modifier_death_prophet_silence       = "low",     -- v6.15.258 silence AOE -- locks BKB but not lethal alone
+    -- v6.15.263 zero-coverage fill batch 2
+    modifier_ancient_apparition_cold_feet = "medium", -- v6.15.263 4s stun if not moved
+    modifier_ancient_apparition_ice_blast = "high",   -- v6.15.263 executes low-HP, hard to remove
+    modifier_gyrocopter_homing_missile    = "medium", -- v6.15.263 3s stun + damage if not destroyed
+    modifier_kunkka_torrent_thinker       = "medium", -- v6.15.263 1.5s warning + delayed stun
+    modifier_kunkka_x_marks_the_spot      = "low",    -- v6.15.263 mostly setup for combo, dispellable
+    modifier_nevermore_requiem            = "high",   -- v6.15.263 high magic damage + fear
 }
 
 ----------------------------------------------------------------------------
