@@ -919,41 +919,38 @@ ThreatData.RECOMMENDED_SAVES = {
 ---get the canonical response for their behavioral class without per-modifier
 ---tuning.
 ---
----v6.15.259: extracted from Sniper/Sniper.lua to the lib so other hero brains
----can consume the same category-keyed defaults. v6.15.260 is the planned
----decoupling pass to remove the remaining Sniper-specific names (`grenade_*`)
----from these chains; entries currently flagged `-- (sniper-coupled)` are
----safe to consume by other hero brains (the unknown save name is silently
----skipped by the dispatcher) but will be cleaner after v6.15.260.
+---v6.15.259: extracted from Sniper/Sniper.lua so other hero brains can
+---consume the same category-keyed defaults.
+---v6.15.260: HERO-AGNOSTIC -- no per-hero save names appear in any chain.
+---Hero brains insert their own abilities via per-hero category-patch tables
+---(Sniper uses SNIPER_CATEGORY_PATCHES with {prepend, insert_after, append}
+---semantics). The lib chain is the items-only baseline; the hero patch
+---adds hero-specific saves around the baseline.
 ---@type table<string, string[]>
 ThreatData.CATEGORY_CHAINS = {
     -- Chase / gap-close (Bara, Tusk, PA Strike, Slark Pounce, Storm Ball
-    -- Lightning, Magnus Skewer/RP-prep, anything homing toward Sniper).
-    -- Pike-on-enemy radial-pushes them, grenade-at-caster stuns + knocks.
+    -- Lightning, Magnus Skewer/RP-prep, anything homing toward the hero).
+    -- Pike-on-enemy radial-pushes them, Force pushes self, BKB blocks damage.
     close_gap = {
         "item_hurricane_pike",
-        "grenade_at_caster",  -- (sniper-coupled) — v6.15.260 cleanup target
         "item_force_staff",
         "item_black_king_bar", "item_cyclone", "item_wind_waker",
         "item_lotus_orb", "item_manta", "item_aeon_disk", "item_ghost",
     },
-    -- Tether channels on Sniper (Pudge Dismember, Bane Grip, Shaman Shackles,
-    -- WD Death Ward, Legion Duel, Pugna Life Drain -- anything that locks
-    -- Sniper at range from the caster). Grenade-at-caster's 0.4s stun
-    -- interrupts cast point + push breaks tether. Pike fallback.
+    -- Tether channels on the hero (Pudge Dismember, Bane Grip, Shaman
+    -- Shackles, WD Death Ward, Legion Duel, Pugna Life Drain -- anything
+    -- that locks the hero at range from the caster). Force/Pike push breaks
+    -- the tether; Manta/Satanic dispel some; BKB blocks damage.
     channel_on_self = {
-        "grenade_at_caster",  -- (sniper-coupled)
         "item_hurricane_pike",
         "item_force_staff",
         "item_manta", "item_satanic", "item_disperser",
         "item_cyclone", "item_wind_waker", "item_aeon_disk",
-        "grenade_self",       -- (sniper-coupled)
     },
     -- Line projectiles (Mirana Arrow, Pudge Hook, Magnus Skewer, Sven Bolt,
     -- Earth Spirit Boulder). Perpendicular displacement breaks the line.
     line_projectile = {
         "item_force_staff", "item_hurricane_pike",
-        "grenade_self",       -- (sniper-coupled)
         "item_cyclone", "item_manta", "item_black_king_bar",
     },
     -- Single-target hard disable (Hex, Doom debuff cast, Lion Voodoo,
@@ -973,18 +970,16 @@ ThreatData.CATEGORY_CHAINS = {
     },
     -- Area-deny traps (Disruptor Kinetic Field, Underlord Pit of Malice,
     -- Faceless Void Chrono edge). Forced movement blocked -- only knockback
-    -- escapes.
+    -- and blink escape. Hero-specific knockback abilities patch in via
+    -- per-hero CATEGORY_PATCHES.
     trap = {
-        "grenade_self",       -- (sniper-coupled)
-        "grenade_at_caster",  -- (sniper-coupled)
+        "item_blink", "item_arcane_blink", "item_swift_blink",
     },
     -- Drain channels (Pugna Life Drain, Lion Mana Drain). Force/Pike
-    -- breaks tether; grenade stuns caster.
+    -- breaks tether.
     drain = {
         "item_force_staff", "item_hurricane_pike",
-        "grenade_at_caster",  -- (sniper-coupled)
-        "grenade_self",       -- (sniper-coupled)
-        "item_cyclone",
+        "item_cyclone", "item_manta",
     },
     -- Physical-chase debuffs (Lifestealer Open Wounds, Slark Essence Shift).
     -- Pike pushes chaser, Glimmer/Ghost break attack target-lock.
@@ -999,8 +994,8 @@ ThreatData.CATEGORY_CHAINS = {
         "item_cyclone", "item_wind_waker", "item_lotus_orb",
         "item_manta", "item_aeon_disk", "item_black_king_bar",
     },
-    -- Single-target burst (Lina Laguna, Lion Finger, Zeus Bolt, Sniper R'd,
-    -- single-target nukes). Lotus reflects, BKB blocks, magic_barrier eats.
+    -- Single-target burst (Lina Laguna, Lion Finger, Zeus Bolt, single-target
+    -- nukes). Lotus reflects, BKB blocks, magic_barrier eats.
     targeted_burst = {
         "item_lotus_orb",
         "item_black_king_bar", "item_pipe_of_insight",
