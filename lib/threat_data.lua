@@ -266,6 +266,14 @@ ThreatData.THREAT_COUNTER = {
     -- modifier_disruptor_kinetic_field_remnant once empirically confirmed
     -- via modseen.)
     modifier_disruptor_kinetic_field_remnant = { "displacement_perp" },
+    -- v6.15.256: Underlord Pit of Malice. 400u-radius (500u with shard)
+    -- snare pit, re-snares every 3.6s for 12s; each snare is a 1.5-1.8s
+    -- root. Same escape profile as Kinetic Field: only knockback motion
+    -- (grenade-self push, pike-self push, Force push) reliably moves
+    -- Sniper out of the pit. Blink works too (the pit doesn't block
+    -- teleports). (verify) — modifier name from KV naming convention,
+    -- not yet harvested from a real match.
+    modifier_abyssal_underlord_pit_of_malice = { "displacement_perp", "displacement_blink" },
 }
 
 ----------------------------------------------------------------------------
@@ -430,6 +438,10 @@ ThreatData.THREATS_ON_SELF = {
     modifier_pugna_life_drain            = { role = "drain",         save = "force_or_pike" },         -- (verify) — channel
     -- v6.15.10: Disruptor Kinetic Field — trapped. Only knockback escapes.
     modifier_disruptor_kinetic_field_remnant = { role = "trapped",   save = "knockback_only" },         -- (verify)
+    -- v6.15.256: Underlord Pit of Malice — same trapped pattern as Kinetic
+    -- Field. Snare ticks ~3.6s for 12s; escape via displacement breaks the
+    -- root and removes Sniper from the 400u pit area.
+    modifier_abyssal_underlord_pit_of_malice = { role = "trapped",   save = "knockback_only" },         -- (verify)
     -- v6.15.198 harvest — modifier names captured from threat_unrecognized
     -- across three bot matches (post v6.15.194 / .195 / .197). All names
     -- below are HARVESTED (observed in real logs), not guessed; remove the
@@ -598,6 +610,7 @@ ThreatData.ABILITY_TO_THREAT = {
     life_stealer_open_wounds            = "modifier_life_stealer_open_wounds",         -- (verify)
     pugna_life_drain                    = "modifier_pugna_life_drain",                 -- (verify)
     disruptor_kinetic_field             = "modifier_disruptor_kinetic_field_remnant",  -- (verify) — v6.15.10
+    abyssal_underlord_pit_of_malice     = "modifier_abyssal_underlord_pit_of_malice",   -- (verify) — v6.15.256
     -- v6.15.198 harvest — anim-route mappings for the threats harvested
     -- into THREATS_ON_SELF this version. Where one ability lands MULTIPLE
     -- modifiers on the victim (PA Stifling Dagger, Viper Nethertoxin
@@ -843,6 +856,14 @@ ThreatData.RECOMMENDED_SAVES = {
     modifier_disruptor_kinetic_field_remnant = {
         "grenade_self",
     },
+    -- v6.15.256: Underlord Pit of Malice. Same trap escape posture as
+    -- Kinetic Field; grenade-self knocks Sniper out of the 400u pit in
+    -- the user's facing direction. grenade-at-caster fallback applies
+    -- when Underlord himself is close enough (push both apart from
+    -- the midpoint).
+    modifier_abyssal_underlord_pit_of_malice = {
+        "grenade_self",
+    },
     modifier_treant_overgrowth = {
         "item_black_king_bar", "item_blink", "item_swift_blink",
         "item_cyclone", "item_wind_waker", "item_manta",
@@ -992,6 +1013,7 @@ ThreatData.THREAT_TIMING = {
     modifier_life_stealer_open_wounds    = "reactive",
     modifier_pugna_life_drain            = "reactive",
     modifier_disruptor_kinetic_field_remnant = "reactive",  -- v6.15.10 — fires once trapped
+    modifier_abyssal_underlord_pit_of_malice = "reactive",  -- v6.15.256 — fires once snared
 }
 
 ----------------------------------------------------------------------------
@@ -1152,6 +1174,7 @@ ThreatData.THREAT_CATEGORY = {
     modifier_life_stealer_open_wounds          = "physical_chase",
     modifier_pugna_life_drain                  = "drain",
     modifier_disruptor_kinetic_field_remnant   = "trap",         -- v6.15.10
+    modifier_abyssal_underlord_pit_of_malice   = "trap",         -- v6.15.256
 }
 
 ---@param threat_mod string|nil
@@ -1277,6 +1300,7 @@ ThreatData.THREAT_SEVERITY = {
     modifier_life_stealer_open_wounds    = "medium", -- chase enabler; depends on Naix HP
     modifier_pugna_life_drain            = "medium", -- HP drain channel
     modifier_disruptor_kinetic_field_remnant = "high", -- v6.15.10 trap usually paired with Static Storm
+    modifier_abyssal_underlord_pit_of_malice = "medium", -- v6.15.256 1.5-1.8s root, recurring; less lethal than KF
 }
 
 ----------------------------------------------------------------------------
