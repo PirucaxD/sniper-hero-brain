@@ -13,9 +13,9 @@ Re-run after every catalog batch to track progress.
 | Heroes with anim RegisterMap entries | 110 | 86% |
 | Heroes with **any** catalog entry | 124 | 97% |
 | Heroes with **zero** coverage | 4 | 3% |
-| THREATS_ON_SELF entries | 150 | — |
-| ABILITY_TO_THREAT entries | 174 | — |
-| THREAT_CATEGORY entries | 147 | — |
+| THREATS_ON_SELF entries | 162 | — |
+| ABILITY_TO_THREAT entries | 182 | — |
+| THREAT_CATEGORY entries | 159 | — |
 | `(verify)` flags in threat_data.lua | 141 | — |
 | `instant_target` flagged anim entries | 35 | — |
 
@@ -30,17 +30,16 @@ Each hero has no entry in either Sniper.lua's anim catalog or any threat_data.lu
 | techies | `techies_sticky_bomb` (point-aoe), `techies_reactive_tazer` (unit-target), `techies_suicide` (point-aoe), `techies_minefield_sign` (point-aoe), `techies_land_mines` (point-aoe) |
 | wisp | `wisp_tether` (unit-target) |
 
-## Heroes with partial coverage (76)
+## Heroes with partial coverage (73)
 
 Heroes with at least one entry but where some active-threat abilities are not catalogued. `gap` = active_threats - covered.
 
 | Hero | gap | Active-threat abilities | Covered |
 |---|---|---|---|
 | tinker | 5 | tinker_laser, tinker_march_of_the_machines, tinker_deploy_turrets, tinker_warp_grenade, tinker_keen_teleport, tinker_rearm | tinker_rearm |
-| tiny | 4 | tiny_avalanche, tiny_toss, tiny_tree_grab, tiny_tree_channel, tiny_toss_tree | tiny_toss |
 | lich | 4 | lich_frost_nova, lich_frost_shield, lich_sinister_gaze, lich_ice_spire, lich_death_charge, lich_chain_frost | lich_sinister_gaze, lich_chain_frost |
 | rubick | 4 | rubick_telekinesis, rubick_fade_bolt, rubick_spell_steal, rubick_telekinesis_land, rubick_telekinesis_land_self | rubick_telekinesis |
-| keeper_of_the_light | 4 | keeper_of_the_light_illuminate, keeper_of_the_light_blinding_light, keeper_of_the_light_chakra_magic, keeper_of_the_light_radiant_bind, keeper_of_the_light_will_o_wisp | keeper_of_the_light_illuminate |
+| tiny | 3 | tiny_avalanche, tiny_toss, tiny_tree_grab, tiny_tree_channel, tiny_toss_tree | tiny_avalanche, tiny_toss |
 | shadow_shaman | 3 | shadow_shaman_ether_shock, shadow_shaman_voodoo, shadow_shaman_shackles, shadow_shaman_urnaconda, shadow_shaman_mass_serpent_ward | shadow_shaman_voodoo, shadow_shaman_shackles |
 | warlock | 3 | warlock_fatal_bonds, warlock_shadow_word, warlock_upheaval, warlock_rain_of_chaos | warlock_upheaval |
 | furion | 3 | furion_sprout, furion_teleportation, furion_force_of_nature, furion_wrath_of_nature | furion_sprout |
@@ -66,6 +65,7 @@ Heroes with at least one entry but where some active-threat abilities are not ca
 | silencer | 2 | silencer_curse_of_the_silent, silencer_glaives_of_wisdom, silencer_last_word | silencer_last_word |
 | treant | 2 | treant_leech_seed, treant_living_armor, treant_eyes_in_the_forest | — |
 | disruptor | 2 | disruptor_thunder_strike, disruptor_glimpse, disruptor_kinetic_field, disruptor_static_storm | disruptor_kinetic_field, disruptor_static_storm |
+| earth_spirit | 2 | earth_spirit_boulder_smash, earth_spirit_geomagnetic_grip, earth_spirit_petrify | — |
 
 ## Anim entries missing `instant_target` candidates
 
