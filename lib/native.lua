@@ -84,15 +84,21 @@ end
 ---Pause (disable) the native Hit & Run + Orb Walker for `name`, saving prior
 ---values for a later restore. Idempotent. Returns true only on the first
 ---not-paused -> paused transition (so the caller can log once).
+---v0.5.31 task-10 probe: also return the saved snapshot as a second value so
+---the caller can log what we captured. Lets us diagnose whether the snapshot
+---was poisoned (wget returned nil or wrong values) vs whether something writes
+---hr_kiting=true post-restore.
 ---@param name string
 ---@return boolean newly_paused
+---@return table?  probe  { saved_hr_override, saved_hr_enabled, saved_hr_kiting, saved_ow_override, saved_ow_enabled }
 function Native.PauseHitRun(name)
     if paused[name] then return false end
     local c = resolve(name)
-    saved[name] = {
+    local s = {
         hr_override = wget(c.hr_override), hr_kiting = wget(c.hr_kiting), hr_enabled = wget(c.hr_enabled),
         ow_override = wget(c.ow_override), ow_enabled = wget(c.ow_enabled),
     }
+    saved[name] = s
     -- Override=true so the per-hero value wins over the global default; Enabled
     -- =false is the real off-switch; Kiting=false belt-and-suspenders.
     wset(c.hr_override, true)
@@ -101,7 +107,18 @@ function Native.PauseHitRun(name)
     wset(c.ow_override, true)
     wset(c.ow_enabled, false)
     paused[name] = true
-    return true
+    -- v0.5.31 probe return: caller logs the saved snapshot via native_hitrun_save
+    -- tlog so the next test session surfaces whether the saved.hr_kiting captured
+    -- at this moment is true (user's actual config), false (correct - mouse-follow
+    -- mode), or nil (widget didn't resolve, restore's nil-guard will silently
+    -- skip the write).
+    return true, {
+        saved_hr_override = s.hr_override,
+        saved_hr_enabled  = s.hr_enabled,
+        saved_hr_kiting   = s.hr_kiting,
+        saved_ow_override = s.ow_override,
+        saved_ow_enabled  = s.ow_enabled,
+    }
 end
 
 ---Restore the native subsystems for `name` to their pre-pause values. Idempotent.
@@ -126,10 +143,17 @@ function Native.RestoreHitRun(name)
     paused[name] = false
     -- v0.5.8 E2: live readback AFTER writes so the caller can prove/refute
     -- that the framework HR module rewrites Enabled=false back between cycles.
+    -- v0.5.31 task-10: extend with hr_ov_pre / hr_ki_pre / hr_ki_post so a
+    -- single restore probe carries the full pre/post triplet for the three
+    -- HR widgets. This is what disambiguates H1/H2/H3 from the workflow
+    -- synthesis (saved poisoned vs nil-skip vs framework rewrite).
     local probe = {
         hr_en_pre  = s.hr_enabled,
         hr_en_post = wget(c.hr_enabled),
+        hr_ov_pre  = s.hr_override,
         hr_ov_post = wget(c.hr_override),
+        hr_ki_pre  = s.hr_kiting,
+        hr_ki_post = wget(c.hr_kiting),
         ow_ov_post = wget(c.ow_override),
     }
     return true, probe
@@ -148,16 +172,29 @@ end
 ---which fixed auto-attacks but ALSO clobbered the user's hr_kiting=false config
 ---(mouse-follow mode, observed 2026-06-01 demo: Lina would not move on mouse
 ---direction with brain on; without brain, fine). v0.5.30: shrink to ONLY
----re-assert hr_enabled, the widget the original bug actually touched.
----hr_override and hr_kiting stay at whatever RestoreHitRun put them at (the
----user's pre-pause saved values), so user mouse-follow / kiting preferences
----survive the watchdog. WITHOUT touching paused[]/saved[] state. The caller
----invokes this ~500ms after a paused->restored edge. Idempotent at the widget
----level (if value already matches, the Set is a no-op).
+---re-assert hr_enabled. hr_override and hr_kiting stay at whatever RestoreHitRun
+---put them at (the user's pre-pause saved values).
+---
+---v0.5.31 task-10 INV-D-01 guard: even shrunk to hr_enabled, the watchdog was
+---STILL unconditionally writing true. If the user's mouse-follow config has
+---hr_enabled=false (HR feature globally OFF so the engine handles raw
+---mouse-direction movement), the brain force-flips it back on after every combo
+----- identical-shape bug to the v0.5.30-fixed hr_kiting clobber, just on a
+---different widget. Now: only write true if the user's saved value at
+---pause-time WAS true. If saved.hr_enabled was false, the user wanted HR off
+---and the watchdog respects that. If saved is nil (no pause yet, or the widget
+---was nil-resolved at pause-time), skip entirely -- no signal to honor.
+---Preserves the original v0.5.8 fix for users with hr_enabled=true normally;
+---no-ops for users running hr_enabled=false (mouse-follow with HR off).
+---WITHOUT touching paused[]/saved[] state. The caller invokes this ~500ms
+---after a paused->restored edge. Idempotent at the widget level.
 ---@param name string
 function Native.ReassertEnabled(name)
     local c = resolve(name)
-    wset(c.hr_enabled,  true)
+    local s = saved[name]
+    if s and s.hr_enabled == true then
+        wset(c.hr_enabled, true)
+    end
 end
 
 return Native
