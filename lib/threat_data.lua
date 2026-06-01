@@ -364,6 +364,16 @@ ThreatData.THREATS_ON_SELF = {
     modifier_razor_static_link_debuff           = { role = "drain",         save = "force_or_pike" },
     modifier_ursa_overpower              = { role = "physical_burst",save = "glimmer_or_pike" },
     modifier_legion_commander_duel       = { role = "lockdown",      save = "satanic_or_grenade_self" },
+    -- Naga Ensnare: physical root, BKB-piercing. Modifier name verified via
+    -- VPK binary-grep on pak01_009.vpk (2026-06-01, per lesson 13). All sibling
+    -- tables already cataloged the modifier (ABILITY_TO_THREAT, RECOMMENDED_SAVES,
+    -- THREAT_TIMING pre_cast, CATEGORY_OVERRIDES targeted_disable, SeverityOf
+    -- medium, COUNTER_LAYERS invuln+dispel_basic+reflect_target). THREATS_ON_SELF
+    -- was the missing entry: surfaced via v0.5.23 A3b Lina demo as
+    -- `threat_unrecognized | mod=modifier_naga_siren_ensnare`. Role=lockdown
+    -- matches LC Duel (also BKB-piercing physical). Counters: cyclone-airborne
+    -- (Eul/WW phase out of root), basic dispel (Manta/Disperser), Lotus reflect.
+    modifier_naga_siren_ensnare          = { role = "lockdown",      save = "manta_or_eul" },
     modifier_axe_berserkers_call         = { role = "taunt",         save = "informational" },
     modifier_phantom_assassin_phantom_strike_target = { role = "gap_close", save = "glimmer_or_pike" },
     modifier_spirit_breaker_charge_of_darkness      = { role = "gap_close", save = "pike_or_grenade" },
@@ -816,13 +826,12 @@ ThreatData.ABILITY_TO_THREAT = {
     arc_warden_flux                     = "modifier_arc_warden_flux",                     -- (verify) — v6.15.269
     -- v6.15.270 final mop-up
     abaddon_aphotic_shield              = nil,                                            -- v6.15.270: cast on ALLY; explosion AOE damage is the threat but no Sniper modifier
-    centaur_double_edge                 = nil,                                            -- v6.15.270: instant burst; no Sniper modifier; anim-only
+    -- v0.5.14 E9 (BL-B5): duplicate centaur_double_edge = nil removed (live entry preserved earlier in file at v6.15.267 block; this v6.15.270 duplicate was an editing trap)
     chen_penitence                      = "modifier_chen_penitence",                      -- (verify) — v6.15.270
     enchantress_impetus                 = nil,                                            -- v6.15.270: autocast passive proc damage; no specific modifier (raw projectile damage)
     omniknight_hammer_of_purity         = "modifier_omniknight_hammer_of_purity",         -- (verify) — v6.15.270
     largo_catchy_lick                   = "modifier_largo_catchy_lick",                   -- (verify) — v6.15.270
-    largo_frogstomp                     = nil,                                            -- v6.15.270: POINT-AOE stomp; modifier name unverified
-    largo_croak_of_genius               = nil,                                            -- v6.15.270: UNIT_TARGET debuff; modifier name unverified
+    -- v0.5.14 E9 (BL-B5): duplicate largo_frogstomp / largo_croak_of_genius nil placeholders removed; the live string-valued entries in the v6.15.272 second-match harvest block below are authoritative
     -- v6.15.271 ranked-match harvest
     tusk_walrus_punch                   = "modifier_tusk_walrus_punch_air_time",          -- harvested 2026-05-24
     tusk_tag_team                       = "modifier_tusk_tag_team_attack_slow",           -- harvested 2026-05-24 (passive proc)
