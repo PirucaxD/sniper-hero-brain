@@ -2086,4 +2086,16 @@ for _, t in pairs(ThreatData) do
     end
 end
 
+-- v0.5.35: Target-side spell-deflect modifiers. When the R target has any of
+-- these active, the brain MUST refuse R (the cast reflects damage back). This
+-- is OFFENSIVE-side guarding (hero-as-attacker), distinct from THREATS_ON_SELF
+-- (hero-as-defender). Lotus stays out of this table - Target.HasReadyLotus is
+-- engine-side and already filtered by r_target_blocked (Lina.lua:2178).
+-- Add a new entry only when (a) the modifier name is VPK-verified per lesson
+-- 13, and (b) the effect reflects damage back to the caster (not merely
+-- absorbs or dispels - those are separate concerns).
+ThreatData.SPELL_DEFLECT_MODIFIERS = {
+    modifier_nyx_assassin_spiked_carapace = true,
+}
+
 return ThreatData
