@@ -1,0 +1,68 @@
+name: Release on tag
+
+# Builds the deploy zip (Sniper.lua + lib/) and publishes a GitHub
+# Release whenever a tag matching `v*` is pushed.
+#
+# Workflow per version becomes just:
+#   git -c user.name='...' -c user.email='...' tag -a vX.Y.Z -m "..."
+#   git push origin vX.Y.Z
+# and the release lands automatically with the zip attached.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with tag metadata)
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
+      - name: Build deploy zip
+        run: |
+          set -euo pipefail
+          mkdir -p staging/lib
+          cp Sniper/Sniper.lua staging/Sniper.lua
+          cp lib/*.lua staging/lib/
+          (cd staging && zip -r "../sniper-brain-${GITHUB_REF_NAME}.zip" .)
+          ls -la sniper-brain-*.zip
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+
+          # Annotated tag message (empty for lightweight tags).
+          MSG="$(git for-each-ref "refs/tags/${TAG}" --format='%(contents)' | sed -e '/^-----BEGIN PGP SIGNATURE-----/,$d')"
+
+          # Compose release body: tag message header + install footer.
+          {
+            if [ -n "${MSG}" ]; then
+              printf '%s\n\n---\n\n' "${MSG}"
+            fi
+            cat <<INSTALL
+          ## Install
+
+          Download \`sniper-brain-${TAG}.zip\` below, unzip it, and drop the contents into your \`%cheat_dir%/scripts/\` folder. The bundle overlays cleanly: it contains \`Sniper.lua\` plus the \`lib/\` folder of shared modules.
+
+          After loading, the in-game log shows \`[Sniper] Sniper brain ${TAG} loaded\` near the top.
+
+          ## Compatibility
+
+          Requires the UCZone framework with Stage 2 information enabled. Tested on Dota 2 patch 7.41c.
+          INSTALL
+          } > release-notes.md
+
+          gh release create "${TAG}" \
+            --title "${TAG}" \
+            --notes-file release-notes.md \
+            "sniper-brain-${TAG}.zip"
