@@ -600,6 +600,67 @@ ThreatData.LOTUS_WORTHY_INCOMING = {
 }
 
 ----------------------------------------------------------------------------
+-- CAST_POINT_THREATS — pre-cast-armed threats with sub-second windows
+----------------------------------------------------------------------------
+--
+-- v0.5.39 BUG-3: enemy ults / nukes that have a meaningful cast-point window
+-- during which the brain should ARM (record the threat and the caster's
+-- live cast point) and FIRE the save AT THE END of the cast point (via
+-- SAVE_ETA_TRIGGER on the chain head save), NOT immediately on detection.
+-- Mirrors the v0.5.6/0.5.7 SAVE_ETA_TRIGGER design used for homing close-gap
+-- threats (Bara Charge, Tusk Snowball) but extends it to cast-point ults
+-- whose impact lands at end-of-cast-point rather than via flight-time.
+--
+-- Entry shape:
+--   ability      KV-stable ability name (used to resolve the live cast point
+--                via Ability.GetCastPoint, and as the reverse-lookup key for
+--                anim-path arming - on_hard_disable / on_channel_start).
+--   cp_default   fallback cast point (seconds) when Ability.GetCastPoint is
+--                unavailable. KV-derivation: matches npc_abilities CastPoint.
+--   category     THREAT_CATEGORY-compatible string. Drives the save chain
+--                via Dispatcher:ResolveSaveOrder when the brain arms.
+--   max_dist     proximity gate (DOTA units). If dist(self, caster) exceeds
+--                this at any tick after arming, the entry is GC'd with a
+--                cast_point_threat_abort_dist event. Use a large sentinel
+--                (e.g. 99999) for global-range threats (Sniper Assassinate,
+--                Zeus Thundergod's Wrath, AA Ice Blast).
+--
+-- Roster v0.5.39 (user-approved):
+--   - sniper_assassinate         single-target magical execute, ~2.0s cast
+--   - lion_finger_of_death       single-target nuke, 0.6s cast, 600u range
+--   - lina_laguna_blade          single-target nuke, 0.45s cast, 750u range.
+--                                Hero brains MUST skip self-arming when the
+--                                caster is OUR Lina (mirror artifacts).
+--   - ancient_apparition_ice_blast frost mark + execute, ~0.5s cast, global
+--   - obsidian_destroyer_sanity_eclipse AoE mana-based magic, ~1.7s cast
+--   - tinker_laser               single-target stun + nuke, 0.45s cast
+--   - zuus_thundergods_wrath     global AoE ult, 0.6s effective windup
+--   - doom_bringer_doom          single-target 12s silence. MIGRATED from
+--                                LINA_INSTANT_DISABLE_MODS -> CAST_POINT.
+--                                Doom's cast is INSTANT in-game (0.5s cast
+--                                point but no projectile flight); the brain
+--                                now waits ~0.5s before firing BKB/Lotus so
+--                                the save lands at modifier-impact time
+--                                rather than burning at-cast-start.
+--
+-- Hero brains pull this table into a module-local upvalue and consult it
+-- in OnModifierCreate (catch-all entry) and in their anim subscribers
+-- (anim is the primary entry; OnModifierCreate is fallback). The arm-key
+-- convention is "castpt:<mod>:<caster_idx>" so concurrent casters of the
+-- same ult don't collide.
+---@type table<string, { ability:string, cp_default:number, category:string, max_dist:number }>
+ThreatData.CAST_POINT_THREATS = {
+    modifier_sniper_assassinate                = { ability = "sniper_assassinate",                cp_default = 2.0,  category = "targeted_burst",  max_dist = 99999 },
+    modifier_lion_finger_of_death              = { ability = "lion_finger_of_death",              cp_default = 0.6,  category = "targeted_burst",  max_dist = 600   },
+    modifier_lina_laguna_blade                 = { ability = "lina_laguna_blade",                 cp_default = 0.45, category = "targeted_burst",  max_dist = 750   },
+    modifier_ice_blast                         = { ability = "ancient_apparition_ice_blast",      cp_default = 0.5,  category = "targeted_burst",  max_dist = 99999 },
+    modifier_obsidian_destroyer_sanity_eclipse = { ability = "obsidian_destroyer_sanity_eclipse", cp_default = 1.7,  category = "delayed_aoe",     max_dist = 600   },
+    modifier_tinker_laser                      = { ability = "tinker_laser",                      cp_default = 0.45, category = "targeted_burst",  max_dist = 550   },
+    modifier_zuus_thundergods_wrath            = { ability = "zuus_thundergods_wrath",            cp_default = 0.6,  category = "targeted_burst",  max_dist = 99999 },
+    modifier_doom_bringer_doom                 = { ability = "doom_bringer_doom",                 cp_default = 0.5,  category = "targeted_disable", max_dist = 600  },
+}
+
+----------------------------------------------------------------------------
 -- ENEMY_CHANNEL_MODIFIERS — Layer 1.5 channel-punish / TP-interrupt triggers
 ----------------------------------------------------------------------------
 
