@@ -2159,4 +2159,201 @@ ThreatData.SPELL_DEFLECT_MODIFIERS = {
     modifier_nyx_assassin_spiked_carapace = true,
 }
 
+----------------------------------------------------------------------------
+-- v0.5.40 TIER 0 (A2): canonical-modifier-name resolution
+--
+-- The Dispatcher's per-threat lock domain (lib/defense.lua v0.5.40) keys on
+-- the tuple (target_idx, canonical_mod, caster_idx) per v0.5.14 BL-A5/BL-B7.
+-- An engine threat often ships SIBLING modifiers that name the same threat
+-- instance (Bara Charge applies both modifier_spirit_breaker_charge_of_darkness
+-- on the caster AND modifier_spirit_breaker_charge_of_darkness_vision /
+-- _target on the victim; Tusk Snowball stamps _movement on the carrier AND
+-- _target on the victim; PA Phantom Strike stamps _target on the victim while
+-- the catalog keys on _target itself). Two different sibling names landing
+-- within the lock window for the SAME engagement must hash to the SAME lock
+-- key, or the second sibling silently bypasses the lock and double-fires.
+--
+-- v0.5.39 demo failure modes that motivated this:
+--   (1) Bara Charge double-fire (WW via on_gap_close anim hits with the bare
+--       canonical name, Pike via armed_threats_tick homing branch hits with
+--       _vision). With sibling-collapse both route through the same
+--       (target_idx, modifier_spirit_breaker_charge_of_darkness, caster_idx)
+--       lock; the second arm sees dispatcher_lock_skip.
+--   (2) Sniper Assassinate second-save: the lotus_pending:* slot and the
+--       castpt:* slot in armed_threats_tick reference the same engagement; if
+--       a sibling spelling ever leaked the locks would diverge.
+--
+-- Canonical names match the existing CATALOG KEYS (LINA_SAVE_OVERRIDES,
+-- CAST_POINT_THREATS, THREATS_ON_SELF, RECOMMENDED_SAVES). Aliases are the
+-- sibling modifiers that should fold INTO the catalog key for lock-domain
+-- purposes. The catalog keys themselves are identity entries (covered by the
+-- nil-fallback in CanonicalMod -- no need to enumerate them).
+--
+-- Source-of-truth markers in comments:
+--   vpk     -- confirmed via grep against pak01_*.vpk
+--   audit   -- LINA_DEFER_TO_ARMED (Lina.lua L728-741) or other in-tree usage
+--   manual  -- known-pair from threat catalog ownership, no separate VPK hit
+----------------------------------------------------------------------------
+
+---@type table<string, string>
+ThreatData.CANONICAL_MOD_ALIASES = {
+    -- Spirit Breaker Charge of Darkness. Canonical = the bare name (matches
+    -- LINA_SAVE_OVERRIDES key and ABILITY_TO_THREAT value).
+    -- vpk: pak01_009 ships modifier_spirit_breaker_charge_of_darkness,
+    --      _debuff, _target as engine-visible names.
+    -- audit: Lina.lua LINA_DEFER_TO_ARMED L730 maps _vision -> "bara_charge",
+    --        confirming _vision is a real victim-side sibling the brain sees.
+    modifier_spirit_breaker_charge_of_darkness_vision = "modifier_spirit_breaker_charge_of_darkness",  -- audit
+    modifier_spirit_breaker_charge_of_darkness_target = "modifier_spirit_breaker_charge_of_darkness",  -- vpk
+    modifier_spirit_breaker_charge_of_darkness_debuff = "modifier_spirit_breaker_charge_of_darkness",  -- vpk
+
+    -- Tusk Snowball. Canonical = _movement (LINA_SAVE_OVERRIDES key,
+    -- ABILITY_TO_THREAT value, RECOMMENDED_SAVES key). _target is the
+    -- victim-side root-on-impact debuff; _movement_friendly is the carried-ally
+    -- variant (Lina-as-ally; lock-domain irrelevant but folded for safety).
+    -- audit: Lina.lua LINA_DEFER_TO_ARMED L729 maps _target -> "tusk_snowball".
+    -- vpk: pak01_009 ships _movement_friendly. Canonical _movement itself is
+    -- field-validated (THREATS_ON_SELF, ABILITY_TO_THREAT) rather than direct
+    -- VPK-grep-validated; engine-vs-VPK distinction documented per verifier.
+    modifier_tusk_snowball_target              = "modifier_tusk_snowball_movement",  -- audit
+    modifier_tusk_snowball                     = "modifier_tusk_snowball_movement",  -- manual (bare-name guard)
+    modifier_tusk_snowball_movement_friendly   = "modifier_tusk_snowball_movement",  -- vpk
+
+    -- PA Phantom Strike. Canonical = _target (catalog key, anim-stamp target).
+    -- audit: Lina.lua LINA_DEFER_TO_ARMED L740 maps _target -> instant_blink arm,
+    -- confirming _target IS the canonical the brain reasons in.
+    -- The bare modifier_phantom_assassin_phantom_strike does NOT exist as a
+    -- separate engine modifier (pak01 grep returns only the aghsfort variant);
+    -- entry kept as defensive guard for any future engine rename.
+    modifier_phantom_assassin_phantom_strike   = "modifier_phantom_assassin_phantom_strike_target",  -- manual
+
+    -- Pudge Dismember. Canonical = _pull (LINA_SAVE_OVERRIDES key, the pull
+    -- component is what the brain saves against). The legacy bare-name folder
+    -- earlier in this file (the `for _, t in pairs(ThreatData)` loop targeting
+    -- modifier_pudge_dismember_pull at L2144) handles catalog mirroring; here
+    -- we collapse the lock-domain side too.
+    -- vpk: pak01 ships modifier_pudge_dismember (bare) and _pull.
+    modifier_pudge_dismember                   = "modifier_pudge_dismember_pull",    -- vpk
+
+    -- Bane Fiends Grip. Canonical = bare. VPK sweep (pak01_009) finds the
+    -- bare canonical; no _cast_illusion sibling reproducible in the current
+    -- build. No fold today; add here with a 'manual' marker if the engine
+    -- grows an illusion-side stamp.
+
+    -- Legion Commander Duel. Canonical = bare. _damage_boost is the post-duel
+    -- winner stamp (caster-side); only present here so an accidental brain-side
+    -- detector folds correctly.
+    -- vpk: pak01_009 ships _damage_boost.
+    modifier_legion_commander_duel_damage_boost = "modifier_legion_commander_duel",  -- vpk
+
+    -- Earthshaker Fissure (modifier_earthshaker_fissure_stun +
+    -- modifier_fissure_rooted, both ship in pak01_009): NOT a Lina-defended
+    -- threat today (no THREATS_ON_SELF entry, no RECOMMENDED_SAVES chain).
+    -- An alias-only pairing would strand the lock_key; catalog the canonical
+    -- first, then re-add the _rooted alias here.
+
+    -- Magnataur Skewer. Canonical = _impact (the impact stun). _slow is the
+    -- separate post-impact slow that the brain treats independently in
+    -- RECOMMENDED_SAVES; we do NOT alias _slow -> _impact (different threats,
+    -- different save preferences). Documenting the deliberate omission here so
+    -- a future contributor doesn't fold them by mistake.
+    -- (no entry: _impact and _slow are siblings of the SAME ability but distinct
+    -- threats in the catalog; the dispatcher's caster_idx in the lock tuple is
+    -- enough to keep them from racing.)
+
+    -- Lion Finger of Death. Canonical = bare (CAST_POINT_THREATS key).
+    -- vpk: pak01_009 ships _delay and _kill_counter siblings.
+    modifier_lion_finger_of_death_delay        = "modifier_lion_finger_of_death",    -- vpk
+    modifier_lion_finger_of_death_kill_counter = "modifier_lion_finger_of_death",    -- vpk
+
+    -- Tinker Laser. Canonical = bare (CAST_POINT_THREATS key). _blind is the
+    -- miss-chance debuff sibling.
+    -- vpk: pak01_009 ships _blind.
+    modifier_tinker_laser_blind                = "modifier_tinker_laser",            -- vpk
+
+    -- OD Sanity Eclipse. Canonical = bare (CAST_POINT_THREATS key).
+    -- vpk: pak01_009 ships _charge (caster-side mana-charge stack).
+    modifier_obsidian_destroyer_sanity_eclipse_charge = "modifier_obsidian_destroyer_sanity_eclipse",  -- vpk
+
+    -- Doom. Canonical = modifier_doom_bringer_doom (CAST_POINT_THREATS key).
+    -- VPK sweep (pak01_009) found only the bare canonical; no _aura_enemy /
+    -- _aura_self siblings reproducible in the current build. No fold today;
+    -- add here with a 'manual' marker if a future engine version introduces
+    -- a victim-side aura modifier the brain detects.
+
+    -- Disruptor Static Storm. Canonical = _thinker (the channel-on-thinker
+    -- mod; THREATS_ON_SELF + ENEMY_CHANNEL_MODIFIERS key). The bare name lives
+    -- on the victim during the channel; fold so a victim-side detector also
+    -- routes to the thinker-keyed lock.
+    -- audit: lib/threat_data.lua ENEMY_CHANNEL_MODIFIERS keys on _thinker; the
+    --        bare name is a real engine sibling per pak01_009 grep.
+    modifier_disruptor_static_storm            = "modifier_disruptor_static_storm_thinker",  -- vpk
+}
+
+----------------------------------------------------------------------------
+-- ThreatData.CanonicalMod(mod_name) -- alias-fold a modifier name to its
+-- canonical lock-domain key.
+--
+-- Signature:
+--   (mod_name: string|nil) -> string|nil
+--
+-- Semantics:
+--   - nil / empty / non-string -> nil (caller must treat as "unresolvable";
+--     defense.lua falls through to the v0.5.39 unlocked path on nil).
+--   - alias in CANONICAL_MOD_ALIASES -> the canonical string.
+--   - everything else -> identity (already canonical OR uncatalogued; the
+--     dispatcher will tlog 'eta_resolver_fallback' on uncatalogued mods so
+--     they get added to CANONICAL_MOD_ALIASES on the next iteration).
+--
+-- Pure: no side-effects, table lookups only.
+--
+-- Caller contract (lib/defense.lua Dispatcher:_LockKey):
+--   local canon = c.TD.CanonicalMod(threat_mod)
+--   if not canon then return nil end   -- unlocked path
+--   return string.format('%d:%s:%d', target_idx, canon, caster_idx)
+----------------------------------------------------------------------------
+function ThreatData.CanonicalMod(mod_name)
+    if type(mod_name) ~= "string" or mod_name == "" then
+        return nil
+    end
+    local canon = ThreatData.CANONICAL_MOD_ALIASES[mod_name]
+    if canon then
+        return canon
+    end
+    return mod_name
+end
+
+-- Exported alias under the longer name used in the audit doc. Both names
+-- resolve to the same function so Lina.lua / lib/defense.lua can pick whichever
+-- reads better at call site without an extra indirection.
+ThreatData.CanonicalizeThreatMod = ThreatData.CanonicalMod
+-- Third alias under the bare 'Canonicalize' spelling: zero-cost defensive
+-- shim so any future doc / call site that references the shorter name finds
+-- the same closure (v0.5.40 verifier optional finding).
+ThreatData.Canonicalize          = ThreatData.CanonicalMod
+
+----------------------------------------------------------------------------
+-- ThreatData.AbilityToCanonical(ability_name) -- compose ABILITY_TO_THREAT
+-- with CanonicalMod. Used by lib/defense.lua when the anim-path fires before
+-- any modifier is on the victim (line projectiles: hook, arrow, storm bolt)
+-- and the lock_key must be derived from the ability name alone.
+--
+-- Signature:
+--   (ability_name: string|nil) -> string|nil
+--
+-- Returns the canonical modifier name the ability stamps, or nil if the
+-- ability is unmapped / its threat_modifier is nil (mobility-only abilities
+-- like queenofpain_blink that map to nil in ABILITY_TO_THREAT).
+----------------------------------------------------------------------------
+function ThreatData.AbilityToCanonical(ability_name)
+    if type(ability_name) ~= "string" or ability_name == "" then
+        return nil
+    end
+    local mod = ThreatData.ABILITY_TO_THREAT[ability_name]
+    if not mod then
+        return nil
+    end
+    return ThreatData.CanonicalMod(mod)
+end
+
 return ThreatData
