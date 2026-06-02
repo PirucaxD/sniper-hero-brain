@@ -20,10 +20,16 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with tag metadata)
+      - name: Checkout (full history for tag annotation access)
         uses: actions/checkout@v4
         with:
-          fetch-tags: true
+          # fetch-depth: 0 is required for `git for-each-ref` to read the
+          # tag annotation message. fetch-tags: true alone collides with
+          # the tag-push trigger ("Cannot fetch both <sha> and refs/tags/X
+          # to refs/tags/X"), since the action fetches the commit SHA AND
+          # the tag ref to the same local path. Full history sidesteps
+          # the collision and the repo is small.
+          fetch-depth: 0
 
       - name: Build deploy zip
         run: |
