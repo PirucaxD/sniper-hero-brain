@@ -90,6 +90,14 @@ local LOCK_TTL_FLOOR_S           = 0.4
 ---    cfg.ability_handle     fun(ability_name:string|nil):any|nil
 ---        Optional. Returns the engine ability handle for an ability_name so
 ---        resolvers can read GetCastPoint / GetChannelTime live. nil-tolerant.
+---    cfg.post_pick_filter   fun(picked:table, ctx:table|nil, threat_mod:string|nil, authoritative:boolean):table?, boolean?
+---        v0.5.41 GAP-3-GENERIC. Optional chain-rewrite hook called by
+---        ResolveSaveOrder after chain resolution, before returning. Receives
+---        the resolved (picked, ctx, threat_mod, authoritative); may return a
+---        new (picked, authoritative) tuple to substitute. Return nil for
+---        picked to keep the resolved chain. Lib applies new_auth only when
+---        non-nil so a hook returning just a new chain preserves the
+---        original authoritative flag. nil hook = passthrough.
 ---@return table dispatcher
 function Defense.New(cfg)
     local self = setmetatable({ cfg = cfg }, Dispatcher)
@@ -110,11 +118,13 @@ end
 ---Resolve the effective save chain for a (threat_mod, category_hint,
 ---ability_name) tuple. Returns (chain, is_authoritative); authoritative
 ---chains bypass the kind/tether filters during the walk.
----v0.5.40 GAP-3: optional ctx table lets the hero pass live context that
----influences chain ordering. Currently consumed:
----  ctx.fs_shard_window (boolean): when truthy, demote 'lina_flame_cloak' to
----    the tail of the resolved chain so a shard-window save sequence doesn't
----    spend FC before BKB/Manta/Eul. Hero populates from FS shard tracker.
+---v0.5.40 GAP-3 / v0.5.41 GAP-3-GENERIC: optional ctx table lets the hero
+---pass live context that influences chain ordering. ctx is forwarded to
+---cfg.post_pick_filter (when registered) so the hero decides what keys it
+---cares about. The lib treats ctx as opaque. Behavior-neutral when the hook
+---is nil or returns nil. Lina's registration consumes ctx.fs_shard_window
+---to demote 'lina_flame_cloak' to chain tail during the 5s post-R Aghs
+---Shard window; see Lina/Lina.lua Defense.New cfg.post_pick_filter.
 ---@param threat_mod string|nil
 ---@param category_hint string|nil
 ---@param ability_name string|nil
@@ -177,27 +187,19 @@ function Dispatcher:ResolveSaveOrder(threat_mod, category_hint, ability_name, ct
         picked, authoritative = c.default_chain, false
     end
 
-    -- v0.5.40 GAP-3: FC chain demotion under shard window. When the hero
-    -- signals an active fs_shard_window via ctx.fs_shard_window, push
-    -- 'lina_flame_cloak' to the chain tail so a shard-amped FS spend is not
-    -- pre-empted by a FC burn. Builds a NEW chain table to keep the cfg
-    -- override / category / default tables untouched (those are module-local
-    -- in the hero file; mutating them would leak across calls).
-    if ctx and ctx.fs_shard_window and picked then
-        local has_fc = false
-        for i = 1, #picked do
-            if picked[i] == "lina_flame_cloak" then has_fc = true break end
-        end
-        if has_fc then
-            local demoted = {}
-            for i = 1, #picked do
-                if picked[i] ~= "lina_flame_cloak" then
-                    demoted[#demoted + 1] = picked[i]
-                end
-            end
-            demoted[#demoted + 1] = "lina_flame_cloak"
-            c.tlog(3, "resolve_save_order_fc_demote", { mod = threat_mod, head = demoted[1] or "-", reason = "fs_shard_window" })
-            return demoted, authoritative
+    -- v0.5.41 GAP-3-GENERIC: hero-supplied chain-rewrite hook. Replaces the
+    -- v0.5.40 hardcoded lina_flame_cloak demotion that used to live here.
+    -- Hero registers cfg.post_pick_filter(picked, ctx, threat_mod,
+    -- authoritative) -> (picked, authoritative); nil hook returns chain
+    -- as-is (behavior-neutral). Lina's registration replicates the v0.5.40
+    -- FC demotion under fs_shard_window; other heroes can reorder chains
+    -- on live ctx without editing the lib. Builds a NEW chain table inside
+    -- the hook so cfg override / category / default tables stay untouched.
+    if c.post_pick_filter then
+        local new_picked, new_auth = c.post_pick_filter(picked, ctx, threat_mod, authoritative)
+        if new_picked then
+            picked = new_picked
+            if new_auth ~= nil then authoritative = new_auth end
         end
     end
 
