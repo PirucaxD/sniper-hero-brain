@@ -90,6 +90,15 @@ function Dedup.threat_already_responded(tbl, caster, mod_name)
     return false
 end
 
+---Most-recent threat-mark timestamp across ALL consumers of this module.
+---Updated inside threat_mark_responded; exposed via Dedup.last_mark_t() so
+---hot-path callers can ask "was ANY threat marked in the last N seconds?"
+---in O(1) instead of iterating their responded_threats table every tick.
+---Per-hero state is unaffected, this scalar piggybacks on the existing
+---mark write site and is only useful as a recency floor; consumers that
+---need per-caster/per-mod fidelity continue to call threat_already_responded.
+local _last_mark_t = nil
+
 ---Mark a threat instance as responded. Call AFTER taking the save action
 ---so future observations of the same threat dedupe.
 ---@param tbl table caller-owned dedup table
@@ -99,7 +108,21 @@ function Dedup.threat_mark_responded(tbl, caster, mod_name)
     if not tbl then return end
     local key = threat_key(caster, mod_name)
     if not key then return end
-    tbl[key] = GlobalVars.GetCurTime()
+    local t = GlobalVars.GetCurTime()
+    tbl[key] = t
+    -- v0.5.37 PERF-06: stamp the global most-recent-mark scalar so consumers
+    -- (e.g. Lina ww_recent_threat) can do an O(1) recency query without
+    -- iterating the caller's responded_threats table on every tick.
+    _last_mark_t = t
+end
+
+---Returns the timestamp of the most-recent threat mark across ALL consumers
+---of this module, or nil if no mark has ever been recorded this session.
+---Stable, O(1). Used by hot-path "was anything marked recently?" gates that
+---would otherwise iterate a multi-entry dedup table every frame.
+---@return number|nil
+function Dedup.last_mark_t()
+    return _last_mark_t
 end
 
 ---Clear a threat instance's responded mark, so the NEXT observation of the
