@@ -47,8 +47,19 @@ jobs:
           set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
 
-          # Annotated tag message (empty for lightweight tags).
-          MSG="$(git for-each-ref "refs/tags/${TAG}" --format='%(contents)' | sed -e '/^-----BEGIN PGP SIGNATURE-----/,$d')"
+          # Annotated tag message via the GitHub API. actions/checkout fetches
+          # tag refs as lightweight pointers by default, so `git for-each-ref`
+          # would return the underlying commit message instead of the tag
+          # annotation. The API always returns the real annotation regardless
+          # of how the local clone was set up. Lightweight tags surface as
+          # object.type=commit and MSG stays empty (the install footer alone
+          # becomes the body).
+          OBJ_TYPE=$(gh api "repos/${GITHUB_REPOSITORY}/git/refs/tags/${TAG}" --jq '.object.type')
+          OBJ_SHA=$(gh api "repos/${GITHUB_REPOSITORY}/git/refs/tags/${TAG}" --jq '.object.sha')
+          MSG=""
+          if [ "${OBJ_TYPE}" = "tag" ]; then
+            MSG=$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${OBJ_SHA}" --jq '.message')
+          fi
 
           # Compose release body: tag message header + install footer.
           {
