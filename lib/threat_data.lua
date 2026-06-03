@@ -1361,13 +1361,23 @@ ThreatData.THREAT_ARRIVAL_TIMING = {
     -- modified value (typically 500-700 with phase boots + level + talents,
     -- up to ~1100 max). speed_fallback=1000 for the case where the live
     -- read fails. impact_pos=self because Bara STOPS at the target on hit.
+    -- acceleration_buffer=200 (v0.5.49.2): Bara CONTINUES to accelerate
+    -- during the W prep window (~220 u/s^2 observed in demo logs); live
+    -- NPC.GetMoveSpeed at fire moment is current speed, NOT the average
+    -- during the next 1.12s. Without buffer, catalog impact_t = d/live
+    -- underestimates Bara's progress -> real arrival lands BEFORE W
+    -- detonation -> charge stun on Lina then W stuns Bara (post-impact,
+    -- not pre-impact per user spec). Buffer adds +200 to the speed used
+    -- by the impact_t calculation so W fires further out, giving the
+    -- acceleration time to ramp without overtaking the W detonation.
     modifier_spirit_breaker_charge_of_darkness = {
-        kind            = "homing_charge",
-        speed_source    = "live_or_fallback",
-        speed_fallback  = 1000,
-        cast_point      = 0,
-        post_cast_delay = 0,
-        impact_pos      = "self",
+        kind                 = "homing_charge",
+        speed_source         = "live_or_fallback",
+        speed_fallback       = 1000,
+        acceleration_buffer  = 200,
+        cast_point           = 0,
+        post_cast_delay      = 0,
+        impact_pos           = "self",
     },
 
     -- Tusk Snowball: homing carry. The snowball is a separate entity that
