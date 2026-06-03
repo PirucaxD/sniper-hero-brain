@@ -1312,6 +1312,154 @@ function ThreatData.CategoryChain(category)
     return ThreatData.CATEGORY_CHAINS[category]
 end
 
+---v0.5.48 Phase 2: per-threat arrival-timing catalog. Data-only entries
+---giving the inputs needed to compute "when does this threat actually
+---hit the target" precisely. Hero-side code combines an entry with the
+---live caster/target positions + (optionally) KV reads to derive
+---impact_t and impact_pos. Used by Lina W .fire for precise pre-fire
+---timing (W has 1.12s prep so it needs accurate impact_t to land at
+---arrival). Future Sniper opt-in via the same catalog.
+---
+---Entry fields:
+---  - kind            : descriptive tag (homing_charge / homing_carry /
+---                      instant_blink / channel_at_caster /
+---                      cast_point_targeted). Informational; not consumed
+---                      by the compute helper.
+---  - speed_source    : how to derive travel speed.
+---      'live_or_fallback' = max(NPC.GetMoveSpeed(caster), speed_fallback)
+---      'kv_or_fallback'   = read KV (kv_ability + kv_speed_key) else
+---                           speed_fallback
+---      'instant'          = no travel time (cast point + post-cast delay
+---                           only)
+---  - speed_fallback  : numeric u/s used when live/KV unavailable.
+---  - kv_ability      : KV ability name (e.g. 'tusk_snowball') for KV
+---                      lookups. Modifier.GetAbility(mod_handle) provides
+---                      the live ability handle.
+---  - kv_speed_key    : KV special value key for travel speed.
+---  - cast_point      : seconds before the threat physically lands after
+---                      the modifier-create event. For blinks / charges
+---                      this is 0 (modifier IS the impact arming). For
+---                      cast-point-armed threats (Lion Finger, Sniper
+---                      Assassinate) this is the cast point duration.
+---  - post_cast_delay : seconds AFTER cast point during which the threat
+---                      lands. Most threats are 0; some have a baked-in
+---                      delay between cast finish and impact.
+---  - impact_pos      : 'self' (defender's current position) or 'caster'
+---                      (threat caster's current position). Determines
+---                      where defensive AoE saves should be aimed.
+---
+---Compute helper (hero-side):
+---```lua
+---local impact_t, impact_pos = state.compute_arrival_time(
+---    threat_mod, caster, self_npc, modifier_handle)
+---if impact_t and impact_t <= W_PREP + slack then fire_W_now() end
+---```
+ThreatData.THREAT_ARRIVAL_TIMING = {
+
+    -- Bara Charge of Darkness: homing close-gap. Bara's MS during charge
+    -- reflects the modifier's MS boost; NPC.GetMoveSpeed returns the live
+    -- modified value (typically 500-700 with phase boots + level + talents,
+    -- up to ~1100 max). speed_fallback=1000 for the case where the live
+    -- read fails. impact_pos=self because Bara STOPS at the target on hit.
+    modifier_spirit_breaker_charge_of_darkness = {
+        kind            = "homing_charge",
+        speed_source    = "live_or_fallback",
+        speed_fallback  = 1000,
+        cast_point      = 0,
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+
+    -- Tusk Snowball: homing carry. The snowball is a separate entity that
+    -- travels at a fixed KV speed; Tusk's hero MS (NPC.GetMoveSpeed = ~310
+    -- during snowball) does NOT reflect the snowball's travel speed.
+    -- Canonical KV: tusk_snowball.snowball_movement_speed = 1675 (per
+    -- liquipedia + KV). speed_fallback=1675 used if KV unavailable.
+    -- impact_pos=self because the snowball PICKS UP the target at the
+    -- target's position (does not deposit them past).
+    modifier_tusk_snowball_movement = {
+        kind            = "homing_carry",
+        speed_source    = "kv_or_fallback",
+        kv_ability      = "tusk_snowball",
+        kv_speed_key    = "snowball_movement_speed",
+        speed_fallback  = 1675,
+        cast_point      = 0,
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+
+    -- PA Phantom Strike: instant blink to target. The cast point ~0.25s
+    -- is the animation lock before the blink resolves; the impact (PA at
+    -- target) is effectively at modifier-create. impact_pos=self because
+    -- PA blinks ONTO the target and stays at melee.
+    modifier_phantom_assassin_phantom_strike_target = {
+        kind            = "instant_blink",
+        speed_source    = "instant",
+        speed_fallback  = 0,
+        cast_point      = 0,  -- modifier appears post-blink; treat as instant
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+
+    -- WD Death Ward: channel at caster. 8s channel; the ward auto-attacks
+    -- the target with magical damage but WD himself is stationary at his
+    -- summoning position. Interrupting WD (stun) ends the channel. impact
+    -- _pos=caster so the defensive W AoE is aimed at WD to stun him mid-
+    -- channel. cast_point=0.5s (WD's Death Ward summon cast point).
+    modifier_witch_doctor_death_ward = {
+        kind            = "channel_at_caster",
+        speed_source    = "instant",
+        speed_fallback  = 0,
+        cast_point      = 0.5,
+        post_cast_delay = 0,
+        impact_pos      = "caster",
+    },
+
+    -- Lion Finger of Death: cast-point-targeted single-target nuke. Cast
+    -- point 0.6s (per KV / liquipedia). impact_pos=self because the
+    -- damage resolves on the target.
+    modifier_lion_finger_of_death = {
+        kind            = "cast_point_targeted",
+        speed_source    = "instant",
+        speed_fallback  = 0,
+        kv_ability      = "lion_finger_of_death",
+        kv_cast_point_key = "AbilityCastPoint",
+        cast_point      = 0.6,
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+
+    -- Sniper Assassinate: cast-point-targeted ult. Cast point 2.0s (per
+    -- v0.5.39 BUG-3 catalog). The 2.0s is interruptible via stun on
+    -- Sniper. impact_pos=self for the damage application; defensive
+    -- saves that interrupt the cast should target Sniper instead (handled
+    -- separately by the existing Lotus / BKB / Aeon chain front).
+    modifier_sniper_assassinate = {
+        kind            = "cast_point_targeted",
+        speed_source    = "instant",
+        speed_fallback  = 0,
+        kv_ability      = "sniper_assassinate",
+        kv_cast_point_key = "AbilityCastPoint",
+        cast_point      = 2.0,
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+
+    -- Lina Laguna Blade: cast-point-targeted ult mirror to Sniper Assassinate.
+    -- Cast point 0.45s (per liquipedia / KV). For Lina defending against
+    -- ENEMY Lina mirror matchups. impact_pos=self.
+    modifier_lina_laguna_blade = {
+        kind            = "cast_point_targeted",
+        speed_source    = "instant",
+        speed_fallback  = 0,
+        kv_ability      = "lina_laguna_blade",
+        kv_cast_point_key = "AbilityCastPoint",
+        cast_point      = 0.45,
+        post_cast_delay = 0,
+        impact_pos      = "self",
+    },
+}
+
 ----------------------------------------------------------------------------
 -- THREAT_TIMING — when to fire the save relative to the threat
 ----------------------------------------------------------------------------
