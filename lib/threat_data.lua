@@ -1361,21 +1361,41 @@ ThreatData.THREAT_ARRIVAL_TIMING = {
     -- modified value (typically 500-700 with phase boots + level + talents,
     -- up to ~1100 max). speed_fallback=1000 for the case where the live
     -- read fails. impact_pos=self because Bara STOPS at the target on hit.
-    -- acceleration_buffer (v0.5.49.2: 200; v0.5.49.3 tuned to 100):
-    -- Bara CONTINUES to accelerate during the W prep window (~220 u/s^2
-    -- observed in demo logs); live NPC.GetMoveSpeed at fire moment is
-    -- current speed, NOT the average during the next 1.12s. Without
-    -- buffer, catalog impact_t = d/live underestimates Bara's progress
-    -- -> real arrival lands BEFORE W detonation -> charge stun on Lina
-    -- then W stuns Bara (post-impact). Buffer inflates the speed used
-    -- by the impact_t calculation so W fires further out. v0.5.49.2's
-    -- +200 over-corrected (W fires too early per user demo); v0.5.49.3
-    -- tuned to +100 = half the original buffer.
+    -- v0.5.50: ramp model from Liquipedia (replaces v0.5.49.x flat
+    -- acceleration_buffer). Bara Charge of Darkness:
+    --   Min MS bonus: 68.75 / 81.25 / 93.75 / 106.25 per skill level
+    --   Max MS bonus: 275 / 325 / 375 / 425 per skill level
+    --   Wind-up: 1.5s linear ramp from min to max
+    --   Status: flat MS bonus (ramping) + removed MS cap + no unit collision
+    --
+    -- NPC.GetMoveSpeed at fire moment reflects the CURRENT ramped speed
+    -- (base_MS + min_bonus + ramp_fraction * (max_bonus - min_bonus)).
+    -- Catalog impact_t = d / live_speed underestimates Bara's progress
+    -- because Bara CONTINUES to ramp during W's 1.12s prep window.
+    --
+    -- Ramp acceleration per level (max - min) / wind_up:
+    --   lvl 1: (275 - 68.75) / 1.5  = 137 u/s^2
+    --   lvl 2: (325 - 81.25) / 1.5  = 163 u/s^2
+    --   lvl 3: (375 - 93.75) / 1.5  = 188 u/s^2
+    --   lvl 4: (425 - 106.25) / 1.5 = 213 u/s^2  (catalog default)
+    --
+    -- compute_arrival_time computes:
+    --   predicted_end_speed = min(peak_speed_cap, live + ramp_accel * W_LEAD)
+    --   avg_during_prep     = (live + predicted_end_speed) / 2
+    -- Handles BOTH early-charge (still ramping) and late-charge (already
+    -- at peak; peak_speed_cap clamps the over-extrapolation) cases.
+    --
+    -- peak_speed_cap = 800 covers Bara at lvl 4 (715 base+max) + Phase
+    -- Boots (+50) + level 15 charge talent (+60 bonus = max 485 instead
+    -- of 425, peak ~775). Caps higher edge cases without overshooting.
+    -- Per-level KV reads (lvl-aware accel + cap) queued for v0.5.50.1
+    -- once modifier_handle threading from armed_threats lands.
     modifier_spirit_breaker_charge_of_darkness = {
         kind                 = "homing_charge",
-        speed_source         = "live_or_fallback",
-        speed_fallback       = 1000,
-        acceleration_buffer  = 100,
+        speed_source         = "live_with_ramp",
+        speed_fallback       = 700,   -- if NPC.GetMoveSpeed fails
+        ramp_accel           = 213,   -- u/s^2 (lvl 4 default)
+        peak_speed_cap       = 800,   -- absolute speed ceiling for the ramp
         cast_point           = 0,
         post_cast_delay      = 0,
         impact_pos           = "self",
