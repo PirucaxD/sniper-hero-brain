@@ -54,6 +54,10 @@ GlobalVars.GetCurTime = function() return 0 end
 Enum = Enum or {}
 Enum.ModifierState = setmetatable({}, { __index = function(_, k) return k end })
 
+-- v0.5.82: Vector stub for lib/farm pure-geometry tests. farm only reads
+-- .x / .y and constructs Vector(x, y, z) for aim points; no Vector methods.
+Vector = Vector or function(x, y, z) return { x = x, y = y, z = z } end
+
 -- Patch package.path so requires from lib/ resolve.
 package.path = "./?.lua;./?/init.lua;" .. package.path
 
@@ -160,6 +164,89 @@ describe("lib/timing — EscapeReadiness", function()
     it("returns 0 for entity without items", function()
         local r = Timing.EscapeReadiness({ idx = 1 }, 2.0)
         assert_eq(r, 0)
+    end)
+end)
+
+local Farm = require("lib.farm")
+
+describe("lib/farm , pure geometry (v0.5.82)", function()
+    local function u(x, y, hp) return { pos = { x = x, y = y, z = 0 }, hp = hp or 100 } end
+    local origin = { x = 0, y = 0, z = 0 }
+
+    it("WorthCasting respects min_count", function()
+        assert_true(Farm.WorthCasting(3, 3))
+        assert_false(Farm.WorthCasting(2, 3))
+        assert_true(Farm.WorthCasting(1))
+        assert_false(Farm.WorthCasting(0, 1))
+    end)
+
+    it("CountInLine counts units inside the line band", function()
+        local units = { u(100, 0), u(500, 50), u(500, 300), u(-100, 0), u(1200, 0) }
+        local n = Farm.CountInLine(origin, { x = 1, y = 0, z = 0 }, 1000, 100, units)
+        assert_eq(n, 2, "expected 2 in-line")
+    end)
+
+    it("BestLineAim picks the densest direction", function()
+        local units = { u(200, 0), u(400, 0), u(600, 0), u(0, 400) }
+        local aim, hit = Farm.BestLineAim(origin, units, 1075, 110)
+        assert_eq(hit, 3, "expected 3 hits on the +x line")
+        assert_true(aim ~= nil and aim.x > aim.y, "aim should point +x")
+    end)
+
+    it("BestLineAim tie-break prefers the closer pack (v0.5.81)", function()
+        local near = u(300, 0, 100)
+        local far  = u(0, 900, 100)
+        local aim, hit = Farm.BestLineAim(origin, { far, near }, 1075, 110)
+        assert_eq(hit, 1)
+        assert_true(aim.x > aim.y, "tie-break should favor the nearer (+x) unit")
+    end)
+
+    it("BestPointAim finds the densest cluster center", function()
+        local units = { u(0, 0), u(50, 0), u(60, 30), u(1000, 1000) }
+        local center, hit = Farm.BestPointAim(units, 250)
+        assert_eq(hit, 3, "cluster of 3 within 250")
+        assert_true(center ~= nil)
+    end)
+
+    it("empty / degenerate inputs are safe", function()
+        local aim, h1 = Farm.BestLineAim(origin, {}, 1000, 100)
+        assert_true(aim == nil and h1 == 0)
+        local c, h2 = Farm.BestPointAim({}, 250)
+        assert_true(c == nil and h2 == 0)
+    end)
+end)
+
+describe("lib/escape - BlinkInLanding", function()
+    Vector = Vector or function(x, y, z) return { x = x, y = y, z = z } end
+    Heroes = Heroes or {}
+    Heroes.GetAll = function() return {} end
+    Heroes.InRadius = function() return {} end
+    -- Entity.GetTeamNum is called by FogSnapshot; stub so it returns a team
+    -- number without erroring. Heroes.GetAll returns {} so no enemy loop runs.
+    Entity.GetTeamNum = Entity.GetTeamNum or function() return 2 end
+    local Escape = require("lib.escape")
+    local me = { pos = { x = 0, y = 0, z = 0 } }
+
+    it("lands at the near edge of engage range, reachable, within blink range", function()
+        local aim = { x = 1000, y = 0, z = 0 }
+        local landing, risk, reachable = Escape.BlinkInLanding(me, aim, 1200, 700, { margin = 50 })
+        assert_true(reachable, "should be reachable")
+        assert_true(type(risk) == "number", "risk is a number")
+        assert_true(math.abs(landing.x - 350) < 1, "landing.x near 350, got " .. tostring(landing.x))
+        assert_true(landing.x <= 1200, "within blink range")
+    end)
+
+    it("target beyond blink+engage reach -> not reachable", function()
+        local aim = { x = 3000, y = 0, z = 0 }
+        local landing, _, reachable = Escape.BlinkInLanding(me, aim, 1200, 700, {})
+        assert_false(reachable, "should NOT be reachable")
+        assert_true(math.abs(landing.x - 1200) < 1, "lands at max blink reach 1200")
+    end)
+
+    it("nil args -> nil landing, not reachable", function()
+        local landing, _, reachable = Escape.BlinkInLanding(me, nil, 1200, 700, {})
+        assert_true(landing == nil, "nil landing")
+        assert_false(reachable, "not reachable")
     end)
 end)
 
