@@ -58,6 +58,7 @@
 ---v0.5.75.
 
 local Target = require("lib.target")
+local Vision = require("lib.vision")   -- v0.1.354: the last-seen source; see the note in FogSnapshot
 
 local UO = Enum.UnitOrder
 
@@ -239,14 +240,21 @@ end
 ---@param push_distance number how far the save moves the defender
 ---@return userdata|nil escape_dir
 ---@return userdata|nil landing
-function Escape.ComputeSafeDest(me, threat_caster, push_distance)
+function Escape.ComputeSafeDest(me, threat_caster, push_distance, threat_pos)
     if not me or not push_distance then return nil, nil end
     local me_pos = Entity.GetAbsOrigin(me)
     if not me_pos then return nil, nil end
     local toward
-    local cp = threat_caster and Entity.IsEntity(threat_caster)
-               and Target.IsAlive(threat_caster)
-               and Entity.GetAbsOrigin(threat_caster) or nil
+    -- v0.5.130: threat_pos (optional Vector) is a PREDICTED threat position the
+    -- hero supplies (state.predict_target_pos / smoothed velocity) so the escape
+    -- pushes away from where a moving/charging threat is HEADING, not where it
+    -- currently is -- else "away from a unit charging at me" points along its
+    -- charge = TOWARD where it lands (the v0.5.129 WW lesson, generalised). A
+    -- stationary threat predicts ~its current pos so this is a no-op for it.
+    -- nil threat_pos -> live origin (Sniper + the WW recompute path: unchanged).
+    local alive_caster = threat_caster and Entity.IsEntity(threat_caster)
+                         and Target.IsAlive(threat_caster) or nil
+    local cp = alive_caster and (threat_pos or Entity.GetAbsOrigin(threat_caster)) or nil
     if cp then
         local diff = cp - me_pos
         if diff:Length2DSqr() < 1 then return nil, nil end
@@ -311,14 +319,17 @@ end
 ---@param push_dist number distance the cast will push (typically 600)
 ---@param threat_caster userdata|nil specific threat, if known
 ---@param cfg EscapeCfg hero-side callbacks
+---@param threat_pos userdata|nil v0.5.130: optional PREDICTED threat position
+---       (hero-supplied) so the push aims away from where a charging threat is
+---       HEADING, not where it is. nil -> the caster's live origin (unchanged).
 ---@return table|nil pending struct to stash (nil = immediate fire or skip)
 ---@return boolean ok did the harness issue an action (cast OR turn)
 function Escape.TrySelfPush(me, intent, item, item_name, push_dist,
-                            threat_caster, cfg)
+                            threat_caster, cfg, threat_pos)
     if not (me and item and cfg) then return nil, false end
     local me_pos = Entity.GetAbsOrigin(me)
     if not me_pos then return nil, false end
-    local escape_dir, _ = Escape.ComputeSafeDest(me, threat_caster, push_dist)
+    local escape_dir, _ = Escape.ComputeSafeDest(me, threat_caster, push_dist, threat_pos)
     if not escape_dir then return nil, false end
     local away_pt = Vector(me_pos.x + escape_dir.x * 400,
                            me_pos.y + escape_dir.y * 400, me_pos.z)
@@ -466,6 +477,11 @@ function Escape.QueueSafePostMove(me, intent, push_dist, threat_caster,
         observed_airborne     = false,
         last_reissue_t        = 0,
         reissue_seq           = 0,
+        -- v0.5.129: retained so PostAirborneMoveTick can RECOMPUTE the dest from
+        -- the threat's live position each re-issue (the cast-time `landing` is a
+        -- snapshot -- wrong for a through-dash like Primal Onslaught; see the tick).
+        threat_caster         = threat_caster,
+        push_dist             = push_dist,
     }
     if cfg.tlog then
         cfg.tlog(1, intent .. "_post_move", {
@@ -514,6 +530,21 @@ function Escape.PostAirborneMoveTick(me, pending, cfg)
         if not pending.moves_during_airborne then return pending end
     elseif not pending.observed_airborne then
         return pending
+    elseif pending.moves_during_airborne then
+        -- v0.5.131: WW (moves_during_airborne) airborne has ENDED -> STOP. The
+        -- reposition happens DURING the cyclone; once it lapses, continuing to
+        -- re-issue MOVE on the ground drags Lina under brain control toward a
+        -- (recompute-drifting) dest for up to the 7s deadline, overriding the
+        -- player long after WW is gone (user-reported; the v0.5.129 recompute
+        -- made the dest rarely "arrive" so it ran to the deadline). Hand control
+        -- back now -- the normal escape/combo logic resumes next tick. Eul
+        -- (moves_during_airborne=false) still falls through to its single
+        -- post-airborne reposition move (it cannot move while airborne).
+        if tlog then
+            tlog(1, pending.intent .. "_post_move_landed",
+                 { reissues = pending.reissue_seq or 0 })
+        end
+        return nil
     end
     local me_pos = Entity.GetAbsOrigin(me)
     if me_pos then
@@ -535,6 +566,27 @@ function Escape.PostAirborneMoveTick(me, pending, cfg)
     end
     pending.last_reissue_t = cfg.now()
     pending.reissue_seq    = (pending.reissue_seq or 0) + 1
+    -- v0.5.129: recompute the safe dest from the threat's LIVE position each
+    -- re-issue. The cast-time dest is a snapshot; for a THROUGH-dash (Primal
+    -- Onslaught) the caster is mid-approach at WW-cast, so "away from his current
+    -- position" points along the dash = toward where he LANDS, sending Lina
+    -- TOWARD him (user-reported). Recomputing self-corrects: once the dasher
+    -- passes Lina and lands, the away-direction flips and Lina retreats from his
+    -- final position. Lina is airborne (untargetable) the whole window, so the
+    -- brief pre-flip drift is harmless. nil (threat dead / degenerate / on top of
+    -- Lina) keeps the prior dest. Only Lina drives this tick (Sniper uses
+    -- TrySelfPush), so this does not touch Sniper.
+    -- v0.5.16x Phase B: pluggable recompute. A hero-supplied recompute_dest (FC-escape
+    -- uses SafestSpotNear, terrain-aware) overrides the default ComputeSafeDest
+    -- directional recompute. Back-compat: WW/Eul set neither, so the elseif path is
+    -- unchanged for them.
+    if pending.recompute_dest then
+        local nd = pending.recompute_dest()
+        if nd then pending.dest = nd end
+    elseif pending.threat_caster and pending.push_dist then
+        local _, new_dest = Escape.ComputeSafeDest(me, pending.threat_caster, pending.push_dist)
+        if new_dest then pending.dest = new_dest end
+    end
     cfg.safe_issue {
         hero = cfg.hero_key, layer = cfg.layer or "def",
         intent = pending.intent .. "_post_move_fire_" .. pending.reissue_seq,
@@ -632,9 +684,16 @@ function Escape.FogSnapshot(me, opts)
             if pos then
                 local age, probable_radius = 0, 0
                 if not visible then
-                    local last_t = Hero.GetLastVisibleTime
-                                   and Hero.GetLastVisibleTime(e) or nil
-                    age = (last_t and (t - last_t)) or 0
+                    -- v0.1.354: was `Hero.GetLastVisibleTime`, which is DEAD - measured nil
+                    -- on 405 of 405 fogged reads in one 895s match (Tinker g353), so this
+                    -- line produced age 0 ALWAYS and the whole COR-1 decay below it has
+                    -- never run. lib/vision owns its clock, so the old cross-clock
+                    -- subtraction against `t` is gone with it (that mismatch - DOTA clock
+                    -- minus engine clock - was the red herring that consumed a whole arc).
+                    -- nil still means "never observed", and `or 0` turns that into
+                    -- "fresh visible": byte-for-byte the pre-vision behaviour, so an inert
+                    -- tracker changes nothing for any hero.
+                    age = Vision.Age(e) or 0
                     if age < 0 then age = 0 end
                     if age > PROBE_MAX_AGE_S then age = PROBE_MAX_AGE_S end
                     probable_radius = age * max_ms
@@ -702,6 +761,35 @@ function Escape.NearbyEnemiesIncludingFog(me, pos, radius, opts)
     return v_cnt, f_cnt, out
 end
 
+---Count FOGGED enemies whose FRESH probable-disc reaches within opts.radius of
+---`pos`. Tighter than NearbyEnemiesIncludingFog: only enemies seen within
+---opts.fresh_s count, and the disc reach is capped at opts.reach_cap (a stale
+---blip's huge disc is rejected, not trusted). Pure: component math on pos.x/.y,
+---so plain {x,y} tables work (the type-boundary law).
+---@param snapshot table {heroes = {{pos, age, probable_radius, visible}}}
+---@param pos table {x, y}
+---@param opts table {radius=1000, reach_cap=450, fresh_s=1.5}
+---@return integer count
+function Escape.ReachableFog(snapshot, pos, opts)
+    local hs = snapshot and snapshot.heroes
+    if not (hs and pos) then return 0 end
+    opts = opts or {}
+    local radius  = opts.radius or 1000
+    local cap     = opts.reach_cap or 450
+    local fresh_s = opts.fresh_s or 1.5
+    local n = 0
+    for i = 1, #hs do
+        local h = hs[i]
+        if h.visible == false and (h.age or 0) <= fresh_s and h.pos then
+            local dx, dy = (h.pos.x or 0) - (pos.x or 0), (h.pos.y or 0) - (pos.y or 0)
+            local d = math.sqrt(dx * dx + dy * dy)
+            local disc = math.min(h.probable_radius or 0, cap)
+            if d - disc <= radius then n = n + 1 end
+        end
+    end
+    return n
+end
+
 ---Composite risk score for a candidate landing position. Lower is safer;
 ---0 = no enemies in or near the engage radius.
 ---
@@ -753,6 +841,77 @@ function Escape.AdvanceRiskScore(me, landing, opts)
         engage_radius = engage_radius,
         enemies       = list,
     }
+end
+
+---Count enemies currently fogged (alive but not visible) in a FogSnapshot. The
+---pro "is a deep raid safe" lever: <=1 missing of 5 -> safe. PURE.
+---@param snapshot table|nil  FogSnapshot result { heroes = {...} }
+---@return number
+function Escape.MissingCount(snapshot)
+    local hs = snapshot and snapshot.heroes
+    if not hs then return 0 end
+    local n = 0
+    for i = 1, #hs do if hs[i].visible == false then n = n + 1 end end
+    return n
+end
+
+---v0.x (COR-1): continuous fog-aware proximity risk in [0,1] = the max over
+---enemies of a distance falloff. A recently-fogged enemy is modeled as a
+---growing-but-decaying reachable disc: the disc radius grows with age
+---(reachability) while the risk it contributes decays as it spreads
+---(uncertainty). Visible enemies and just-vanished fog (age 0) reduce to
+---(1 - dist/risk_radius)^2 -- identical to a plain nearest-enemy proximity
+---risk, so consumers see no change for visible foes.
+---
+---@param snapshot_or_me table|userdata a FogSnapshot ({heroes=...}) to reuse,
+---  or an entity (FogSnapshot is then called internally)
+---@param pt userdata position to score (needs :Distance2D)
+---@param opts table|nil {risk_radius=1400, fog_ms=550, fog_spread=900,
+---  age_cap=5, now, max_ms}. fog_ms = disc-growth rate (Liquipedia move cap);
+---  radius is recomputed from age here (NOT the snapshot's probable_radius) so
+---  fog_ms and the snapshot's max_ms cannot silently diverge.
+---@return number risk 0..1
+function Escape.FogProximityRisk(snapshot_or_me, pt, opts)
+    if not pt then return 0 end
+    opts = opts or {}
+    local risk_radius = opts.risk_radius or 1400
+    local fog_ms      = opts.fog_ms or 550
+    local fog_spread  = opts.fog_spread or 900
+    local age_cap     = opts.age_cap or 5
+    local snap
+    if type(snapshot_or_me) == "table" and snapshot_or_me.heroes then
+        snap = snapshot_or_me
+    else
+        snap = Escape.FogSnapshot(snapshot_or_me, opts)
+    end
+    -- component math, not pt:Distance2D: pt crosses the hero->lib boundary and callers have
+    -- passed plain {x,y} tables (the v0.1.247 stuck-in-DECIDE crash, found by a field tester);
+    -- .x/.y math accepts both plain tables and engine Vectors, and keeps this fn engine-free.
+    local function d2(a, b) local dx, dy = a.x - b.x, a.y - b.y return math.sqrt(dx * dx + dy * dy) end
+    local best = 0
+    for i = 1, #snap.heroes do
+        local h = snap.heroes[i]
+        local edge, conf
+        if h.visible then
+            edge, conf = d2(pt, h.pos), 1
+        elseif h.age <= age_cap then
+            local radius = h.age * fog_ms
+            edge = d2(pt, h.pos) - radius
+            if edge < 0 then edge = 0 end
+            conf = fog_spread / (fog_spread + radius)
+        end
+        if edge then
+            local base = 0
+            if edge < risk_radius then
+                local r = 1 - edge / risk_radius
+                base = r * r
+            end
+            local risk_e = base * conf
+            if opts.weight_fn then risk_e = risk_e * (opts.weight_fn(h) or 1) end
+            if risk_e > best then best = risk_e end
+        end
+    end
+    return best
 end
 
 ---Deterministic Pike self-cast landing for an OFFENSIVE advance: Lina
@@ -818,6 +977,83 @@ function Escape.ComputeAdvanceDest(me, target, push_dist, opts)
     if not landing then return nil, nil, nil end
     local score, breakdown = Escape.AdvanceRiskScore(me, landing, opts)
     return landing, score, breakdown
+end
+
+-- v0.5.16x Phase C: pure chase window. Given Lina pos, the target pos + velocity, and gathered
+-- protection circles, return the straight-line catch-ETA and the escape-ETA (min of out-of-kill-reach
+-- and reaching protection). Hero-agnostic, no engine calls (positions/vel passed in) -> offline-tested.
+-- FC grants no speed bonus (Liquipedia): fly_speed = the chaser's base MS; the value is the terrain shortcut.
+--   me_pos, target_pos: {x,y,z}; vel: {x,y} world units/sec; opts = { fly_speed, kill_reach, tower_circles }
+-- Returns { catch_eta, escape_eta, intercept, reason } or nil.
+local function _exit_radius_eta(p, v, c, R)
+    -- earliest t>=0 with |p + v t - c| = R, growing past R. Quadratic |d + v t|^2 = R^2, d = p - c.
+    local dx, dy = p.x - c.x, p.y - c.y
+    local a = v.x * v.x + v.y * v.y
+    if a < 1e-9 then return math.huge end          -- not moving -> never exits
+    local b = 2 * (dx * v.x + dy * v.y)
+    local cc = dx * dx + dy * dy - R * R
+    if cc >= 0 then return 0 end                    -- already outside
+    local disc = b * b - 4 * a * cc
+    if disc < 0 then return math.huge end
+    local t = (-b + math.sqrt(disc)) / (2 * a)      -- larger root = the outward crossing
+    return (t >= 0) and t or math.huge
+end
+local function _enter_radius_eta(p, v, c, R)
+    -- earliest t>=0 with |p + v t - c| <= R (entering). Smaller root.
+    local dx, dy = p.x - c.x, p.y - c.y
+    if dx * dx + dy * dy <= R * R then return 0 end  -- already inside
+    local a = v.x * v.x + v.y * v.y
+    if a < 1e-9 then return math.huge end
+    local b = 2 * (dx * v.x + dy * v.y)
+    local cc = dx * dx + dy * dy - R * R
+    local disc = b * b - 4 * a * cc
+    if disc < 0 then return math.huge end
+    local t = (-b - math.sqrt(disc)) / (2 * a)       -- smaller root = the inward crossing
+    return (t >= 0) and t or math.huge
+end
+function Escape.ChaseWindow(me_pos, target_pos, vel, opts)
+    if not (me_pos and target_pos and vel and opts) then return nil end
+    local fly_speed = opts.fly_speed or 300
+    if fly_speed < 1e-6 then return nil end
+    local dx, dy = target_pos.x - me_pos.x, target_pos.y - me_pos.y
+    local catch_eta = math.sqrt(dx * dx + dy * dy) / fly_speed
+    local escape_eta = _exit_radius_eta(target_pos, vel, me_pos, opts.kill_reach or 1000)
+    if opts.tower_circles then
+        for i = 1, #opts.tower_circles do
+            local tc = opts.tower_circles[i]
+            local e = _enter_radius_eta(target_pos, vel, tc.pos, tc.range)
+            if e < escape_eta then escape_eta = e end
+        end
+    end
+    return { catch_eta = catch_eta, escape_eta = escape_eta, intercept = target_pos, reason = "ok" }
+end
+
+-- v0.5.163 Phase C2: pure cutoff discriminator. Given the chaser pos, the intercept, and the WALK path
+-- (a GridNav.BuildPath result passed in -> engine-free, offline-testable), decide whether the straight FC
+-- flight is a meaningful shortcut over the walk that detours around terrain/trees. The straight flight is
+-- the whole value of FC chase (FC = unobstructed movement at base MS, no speed).
+--   me_pos, intercept: {x,y[,z]}; walk_path: array of {x,y} waypoints (>=2) or nil.
+--   opts = { ratio (default 1.3), min_gain (default 250) }.
+-- Returns { locked, walk, straight, ratio }.
+function Escape.CutoffLock(me_pos, intercept, walk_path, opts)
+    opts = opts or {}
+    local ratio_thresh = opts.ratio or 1.3
+    local min_gain = opts.min_gain or 250
+    if not (me_pos and intercept) then return { locked = false, walk = 0, straight = 0, ratio = 0 } end
+    local sdx, sdy = intercept.x - me_pos.x, intercept.y - me_pos.y
+    local straight = math.sqrt(sdx * sdx + sdy * sdy)
+    if not (walk_path and #walk_path >= 2) then
+        return { locked = false, walk = straight, straight = straight, ratio = 1 }
+    end
+    local walk = 0
+    for i = 1, #walk_path - 1 do
+        local a, b = walk_path[i], walk_path[i + 1]
+        local dx, dy = b.x - a.x, b.y - a.y
+        walk = walk + math.sqrt(dx * dx + dy * dy)
+    end
+    local r = (straight > 1e-6) and (walk / straight) or 1
+    local locked = (walk >= straight * ratio_thresh) and ((walk - straight) >= min_gain)
+    return { locked = locked, walk = walk, straight = straight, ratio = r }
 end
 
 ----------------------------------------------------------------------------
@@ -1002,18 +1238,26 @@ end
 ---@param me userdata
 ---@param radius number sample circle radius (typical 600-900)
 ---@param opts table|nil same as AdvanceRiskScore opts (engage_radius, max_ms, now)
----@return userdata|nil best_pos
+---@return userdata|nil best_pos best OVERALL spot (may be terrain-locked)
 ---@return number best_score
+---@return table|nil info {traversable, locked, walkable_pos, walkable_score} (v0.5.16x Phase B)
 function Escape.SafestSpotNear(me, radius, opts)
-    if not (me and radius) then return nil, math.huge end
+    if not (me and radius) then return nil, math.huge, nil end
     local me_pos = Entity.GetAbsOrigin(me)
-    if not me_pos then return nil, math.huge end
+    if not me_pos then return nil, math.huge, nil end
     opts = opts or {}
     -- Single snapshot used for all 9 scores (avoid 9x Heroes.GetAll scans).
     local sub_opts = {}
     for k, v in pairs(opts) do sub_opts[k] = v end
     sub_opts.snapshot = sub_opts.snapshot or Escape.FogSnapshot(me, opts)
-    local best_pos, best_score = me_pos, Escape.AdvanceRiskScore(me, me_pos, sub_opts)
+    -- v0.5.16x Phase B (design 6.1): track TWO winners in one scan -- the best
+    -- WALKABLE spot and the best OVERALL spot (incl. terrain-locked samples). The
+    -- 3rd return `info` lets a caller distinguish "the safest spot is across terrain"
+    -- (fly) from "the safest spot is walkable" (just walk). me_pos is always
+    -- traversable so it seeds both. Additive 3rd return: 2-return callers unaffected.
+    local me_score = Escape.AdvanceRiskScore(me, me_pos, sub_opts)
+    local best_pos, best_score, best_locked = me_pos, me_score, false
+    local walk_pos, walk_score = me_pos, me_score
     for deg = 0, 315, 45 do
         local rad = math.rad(deg)
         local p = Vector(me_pos.x + math.cos(rad) * radius,
@@ -1023,14 +1267,16 @@ function Escape.SafestSpotNear(me, radius, opts)
         if GridNav and GridNav.IsTraversableFromTo then
             traversable = GridNav.IsTraversableFromTo(me_pos, p)
         end
-        if traversable then
-            local s = Escape.AdvanceRiskScore(me, p, sub_opts)
-            if s < best_score then
-                best_pos, best_score = p, s
-            end
-        end
+        local s = Escape.AdvanceRiskScore(me, p, sub_opts)
+        if s < best_score then best_pos, best_score, best_locked = p, s, (not traversable) end
+        if traversable and s < walk_score then walk_pos, walk_score = p, s end
     end
-    return best_pos, best_score
+    return best_pos, best_score, {
+        traversable    = not best_locked,
+        locked         = best_locked,
+        walkable_pos   = walk_pos,
+        walkable_score = walk_score,
+    }
 end
 
 ---Offensive Blink-in landing. Pick a point to blink to so `aim_pos` ends up
@@ -1068,6 +1314,100 @@ function Escape.BlinkInLanding(me, aim_pos, blink_range, engage_range, opts)
         reachable = (math.sqrt(adx * adx + ady * ady) <= engage_range)
     end
     return landing, Escape.AdvanceRiskScore(me, landing, opts), reachable
+end
+
+---Commit-risk exposure -> a radius WIDENING distance, in units.
+---travel_s is SUPPLIED BY THE CALLER (Tinker feeds the keen-aware
+---Lane.InterceptETA travel_to_mid it already computes), so there is no
+---distance, no move-speed divisor and no division at all in here: that is
+---what keeps 0/0, inf and NaN out of the result at the source.
+---approach_speed <= 0 returns 0 = the documented no-code-edit kill switch,
+---and the <= (not ==) is the guard that matters: a NEGATIVE speed without it
+---yields a negative widen, which SHRINKS every danger radius and makes the
+---bot blind rather than cautious, silently and exactly backwards.
+---The clamp is math.min(cap, math.max(0, w)) IN THAT ORDER. Measured on the
+---deployed Lua 5.4: math.max(0, nan) = 0 while math.min(cap, nan) = cap, so
+---this ordering sends a NaN to 0 (today's behaviour) rather than to the
+---maximum widening. The reverse order returns cap.
+---@param travel_s number|nil seconds to reach the point (0 for a transit sample)
+---@param stand_s number|nil seconds standing there after arrival
+---@param approach_speed number|nil u/s an unseen enemy is assumed to close at
+---@param widen_max number|nil cap in units; nil = UNCAPPED (0 means zero widen,
+---  which is what the parameter name says; v0.1.357 shipped 0 = uncapped and
+---  that asymmetry is a footgun in the dangerous direction). A NEGATIVE or NaN
+---  cap is sanitised to 0: the clamp order defends the exposure argument only,
+---  and min(cap, .) passes a bad cap straight through, so a mis-signed cap is
+---  the SAME "blind rather than cautious" failure as a negative speed arriving
+---  through the other parameter (a negative widen SHRINKS the danger radius;
+---  a NaN one makes `edge < r_eff` false for every enemy at every distance, so
+---  every destination reads safe - the exact defect being fixed, arriving
+---  silently through the fix). `not (cap >= 0)` catches both in one comparison.
+---@return number widen, always finite and >= 0 for every input
+function Escape.CommitWiden(travel_s, stand_s, approach_speed, widen_max)
+    approach_speed = approach_speed or 0
+    if approach_speed <= 0 then return 0 end
+    local cap = widen_max or math.huge
+    if not (cap >= 0) then cap = 0 end
+    local w = approach_speed * ((travel_s or 0) + (stand_s or 0))
+    return math.min(cap, math.max(0, w))
+end
+
+---Keyed throttle for a diagnostic line. Returns true if the caller should
+---emit, and stamps ONLY THEN. Distinct keys never starve each other: a single
+---shared stamp aliases to whichever call site runs first, which is the
+---v0.1.357 trap where hundreds of calls per decide sampled only the first.
+---A BACKWARDS clock (match transition, or the measured ~102s pregame plateau
+---where GetDOTATime is pinned at exactly 0.0) emits rather than suppressing:
+---an instrument's failure direction must be noisy, never silent.
+function Escape.DiagGate(stamps, key, t, window)
+    local dt = t - (stamps[key] or -math.huge)
+    if dt >= 0 and dt < window then return false end
+    stamps[key] = t
+    return true
+end
+
+---Nearest enemy EDGE distance to pt, using the SAME edge rule as
+---FogProximityRisk (visible = plain distance; fogged = distance minus the
+---age disc, floored at 0). INSTRUMENT ONLY, never gates anything.
+---FogProximityRisk returns exactly 0 for everything past its radius, so a
+---logged risk of 0.00 cannot distinguish "widen too small" from "nobody
+---there". 45% of g356's destination reads (91 of 204, and 43 of 73 commits)
+---are censored that way, which is why the last calibration had to quote a
+---strict worst case instead of a distribution. Returns math.huge on an empty
+---snapshot so "no enemies" is distinguishable from "enemy at 0u".
+---
+---Deliberately carries NO age_cap gate, unlike the risk kernel at :897: the
+---kernel drops a stale ghost because it refuses to SCORE it, but an
+---instrument that drops the same ghost logs ne=inf next to r1=0.00 and the
+---calibration hole this field exists to fill reopens. It reports geometry,
+---the kernel decides what geometry is worth.
+---
+---Component math on .x/.y, never pt:Distance2D: pt crosses the hero->lib
+---boundary and callers pass plain {x,y} tables as well as engine Vectors
+---(the v0.1.247 stuck-in-DECIDE crash), the same type-boundary law as
+---FogProximityRisk's local d2 at :890 and ReachableFog at :784.
+---@param snap table|nil FogSnapshot result { heroes = {{pos, age, visible}} }
+---@param pt table|nil {x, y} plain table or engine Vector
+---@param opts table|nil {fog_ms=550} disc-growth rate, matches FogProximityRisk
+---@return number edge distance in units, math.huge when there is nobody to measure
+function Escape.NearestEnemyEdge(snap, pt, opts)
+    local hs = snap and snap.heroes
+    if not (hs and pt) then return math.huge end
+    local fog_ms = (opts and opts.fog_ms) or 550
+    local best = math.huge
+    for i = 1, #hs do
+        local h = hs[i]
+        if h and h.pos then
+            local dx, dy = (h.pos.x or 0) - (pt.x or 0), (h.pos.y or 0) - (pt.y or 0)
+            local edge = math.sqrt(dx * dx + dy * dy)
+            if not h.visible then
+                edge = edge - (h.age or 0) * fog_ms
+                if edge < 0 then edge = 0 end
+            end
+            if edge < best then best = edge end
+        end
+    end
+    return best
 end
 
 return Escape

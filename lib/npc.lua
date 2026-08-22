@@ -1,5 +1,5 @@
 ---@meta
----lib/npc.lua — generic NPC stat & inventory queries.
+---lib/npc.lua - generic NPC stat & inventory queries.
 ---
 ---Hero-agnostic. Each function takes an npc handle as the first argument.
 ---Extracted from Sniper.lua v6.15.112 to reduce main-chunk local count
@@ -13,7 +13,7 @@
 ---NOT in scope (intentional):
 ---  - Range / cast-range / spell-amp queries are GLOBAL functions in
 ---    Sniper.lua (no `local` keyword) so they don't consume local slots
----    — extracting them would be aesthetic-only with zero slot benefit.
+---    - extracting them would be aesthetic-only with zero slot benefit.
 ---    Re-evaluate if a future hero re-uses them and Sniper's globals
 ---    become awkward.
 ---  - find_ability / ability_ready stay in Sniper because find_ability has
@@ -38,7 +38,7 @@ function NPC_lib.has_scepter(npc)
     return (NPC.HasScepter and NPC.HasScepter(npc)) or false
 end
 
----Item lookup by name. Includes backpack/stash by default? NO — third
+---Item lookup by name. Includes backpack/stash by default? NO - third
 ---arg `true` means INVENTORY ONLY (active slots, not backpack/stash).
 ---Sniper's pattern. Use `false` to scan inventory + backpack + stash.
 ---@param npc userdata|nil

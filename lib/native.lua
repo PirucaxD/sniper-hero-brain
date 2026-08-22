@@ -1,5 +1,5 @@
 ---@meta
----lib/native.lua — control the UCZone framework's native auto-combat subsystems.
+---lib/native.lua - control the UCZone framework's native auto-combat subsystems.
 ---
 ---The built-in per-hero baseline runs ALONGSIDE a brain script and issues its own
 ---orders (Hit & Run -> MOVE flood from 3_hit_n_run.lua; Orb Walker -> ATTACK flood
