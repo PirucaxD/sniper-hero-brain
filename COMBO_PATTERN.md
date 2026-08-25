@@ -1,4 +1,4 @@
-# Combo pattern — Layer 1 aggressive dispatcher for any hero
+# Combo pattern - Layer 1 aggressive dispatcher for any hero
 
 Last updated: 2026-05-12 (Sniper v6.12 baseline).
 
@@ -11,7 +11,7 @@ Last updated: 2026-05-12 (Sniper v6.12 baseline).
 > machine. The legacy `SNIPER_COMBOS`/`SNIPER_SEQUENCES` catalog + `layer1_tick`
 > are being retired. The dispatch *primitives* below
 > (`fire_steps`, step kinds, `commit_pred`, the throttle, cast verification)
-> are still in use and still correct — only the catalog-vs-archetype top
+> are still in use and still correct - only the catalog-vs-archetype top
 > layer changed.
 
 This is the **combo / sequence dispatch** pattern, the offensive analog to `DEFENSE_PATTERN.md`. Battle-tested on Sniper. Captures the v6.8 → v6.12 architecture as it stabilized after multiple iterations.
@@ -21,7 +21,7 @@ This is the **combo / sequence dispatch** pattern, the offensive analog to `DEFE
 | | COMBO | SEQUENCE |
 |---|---|---|
 | Intent | Multi-spell COMMITMENT. Burns a high-CD resource (typically R). Aborting halfway = wasted mana + CD. | OPPORTUNISTIC. One or two cheap casts. No major resource cost if it doesn't connect. |
-| Gate | `commit_pred(ctx)` — kill-grade / setup-killable / stack-killable / channeling. | `trigger(ctx)` — situational (kiting, channeling, in-range, etc.). |
+| Gate | `commit_pred(ctx)` - kill-grade / setup-killable / stack-killable / channeling. | `trigger(ctx)` - situational (kiting, channeling, in-range, etc.). |
 | Floor | `COMBO_COMMIT_FLOOR = 100` (matches kill-grade score). | `SEQUENCE_FLOOR = 1` (any positive utility). |
 | Example | Sniper E+R, Pudge Hook+R, Lion Hex+Finger. | Sniper grenade_shrap_zone, Pudge Rot self-toggle, Lion Hex-on-channeler. |
 
@@ -139,7 +139,7 @@ Veto guards (all → `nil`):
 - Not valid / not alive / not enemy / illusion / Meepo clone.
 - Will be invuln at impact (`Target.WillBeInvulnIn(target, cast_window_ms)`).
 - Has ready Linkens / has ready Lotus.
-- Last visible time `nil` with no actual fog history — **TREAT AS FRESH** (fog_age = 0). DON'T VETO. (Critical bug from v6.8.4.)
+- Last visible time `nil` with no actual fog history - **TREAT AS FRESH** (fog_age = 0). DON'T VETO. (Critical bug from v6.8.4.)
 - Fog age > 3s.
 - Distance > CAST_R.
 
@@ -264,7 +264,7 @@ The chain fires the best (target, combo) pair regardless of which candidate it c
 
 ## Commit window (v6.8.5)
 
-After a dispatch fires, suppress re-dispatch for `LAYER1_COMMIT_WINDOW = 2.5s`. Prevents per-tick re-evaluation while the combo is executing. Without this, 8000+ dispatches in a single bot match (observed in v6.8.1 testing — combo key held continuously).
+After a dispatch fires, suppress re-dispatch for `LAYER1_COMMIT_WINDOW = 2.5s`. Prevents per-tick re-evaluation while the combo is executing. Without this, 8000+ dispatches in a single bot match (observed in v6.8.1 testing - combo key held continuously).
 
 Reset to 0 on R-abort so the brain can immediately pick a fresh combo.
 
@@ -288,18 +288,18 @@ For the next hero, replicate Sniper's diagnostic surface:
 ## What stays per-hero vs lib
 
 **Stays per-hero forever:**
-- `<HERO>_COMBOS` and `<HERO>_SEQUENCES` tables — these are the whole point.
+- `<HERO>_COMBOS` and `<HERO>_SEQUENCES` tables - these are the whole point.
 - Hero-specific step functions (e.g., Sniper's `grenade_self_cast_point` directional cast, Pudge's `hook_lead_position` predictor).
 - `ScoreUltTarget` semantic (every hero scores its own target axis differently).
 - Layer 1 dispatcher body (calls into shared helpers but has hero-specific weight).
 - Per-hero anim map / matchup data.
 
 **Stays in lib forever:**
-- `lib/order.lua` — order discipline, queue dedup, ability-level gating.
-- `lib/target.lua` — universal predicates (`HasReadyEscapeItem`, `IsKitingUs`, `IsRightClicking`, `EscapeItemWindowState`, `HasReadyLinkens`, `HasReadyLotus`, `HasAegis`, `EffectiveHpVs`).
-- `lib/threat_data.lua` — threat / save kind catalog.
-- `lib/damage.lua` — damage feed normalizer.
-- `lib/anim.lua` — animation→ability dispatcher.
+- `lib/order.lua` - order discipline, queue dedup, ability-level gating.
+- `lib/target.lua` - universal predicates (`HasReadyEscapeItem`, `IsKitingUs`, `IsRightClicking`, `EscapeItemWindowState`, `HasReadyLinkens`, `HasReadyLotus`, `HasAegis`, `EffectiveHpVs`).
+- `lib/threat_data.lua` - threat / save kind catalog.
+- `lib/damage.lua` - damage feed normalizer.
+- `lib/anim.lua` - animation→ability dispatcher.
 
 **Candidate for extraction when hero #2 lands (per two-hero rule):**
 - Step scheduler (`schedule_step`, `pending_steps_tick`, `fire_steps`) → `lib/combat.lua`.
@@ -313,7 +313,7 @@ The combo data tables themselves (per-hero) never extract; they are the hero.
 
 1. **Ability.IsReady returns true for unlearned abilities.** Always gate on `Ability.GetLevel(a) > 0` in any custom ability_ready helper.
 
-2. **Hero.GetLastVisibleTime returns nil for never-fogged heroes.** Don't veto on nil — treat as `fog_age = 0`. This single bug caused 8400+ no-op dispatches in a 40-minute match.
+2. **Hero.GetLastVisibleTime returns nil for never-fogged heroes.** Don't veto on nil - treat as `fog_age = 0`. This single bug caused 8400+ no-op dispatches in a 40-minute match.
 
 3. **commit_threshold gates SEQUENCE evaluation.** Set to `0` (or negative with Scepter taper) so non-kill candidates make it into `state.candidates` and SEQUENCES can evaluate them.
 
@@ -321,7 +321,7 @@ The combo data tables themselves (per-hero) never extract; they are the hero.
 
 5. **target_pos snapshot at dispatch is stale for delayed steps.** Use the step scheduler with live arg/cond re-evaluation.
 
-6. **No-waste discipline for charged abilities.** Q2/Q3 conditional on `q_kill_floor` ≥ N — don't burn charges that aren't needed.
+6. **No-waste discipline for charged abilities.** Q2/Q3 conditional on `q_kill_floor` ≥ N - don't burn charges that aren't needed.
 
 7. **Headshot proc in DPS estimate.** 40% baseline → 100% with Take Aim active. Was missing from setup-kill math; brain refused commits that pro plays close.
 
@@ -333,7 +333,7 @@ The combo data tables themselves (per-hero) never extract; they are the hero.
 
 11. **R-cast abort via STOP refunds mana, no CD.** Massive efficiency win for mid-cast target dispels.
 
-12. **JSON staleness — always cross-check Liquipedia.** Patch-edge values may not be in items.json / npc_abilities.json. Especially: push distances, cast ranges, CDs, item removals (Eternal Shroud 7.41), shard/scepter grant status.
+12. **JSON staleness - always cross-check Liquipedia.** Patch-edge values may not be in items.json / npc_abilities.json. Especially: push distances, cast ranges, CDs, item removals (Eternal Shroud 7.41), shard/scepter grant status.
 
 13. **Baseline subsystems run in parallel.** Frame "substitute and improve" as a sidecar pattern: share the combo key (read from gui.json), use queue dedup, let baseline run.
 

@@ -1,7 +1,7 @@
 ---@meta
 
 -- ============================================================================
--- UCZone API v2.0 — Discovered (undocumented) function stubs for VS Code
+-- UCZone API v2.0 - Discovered (undocumented) function stubs for VS Code
 --
 -- These are real APIs used in third-party UCZone scripts (Sniper, KotL, Ogre
 -- Magi, Meepo, Tusk, etc.) that aren't in the official UCZone API v2.0
@@ -75,8 +75,8 @@ function Hero.GetPlayer(hero) end
 ---Confidence: MEDIUM. Tusk script wraps in pcall as fallback.
 ---@param npc userdata
 ---@param ability userdata
----@param fromPos userdata  # Vector — starting reference (typically target pos)
----@param toPos userdata    # Vector — destination/direction endpoint
+---@param fromPos userdata  # Vector - starting reference (typically target pos)
+---@param toPos userdata    # Vector - destination/direction endpoint
 function NPC.CastAbilityVector(npc, ability, fromPos, toPos) end
 
 ---Returns the unit's physical armor as a raw number (e.g. 8.5).
@@ -167,7 +167,7 @@ function NPC.IsMoving(npc) end
 function NPC.IsRooted(npc) end
 
 ---Returns true if the unit is currently visible to the local player's team
----(NOT in fog of war). Snapshot only — for fog-of-war age tracking use
+---(NOT in fog of war). Snapshot only - for fog-of-war age tracking use
 ---the documented `Hero.GetLastVisibleTime`.
 ---NOTE: NOT the same as Vector:IsVisible (which checks screen visibility).
 ---Confidence: HIGH. Used by Sniper auto-grenade and Meepo.
@@ -176,11 +176,11 @@ function NPC.IsRooted(npc) end
 function NPC.IsVisible(npc) end
 
 -- ============================================================================
--- "Looks real but doesn't exist" — DO NOT TRY THESE
+-- "Looks real but doesn't exist" - DO NOT TRY THESE
 --
 -- These names look plausible but the APIs do not exist in UCZone v2.0.
 -- Listed here as warnings so VS Code's autocomplete won't accidentally show
--- them as valid suggestions (commented out — autocomplete will skip).
+-- them as valid suggestions (commented out - autocomplete will skip).
 -- ============================================================================
 
 -- function Entity.GetByIndex(idx) end       -- DOES NOT EXIST. Use Entity.Get(idx).

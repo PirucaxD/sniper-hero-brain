@@ -42,9 +42,9 @@ def strip_version_tags(line):
 def replace_em_dashes(line):
     """Replace em-dash with hyphens or commas. Heuristic: between two
     spaces => ' -- ', otherwise inline ',' (rare). Toolkit prefers ' -- '."""
-    line = line.replace(" — ", " -- ")
+    line = line.replace(" - ", " -- ")
     # Stray em-dashes (no surrounding spaces) become hyphens
-    line = line.replace("—", "-")
+    line = line.replace("-", "-")
     return line
 
 
@@ -143,7 +143,7 @@ def main():
     # Quick sanity checks
     with open(DST, "r", encoding="utf-8") as f:
         check = f.read()
-    em_dashes = check.count("—")
+    em_dashes = check.count("-")
     version_tags = len(re.findall(r"\bv6\.15\.\d+", check))
     sniper_prose = len(_SNIPER_PROSE.findall(check))
     print("  em-dashes: {} (should be 0)".format(em_dashes))

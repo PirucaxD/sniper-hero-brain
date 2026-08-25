@@ -1,10 +1,10 @@
 # UCZone API Reference for Brain Work
 
-**Purpose:** brain-task-organized quick reference. Not a re-export of the canonical docs — a curated index from the brain's perspective.
+**Purpose:** brain-task-organized quick reference. Not a re-export of the canonical docs - a curated index from the brain's perspective.
 
 **Sources of truth:**
 - **Raw API signatures:** the UCZone API v2.0 docs (canonical, 16k lines)
-- **In-editor autocomplete:** Umbrella VS Code extension (`ILKA.umbrella-vscode`) — 97 LuaCATS definition files
+- **In-editor autocomplete:** Umbrella VS Code extension (`ILKA.umbrella-vscode`) - 97 LuaCATS definition files
 - **This file:** brain-task → API mapping, curated enum subsets, Dota-mechanics gotchas
 
 A high-density quick reference for working without the VS Code extension visible, alongside the raw docs.
@@ -41,9 +41,9 @@ local d = NPC.GetStatesDuration(target, {
 | `MODIFIER_STATE_DISARMED` | Cannot attack, can move/cast | Right-click hero check |
 | `MODIFIER_STATE_MUTED` | Cannot use items | Item-Pike check on enemy |
 | `MODIFIER_STATE_INVULNERABLE` | Immune to all damage and most spells | **Hard kill-confirm abort** |
-| `MODIFIER_STATE_OUT_OF_GAME` | Eul / Cyclone / similar — invuln + untargetable | **Hard kill-confirm abort** |
-| `MODIFIER_STATE_MAGIC_IMMUNE` | BKB / Repel — blocks single-target magic | Magic combo abort |
-| `MODIFIER_STATE_ATTACK_IMMUNE` | Ethereal — blocks basic attacks | Orbwalk abort |
+| `MODIFIER_STATE_OUT_OF_GAME` | Eul / Cyclone / similar - invuln + untargetable | **Hard kill-confirm abort** |
+| `MODIFIER_STATE_MAGIC_IMMUNE` | BKB / Repel - blocks single-target magic | Magic combo abort |
+| `MODIFIER_STATE_ATTACK_IMMUNE` | Ethereal - blocks basic attacks | Orbwalk abort |
 | `MODIFIER_STATE_INVISIBLE` | Hidden unless True Sight | Vision gate |
 | `MODIFIER_STATE_TRUESIGHT_IMMUNE` | Stays invisible even under True Sight (Riki ult) | Special-case detection |
 | `MODIFIER_STATE_UNTARGETABLE` | Cannot be targeted by spells | Single-target spell abort |
@@ -52,7 +52,7 @@ local d = NPC.GetStatesDuration(target, {
 | `MODIFIER_STATE_ROOTED` | Cannot move, can attack/cast | Engage opportunity |
 | `MODIFIER_STATE_TETHERED` | Wisp tether active | Combo-trigger signal |
 | `MODIFIER_STATE_TAUNTED` / `MODIFIER_STATE_FEARED` | Forced to attack/run | Threat-window math |
-| `MODIFIER_STATE_NIGHTMARED` | Bane Nightmare — wakes on damage | Damage-first decision |
+| `MODIFIER_STATE_NIGHTMARED` | Bane Nightmare - wakes on damage | Damage-first decision |
 | `MODIFIER_STATE_FROZEN` | Special freeze (rare) | Edge case |
 
 Full list: the UCZone API v2.0 docs, `cheats-types-and-callbacks/enums.md` § Enum.ModifierState (64 entries, lines 229-296).
@@ -91,7 +91,7 @@ local val = NPC.GetModifierProperty(npc, Enum.ModifierFunction.MODIFIER_PROPERTY
 | `MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE` | % cooldown reduction | Aether Lens, Octarine math |
 | `MODIFIER_PROPERTY_MANACOST_PERCENTAGE` | % mana cost reduction | Mana budget |
 
-Use `NPC.GetModifierPropertyHighest` instead of `GetModifierProperty` when multiple items don't stack (e.g., Kaya stacking rules) — returns highest single contributor instead of sum.
+Use `NPC.GetModifierPropertyHighest` instead of `GetModifierProperty` when multiple items don't stack (e.g., Kaya stacking rules) - returns highest single contributor instead of sum.
 
 Full list: enums.md § Enum.ModifierFunction (~175 entries, lines 1081-1255).
 
@@ -115,21 +115,21 @@ All orders go through `lib/order.lua`. The `order_type` field maps to `Enum.Unit
 | `DOTA_UNIT_ORDER_CAST_NO_TARGET` | ability | Instant ult (Mirana Leap, Sven Rage, BKB self, Glimmer self) |
 | `DOTA_UNIT_ORDER_CAST_TOGGLE` | ability | Rot, Sun Ray, Madness, Bloodrage on self |
 | `DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO` | ability | Autocast toggle (Lich Sacrifice, OD Astral Imprisonment auto) |
-| `DOTA_UNIT_ORDER_HOLD_POSITION` | — | Stop and face — used by some channels |
-| `DOTA_UNIT_ORDER_STOP` | — | Cancel current order / channel |
+| `DOTA_UNIT_ORDER_HOLD_POSITION` | - | Stop and face - used by some channels |
+| `DOTA_UNIT_ORDER_STOP` | - | Cancel current order / channel |
 | `DOTA_UNIT_ORDER_TRAIN_ABILITY` | ability | Spend skill point |
 | `DOTA_UNIT_ORDER_PICKUP_RUNE` | rune entity | Rune pickup |
-| `DOTA_UNIT_ORDER_PURCHASE_ITEM` | — (uses ability=item_id) | Buy from shop |
-| `DOTA_UNIT_ORDER_BUYBACK` | — | Buyback on death |
-| `DOTA_UNIT_ORDER_GLYPH` | — | Activate Glyph |
+| `DOTA_UNIT_ORDER_PURCHASE_ITEM` | - (uses ability=item_id) | Buy from shop |
+| `DOTA_UNIT_ORDER_BUYBACK` | - | Buyback on death |
+| `DOTA_UNIT_ORDER_GLYPH` | - | Activate Glyph |
 | `DOTA_UNIT_ORDER_MOVE_TO_DIRECTION` | position | Move toward direction without specific destination |
 | `DOTA_UNIT_ORDER_CAST_RUNE` | rune entity, ability | Cast bottle-stored rune |
 
 `Enum.PlayerOrderIssuer` for `issuer` field:
-- `DOTA_ORDER_ISSUER_SELECTED_UNITS` — affects all selected
-- `DOTA_ORDER_ISSUER_CURRENT_UNIT_ONLY` — only the explicitly-passed unit
-- `DOTA_ORDER_ISSUER_HERO_ONLY` — own hero only
-- `DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY` — for multi-unit heroes; only the named unit acts
+- `DOTA_ORDER_ISSUER_SELECTED_UNITS` - affects all selected
+- `DOTA_ORDER_ISSUER_CURRENT_UNIT_ONLY` - only the explicitly-passed unit
+- `DOTA_ORDER_ISSUER_HERO_ONLY` - own hero only
+- `DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY` - for multi-unit heroes; only the named unit acts
 
 Full list: enums.md § Enum.UnitOrder (lines 596-641).
 
@@ -139,30 +139,30 @@ Full list: enums.md § Enum.UnitOrder (lines 596-641).
 
 Brain has four channels for "the enemy is about to do X." Each has different latency and confidence.
 
-### Channel 1 — Animation (highest latency, most predictive)
+### Channel 1 - Animation (highest latency, most predictive)
 `OnUnitAnimation(data)` fires when the unit begins an animation. Data includes:
-- `unit` — the caster
-- `activity` — `Enum.GameActivity` value (e.g., `ACT_DOTA_CAST_ABILITY_1`)
-- `sequenceName` — string name of the animation sequence
-- `castpoint` — time from start to the cast point in seconds
-- `playbackRate` — animation speed scalar
+- `unit` - the caster
+- `activity` - `Enum.GameActivity` value (e.g., `ACT_DOTA_CAST_ABILITY_1`)
+- `sequenceName` - string name of the animation sequence
+- `castpoint` - time from start to the cast point in seconds
+- `playbackRate` - animation speed scalar
 
 Use the per-matchup animation→ability map (Phase 0.5/D) to translate `activity` → semantic role. Confidence: medium (animation can be cancelled). Latency: earliest signal, before projectile.
 
-### Channel 2 — Projectile spawn (mid latency, high confidence)
+### Channel 2 - Projectile spawn (mid latency, high confidence)
 `OnProjectile(data)` for target-tracking projectiles (Sniper auto, Mirana arrow target-bind variants). `OnLinearProjectileCreate(data)` for fixed-trajectory (Pudge hook, Mirana arrow, Witch Doctor stun).
 - Data has typed `source`, `target` (for target-projectiles), `velocity`, `expireTime`, `maxImpactTime`
-- Available always — no Stage 2 gate
-- Confidence: high — the cast has already committed
+- Available always - no Stage 2 gate
+- Confidence: high - the cast has already committed
 
-### Channel 3 — Particle spawn (when animation+activity isn't reliable)
+### Channel 3 - Particle spawn (when animation+activity isn't reliable)
 `OnParticleCreate(data)` with `name` matching a known signature.
 - Some abilities are most reliably detected by particle (Bloodseeker Rupture start, Doom ult cast, Roshan aggro, smoke-of-deceit application)
 - Add to your hero's particle catalog alongside the animation→ability map
 
-### Channel 4 — Modifier appearance (lowest latency, hard confirm)
+### Channel 4 - Modifier appearance (lowest latency, hard confirm)
 `OnModifierCreate(target_npc, modifier)` fires when a debuff lands.
-- Useful for: "the cast landed; I am now hexed/silenced/stunned" — Layer 2 reaction trigger
+- Useful for: "the cast landed; I am now hexed/silenced/stunned" - Layer 2 reaction trigger
 - The modifier's `GetName()` identifies the ability
 - For DoTs: `GetRemainingTime`, `GetStackCount` give the ongoing damage profile
 
@@ -185,16 +185,16 @@ local kill         = my_dmg >= target_eff_hp
 | `DAMAGE_TYPE_PURE` | Nothing except `MODIFIER_STATE_INVULNERABLE` and `MODIFIER_STATE_DEBUFF_IMMUNE` (Lotus) |
 
 ### Pierce / bypass rules
-Some abilities pierce magic immunity (per-ability KV: `SpellImmunityType`). Treat as data — read `Ability.GetImmunityType` (see `Enum.ImmunityTypes`):
-- `SPELL_IMMUNITY_ENEMIES_NO` — blocked by enemy BKB (default for most magic)
-- `SPELL_IMMUNITY_ENEMIES_YES` — pierces BKB
-- `SPELL_IMMUNITY_ALLIES_YES` / `NO` — same but for ally buffs
+Some abilities pierce magic immunity (per-ability KV: `SpellImmunityType`). Treat as data - read `Ability.GetImmunityType` (see `Enum.ImmunityTypes`):
+- `SPELL_IMMUNITY_ENEMIES_NO` - blocked by enemy BKB (default for most magic)
+- `SPELL_IMMUNITY_ENEMIES_YES` - pierces BKB
+- `SPELL_IMMUNITY_ALLIES_YES` / `NO` - same but for ally buffs
 
 ### Damage-calc order of operations
 1. Raw damage from `Ability.GetDamage` or `Ability.GetLevelSpecialValueFor("damage", level)`
 2. × outgoing damage modifiers (`MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE`, `TOTALDAMAGEOUTGOING_PERCENTAGE`)
 3. × incoming damage modifiers (`MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE`, type-specific incoming)
-4. × armor mult (physical) OR magic resist mult (magical) — read via `NPC.GetArmorDamageMultiplier` / `GetMagicalArmorDamageMultiplier`
+4. × armor mult (physical) OR magic resist mult (magical) - read via `NPC.GetArmorDamageMultiplier` / `GetMagicalArmorDamageMultiplier`
 5. − flat block (`MODIFIER_PROPERTY_AVOID_DAMAGE`, Pipe, Crimson, Vanguard)
 6. = effective damage
 
@@ -223,9 +223,9 @@ local is_channeled  = (b & Enum.AbilityBehavior.DOTA_ABILITY_BEHAVIOR_CHANNELLED
 | `DOTA_ABILITY_BEHAVIOR_NO_TARGET` | Instant self-cast | `DOTA_UNIT_ORDER_CAST_NO_TARGET` |
 | `DOTA_ABILITY_BEHAVIOR_UNIT_TARGET` | Target a unit | `DOTA_UNIT_ORDER_CAST_TARGET` |
 | `DOTA_ABILITY_BEHAVIOR_POINT` | Target a position | `DOTA_UNIT_ORDER_CAST_POSITION` |
-| `DOTA_ABILITY_BEHAVIOR_AOE` | Area-of-effect | Read radius via `Ability.GetLevelSpecialValueFor("radius", level)` (the specific KV value name varies per ability — common: `radius`, `aoe`, `splash_radius`) |
+| `DOTA_ABILITY_BEHAVIOR_AOE` | Area-of-effect | Read radius via `Ability.GetLevelSpecialValueFor("radius", level)` (the specific KV value name varies per ability - common: `radius`, `aoe`, `splash_radius`) |
 | `DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE` | Talent or sub-ability | Filter from level-up planner |
-| `DOTA_ABILITY_BEHAVIOR_CHANNELLED` | Channeled — interrupted by CC | Channel-cover combo planning |
+| `DOTA_ABILITY_BEHAVIOR_CHANNELLED` | Channeled - interrupted by CC | Channel-cover combo planning |
 | `DOTA_ABILITY_BEHAVIOR_ITEM` | This is an item, not an ability | Different cooldown semantics |
 | `DOTA_ABILITY_BEHAVIOR_TOGGLE` | On/off (Rot, Sun Ray, Madness) | Use `DOTA_UNIT_ORDER_CAST_TOGGLE` |
 | `DOTA_ABILITY_BEHAVIOR_AUTOCAST` | Can be set to autofire | Use `DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO` |
@@ -252,12 +252,12 @@ Brain implications:
 - `DISPELLABLE_NO` (most hard-CC stuns) → committed once landed
 
 ### Protection sources (consult before single-target casts)
-- **Linkens Sphere** — absorbs one single-target enemy spell. Check via `NPC.IsLinkensProtected(target)` (framework tracks item-owned + off-cooldown). **Pop with cheap spell first** (lib/linkens.lua).
-- **Lotus Orb** — reflects one single-target spell. Check via `NPC.IsMirrorProtected(target)` (framework-aware). **Reflection rules:** the reflected spell uses your stats against you. If your kill spell would kill the target, it kills you instead.
-- **BKB** (Black King Bar) — duration-based magic immunity + status resist. Read via `Target.HasState(MODIFIER_STATE_MAGIC_IMMUNE)` and `GetStatesDuration({MAGIC_IMMUNE})`.
-- **Repel** (Omniknight) — basic dispel + magic immune.
-- **Glimmer Cape** — magic resist + invisibility. Magic resist contributes to `GetMagicalArmorDamageMultiplier`.
-- **Aegis** — `NPC.HasAegis(target)`. ~5s effective "another life." Don't burn ult if target has aegis unless you can kill twice or strip via dive.
+- **Linkens Sphere** - absorbs one single-target enemy spell. Check via `NPC.IsLinkensProtected(target)` (framework tracks item-owned + off-cooldown). **Pop with cheap spell first** (lib/linkens.lua).
+- **Lotus Orb** - reflects one single-target spell. Check via `NPC.IsMirrorProtected(target)` (framework-aware). **Reflection rules:** the reflected spell uses your stats against you. If your kill spell would kill the target, it kills you instead.
+- **BKB** (Black King Bar) - duration-based magic immunity + status resist. Read via `Target.HasState(MODIFIER_STATE_MAGIC_IMMUNE)` and `GetStatesDuration({MAGIC_IMMUNE})`.
+- **Repel** (Omniknight) - basic dispel + magic immune.
+- **Glimmer Cape** - magic resist + invisibility. Magic resist contributes to `GetMagicalArmorDamageMultiplier`.
+- **Aegis** - `NPC.HasAegis(target)`. ~5s effective "another life." Don't burn ult if target has aegis unless you can kill twice or strip via dive.
 
 ---
 
@@ -270,7 +270,7 @@ Brain implications:
 
 ### What protects your channels
 - BKB (removes silence + magic-immune)
-- `NPC.HasState(npc, Enum.ModifierState.MODIFIER_STATE_CASTS_IGNORE_CHANNELING)` — state flag that lets the unit cast while channeling another ability (rare passive)
+- `NPC.HasState(npc, Enum.ModifierState.MODIFIER_STATE_CASTS_IGNORE_CHANNELING)` - state flag that lets the unit cast while channeling another ability (rare passive)
 - Channel-on-self abilities (Bloodseeker Bloodbath, etc.) sometimes have built-in protection
 
 ### Detecting active channel
@@ -301,7 +301,7 @@ GlobalVars.GetFrameCount()      -- monotonic frame counter
 
 ### Day/night
 - Day cycle: ~5 min day, ~5 min night
-- Night Stalker, Luna, Mirana ult timing — check `IsDayTime()`
+- Night Stalker, Luna, Mirana ult timing - check `IsDayTime()`
 - Vision range shrinks at night for most heroes (`NPC.GetNightTimeVisionRange` vs `GetDayTimeVisionRange`)
 
 ---
@@ -327,7 +327,7 @@ Reduces stun/silence/hex/root **duration**, not whether they apply. `MODIFIER_PR
 - The brain can predict "their Linkens will be down in N seconds" by tracking `OnModifierCreate(modifier_item_linkens_sphere_target)` or equivalent consumption signal
 
 ### Lotus Orb reflection
-- 100% reflection — your spell is cast on YOU by the target
+- 100% reflection - your spell is cast on YOU by the target
 - If your spell would kill the target (kill-confirm passed), the reflection might kill you instead
 - Brain should NOT cast nukes on a Lotus target if your own HP < your_spell_damage_to_self
 
@@ -339,19 +339,19 @@ Reduces stun/silence/hex/root **duration**, not whether they apply. `MODIFIER_PR
 ### Refresher Orb / Shard
 - Refresher Orb refreshes ALL abilities and items (3-min cooldown)
 - Refresher Shard refreshes ONE ability (single-charge consumable)
-- After refresh, `Ability.IsReady` returns true on next frame — brain should re-poll
+- After refresh, `Ability.IsReady` returns true on next frame - brain should re-poll
 
 ### Aghs / Shard detection
-Use `NPC.HasScepter(npc)` and `NPC.HasShard(npc)` — both work for consumed Aghs (the modifier persists) and held Aghs Blessing.
+Use `NPC.HasScepter(npc)` and `NPC.HasShard(npc)` - both work for consumed Aghs (the modifier persists) and held Aghs Blessing.
 
 ### Hero pseudo-talents
 Some heroes have hidden talents enabled by facets or specific items. The brain reads the active modifiers + `Hero.GetFacetID(hero)` to detect facet-conditional behavior.
 
 ### Tempest Double, Meepo clones, illusions
-- `NPC.IsIllusion` — generic illusion check
-- `NPC.IsMeepoClone` — Meepo-specific
-- `Hero.GetReplicatingOtherHeroModel(hero)` returns the original hero if this is a clone/illusion of someone — useful for "Arc Tempest of Sniper" detection
-- Tempest Double has `modifier_arc_warden_tempest_double` — check via `NPC.HasModifier`
+- `NPC.IsIllusion` - generic illusion check
+- `NPC.IsMeepoClone` - Meepo-specific
+- `Hero.GetReplicatingOtherHeroModel(hero)` returns the original hero if this is a clone/illusion of someone - useful for "Arc Tempest of Sniper" detection
+- Tempest Double has `modifier_arc_warden_tempest_double` - check via `NPC.HasModifier`
 
 ### Spell pierce list (per patch)
 This list changes each patch. Read `Ability.GetImmunityType(ability)` at runtime instead of hardcoding. `SPELL_IMMUNITY_ENEMIES_YES` means the spell pierces enemy BKB.
@@ -363,20 +363,20 @@ This list changes each patch. Read `Ability.GetImmunityType(ability)` at runtime
 `Enum.GameActivity` has ~270 values. The high-value ones for hero brain work:
 
 ### Universal
-- `ACT_DOTA_ATTACK` — basic attack
-- `ACT_DOTA_ATTACK2` — secondary attack animation (some heroes alternate)
-- `ACT_DOTA_RUN` — moving
-- `ACT_DOTA_IDLE` — standing still
-- `ACT_DOTA_DIE` — death animation
-- `ACT_DOTA_FLINCH` — taking damage stagger
-- `ACT_DOTA_DISABLED` — stunned/hexed
-- `ACT_DOTA_TELEPORT` / `ACT_DOTA_TELEPORT_END` — TP scroll
-- `ACT_DOTA_VICTORY` / `ACT_DOTA_DEFEAT` — game-end
+- `ACT_DOTA_ATTACK` - basic attack
+- `ACT_DOTA_ATTACK2` - secondary attack animation (some heroes alternate)
+- `ACT_DOTA_RUN` - moving
+- `ACT_DOTA_IDLE` - standing still
+- `ACT_DOTA_DIE` - death animation
+- `ACT_DOTA_FLINCH` - taking damage stagger
+- `ACT_DOTA_DISABLED` - stunned/hexed
+- `ACT_DOTA_TELEPORT` / `ACT_DOTA_TELEPORT_END` - TP scroll
+- `ACT_DOTA_VICTORY` / `ACT_DOTA_DEFEAT` - game-end
 
 ### Ability casts (slot-based)
-- `ACT_DOTA_CAST_ABILITY_1` through `ACT_DOTA_CAST_ABILITY_6` — slots 1-4 + ult + 6
-- `ACT_DOTA_CAST_ABILITY_INSTANT_1` through `_6` — instant variants
-- `ACT_DOTA_CAST_ABILITY_4_END` and similar — channel-end animations
+- `ACT_DOTA_CAST_ABILITY_1` through `ACT_DOTA_CAST_ABILITY_6` - slots 1-4 + ult + 6
+- `ACT_DOTA_CAST_ABILITY_INSTANT_1` through `_6` - instant variants
+- `ACT_DOTA_CAST_ABILITY_4_END` and similar - channel-end animations
 
 ### Item activations
 - `ACT_DOTA_USE_BOTTLE`, `ACT_DOTA_USE_ITEM`, etc.
@@ -413,7 +413,7 @@ Full list: enums.md § Enum.ButtonCode (lines 729-861).
 | Check if target is killable | `Target.EffectiveHpVs(target, self, dmg_type) < my_damage` AND `NPC.IsKillable(target)` |
 | Check if target will dodge | `NPC.GetStatesDuration(target, {INVULNERABLE=true, OUT_OF_GAME=true, MAGIC_IMMUNE=true})` at predicted impact tick |
 | Check if combo is mana-feasible | sum `Ability.GetManaCost` × `(1 - mana_cost_reduction)` ≤ `NPC.GetMana(self)` |
-| Predict impact position (skillshot) | `lib/prediction.lua` — target velocity + projectile speed + cast point |
+| Predict impact position (skillshot) | `lib/prediction.lua` - target velocity + projectile speed + cast point |
 | Predict escape route | `GridNav.BuildPath(self_pos, candidate, ignoreTrees, npc_map)` ranked by distance + threat |
 | Detect enemy gap-close imminent | `OnUnitAnimation` filtered through animation→ability map |
 | Detect enemy projectile inbound | `OnProjectile` / `OnLinearProjectileCreate` with `target == self` |
@@ -423,20 +423,20 @@ Full list: enums.md § Enum.ButtonCode (lines 729-861).
 | Check item cooldown | `Item.HasReady(npc, name)` from `lib/item.lua` |
 | Read hero phase (laning/mid/late) | `GameRules.GetGameTime()` thresholded |
 | React to taking damage | `Damage.GetRecentDamage(self, 1.5)` from `lib/damage.lua` |
-| Detect enemy smoke | **Base subsystem — consume framework state, don't build** |
-| Detect enemy wards | **Base subsystem — consume framework state, don't build** |
+| Detect enemy smoke | **Base subsystem - consume framework state, don't build** |
+| Detect enemy wards | **Base subsystem - consume framework state, don't build** |
 
 ---
 
-## Primitives the raw docs miss — extension-only or under-documented
+## Primitives the raw docs miss - extension-only or under-documented
 
 These surface only via the Umbrella VS Code extension's LuaCATS library. The raw GitBook docs either omit them entirely or document them sparsely.
 
-### Vector — zero-allocation math (used heavily in hot paths)
+### Vector - zero-allocation math (used heavily in hot paths)
 
 The raw docs treat `Vector` as a basic class. The LuaCATS library reveals a full math library. Prefer these over hand-rolled math in `lib/prediction.lua`, `lib/escape.lua`, `lib/target_pick.lua`, `lib/orbwalk.lua`.
 
-**Zero-allocation mutation** (critical in 30Hz hot paths — avoid GC pressure):
+**Zero-allocation mutation** (critical in 30Hz hot paths - avoid GC pressure):
 ```lua
 v:AddInPlace(other)   v:SubInPlace(other)   v:MulInPlace(other)   v:DivInPlace(other)
 v:Set(x,y,z)          v:CopyFrom(other)     v:Negate()            v:Normalize()
@@ -451,7 +451,7 @@ v:Extrapolate(direction, scalar) -- self + dir * scalar (position prediction)
 v:Perpendicular2D()            -- (-y, x, z)
 ```
 
-**Cheap range/distance** (no sqrt — use for comparisons):
+**Cheap range/distance** (no sqrt - use for comparisons):
 ```lua
 v:DistanceSqr2D(other)         -- squared 2D distance
 v:IsInRange2D(other, range)    -- single-call range check
@@ -463,7 +463,7 @@ v:Length2DSqr()                -- squared 2D length
 v:Rotated(angle)               -- CCW rotation in XY (returns new)
 v:MoveForward(angle, distance) -- move by Angle + distance
 v:AngleBetween2D(middle, p3)   -- angle at vertex in triangle (anti-flank checks)
-v:ClosestToPoint(entities)     -- returns (closest, distance) — saves a loop
+v:ClosestToPoint(entities)     -- returns (closest, distance) - saves a loop
 v:Clone()                      -- explicit copy
 v:ToAngle()                    -- vector → angle
 v:ToScreen()                   -- (screenPos, isVisible)
@@ -491,7 +491,7 @@ Callbacks.OnParticleCreate = function(p)
 end
 ```
 
-`KV` global + `KeyValues` class — general-purpose KV parsing:
+`KV` global + `KeyValues` class - general-purpose KV parsing:
 ```lua
 local kv = KV.KeysPersonal()  -- user's personal keybinds (from Steam path)
 local node = kv:FindKey("bind_a")
@@ -525,7 +525,7 @@ for _, sp in ipairs(spawners) do
 end
 ```
 
-This makes `lib/rune.lua` not just react-to-rune but **predict next rune spawn** (bounty every 3 min, power every 2 min, water at specific times). Confirms `lib/rune.lua` is not a base subsystem — build it yourself on top of these primitives.
+This makes `lib/rune.lua` not just react-to-rune but **predict next rune spawn** (bounty every 3 min, power every 2 min, water at specific times). Confirms `lib/rune.lua` is not a base subsystem - build it yourself on top of these primitives.
 
 ### Humanizer extras (not in raw doc surface I covered)
 
@@ -534,15 +534,15 @@ Humanizer.IsSafeTarget(entity)        -- framework-aware "is this safe to target
 Humanizer.ForceUserOrderByMinimap()   -- inside OnPrepareUnitOrders, force the current order through minimap dispatch
 ```
 
-**Fold `IsSafeTarget` into `lib/target.lua`** as a `Target.IsSafeTarget(entity)` predicate — framework-aware truth beats hand-rolled safety checks.
+**Fold `IsSafeTarget` into `lib/target.lua`** as a `Target.IsSafeTarget(entity)` predicate - framework-aware truth beats hand-rolled safety checks.
 
 `ForceUserOrderByMinimap` is the tool to use when a baseline order is in flight and we want to flip it without abandoning the order entirely.
 
-## Game data assets — `C:\Umbrella\assets\data\*.json`
+## Game data assets - `C:\Umbrella\assets\data\*.json`
 
 Five JSON files ship with the framework, providing **static game-state truth** independent of runtime API calls. They are the source for ability KV values (`Ability.GetLevelSpecialValueFor` reads from these), hero base stats, creep stats, item KVs, and the neutral-item tier system. Total ~3.2 MB on disk.
 
-Loaded at runtime via Lua's `io.open(path, "r")` + `JSON:decode(...)` where `JSON` is **Jeffrey Friedl's pure-Lua JSON library** shipped at `<cheat_dir>/assets/JSON.lua` (version 20170927.26, CC-BY licensed). Load it via `local JSON = require('assets.JSON')`. **Note: method-call syntax with colon** (`JSON:decode(raw)`, not `JSON.decode(raw)`). Cache parsed tables; files don't change between game starts. The Umbrella extension's `library/runtime/json.lua` LuaCATS annotation references lua-rapidjson — that's inherited from the FiveM fork and is misleading; the actual asset is Friedl's pure-Lua implementation.
+Loaded at runtime via Lua's `io.open(path, "r")` + `JSON:decode(...)` where `JSON` is **Jeffrey Friedl's pure-Lua JSON library** shipped at `<cheat_dir>/assets/JSON.lua` (version 20170927.26, CC-BY licensed). Load it via `local JSON = require('assets.JSON')`. **Note: method-call syntax with colon** (`JSON:decode(raw)`, not `JSON.decode(raw)`). Cache parsed tables; files don't change between game starts. The Umbrella extension's `library/runtime/json.lua` LuaCATS annotation references lua-rapidjson - that's inherited from the FiveM fork and is misleading; the actual asset is Friedl's pure-Lua implementation.
 
 | File | Top-level key | Brain uses |
 |---|---|---|
@@ -559,19 +559,19 @@ Loaded at runtime via Lua's `io.open(path, "r")` + `JSON:decode(...)` where `JSO
 - `AbilityBehavior` (pipe-separated string: `"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_NORMAL_WHEN_STOLEN"`)
 - `AbilityUnitTargetTeam` / `AbilityUnitTargetType` / `AbilityUnitTargetFlags`
 - `SpellDispellableType` / `SpellImmunityType` / `AbilityUnitDamageType`
-- `AbilityCastAnimation` — **the activity code for OnUnitAnimation matching** (e.g., `ACT_DOTA_CAST_ABILITY_4`)
+- `AbilityCastAnimation` - **the activity code for OnUnitAnimation matching** (e.g., `ACT_DOTA_CAST_ABILITY_4`)
 - `AbilityCastRange`, `AbilityCastRangeBuffer`, `AbilityCastPoint`, `AbilityChannelTime`
 - `AbilityCooldown` (string of per-level values: `"20 15 10"`)
 - `AbilityManaCost`
 - `AbilityValues` (per-level damage + special-value-name keys, plus talent/scepter/shard nested values via `special_bonus_unique_*`, `special_bonus_scepter`, `special_bonus_shard`)
 - `HasScepterUpgrade` flag
 - `AbilityDraftExtraAbilities` (shard adds X ability)
-- `ID` (numeric ability ID — useful for cross-file references)
+- `ID` (numeric ability ID - useful for cross-file references)
 
 **`npc_heroes.json`** (every hero has):
-- `Ability1..6` — slot order matches `NPC.GetAbilityByIndex` (1-based)
-- `Ability10..17` — talents (standard mapping: 13/17 = lv10, 12/16 = lv15, 11/15 = lv20, 10/14 = lv25 — verify per-hero by checking talent names)
-- `Facets` — facet definitions with `Icon`, `Color`, `Deprecated` flag
+- `Ability1..6` - slot order matches `NPC.GetAbilityByIndex` (1-based)
+- `Ability10..17` - talents (standard mapping: 13/17 = lv10, 12/16 = lv15, 11/15 = lv20, 10/14 = lv25 - verify per-hero by checking talent names)
+- `Facets` - facet definitions with `Icon`, `Color`, `Deprecated` flag
 - `AttackCapabilities` (`DOTA_UNIT_CAP_RANGED_ATTACK` / `MELEE`)
 - `AttackDamageMin`, `AttackDamageMax`, `AttackRate`, `AttackAnimationPoint`
 - `ArmorPhysical`, `MagicalResistance`
@@ -584,7 +584,7 @@ Loaded at runtime via Lua's `io.open(path, "r")` + `JSON:decode(...)` where `JSO
 
 **`npc_units.json`** (lane creeps, towers, summons, neutrals):
 - All hero-shared fields above
-- `BountyXP`, `BountyGoldMin`, `BountyGoldMax` — **last-hit reward math**
+- `BountyXP`, `BountyGoldMin`, `BountyGoldMax` - **last-hit reward math**
 - `BaseClass` (`npc_dota_creep_lane` / `npc_dota_tower` / `npc_dota_neutral_*` / etc.)
 - `Level` for the unit's effective level
 - `TeamName` (`DOTA_TEAM_GOODGUYS` / `DOTA_TEAM_BADGUYS` / `DOTA_TEAM_NEUTRALS`)
@@ -635,7 +635,7 @@ for v in assassinate.AbilityCooldown:gmatch("%S+") do table.insert(cd_per_level,
 
 ### Performance considerations (pure-Lua parser, large files)
 
-Friedl's JSON.lua is pure Lua — no C backing. It uses `..` string concatenation in inner loops, which is O(n²) on string accumulation. Realistic parse times on the asset files:
+Friedl's JSON.lua is pure Lua - no C backing. It uses `..` string concatenation in inner loops, which is O(n²) on string accumulation. Realistic parse times on the asset files:
 
 | File | Size | Estimated parse time |
 |---|---|---|
@@ -679,7 +679,7 @@ Phase 0.5/A (per-ability enumeration) and Phase 0.5/D (animation→ability map) 
 
 In addition to game data assets at `assets/data/`, the framework writes per-installation state directly in the cheat root directory. Three files matter, one is opaque:
 
-### `db.json` — flat KV state store (29k+ lines)
+### `db.json` - flat KV state store (29k+ lines)
 
 Per-feature persistent state, keyed in dot-notation (`db.<feature>.<sub>.<sub>`). Read with the same JSON.lua pipeline:
 
@@ -693,46 +693,46 @@ end
 
 Categories the brain cares about:
 
-**`db.dodger.*` — pre-classified ability danger values (BASE SUBSYSTEM data, do not duplicate)**
+**`db.dodger.*` - pre-classified ability danger values (BASE SUBSYSTEM data, do not duplicate)**
 - `db.dodger.dangerous_values.<ability_name>.value` → 0 (safe to ignore) or 2 (dangerous, must dodge)
 - `db.dodger.dodges_values.<ability_name>.value` → 0/2 (abilities usable as dodge sources, e.g., Lifestealer Rage)
 - `db.dodger.global_priority.<n>` → ordered string list of priority assignments
 
-Read this to know which incoming enemy abilities the framework's own Dodger already treats as dangerous. Brain's Layer 2 chain (Pike → Force → Glimmer) fires *after* Dodger has done its work — not as a parallel danger evaluator.
+Read this to know which incoming enemy abilities the framework's own Dodger already treats as dangerous. Brain's Layer 2 chain (Pike → Force → Glimmer) fires *after* Dodger has done its work - not as a parallel danger evaluator.
 
-**`db.__dormant_time_cache.<entity_id>` — historical dormancy timestamps (BASE SUBSYSTEM data)**
+**`db.__dormant_time_cache.<entity_id>` - historical dormancy timestamps (BASE SUBSYSTEM data)**
 - Maps entity IDs → seconds (last-seen-dormant time)
 - Persisted across sessions
 - `lib/fog.lua` reads from here for historical state; uses `OnSetDormant` callback only for real-time transitions
 
-**`db.__match_id_cache` — current match ID**
+**`db.__match_id_cache` - current match ID**
 - Useful for clearing per-match caches without a callback
 
-**`db.<HeroName>.*` — per-hero script state (project convention)**
+**`db.<HeroName>.*` - per-hero script state (project convention)**
 - Native hero scripts persist runtime cache here: `db.Morphling.cache_check`, `db.Morphling.cache_hp_target`, `db.invoker.invoker_cold_snap.<settings>`, `db.rubick.*`, `db.stealer.*`, `db.kunkka_camps`, `db.meepo.pos`
-- **Our brain hero scripts use the same namespacing convention** — write to `db.<Hero>.<key>` for state that should survive reloads (e.g., learned matchup behavior, last-fight timestamp, mana-budget tuning per session)
+- **Our brain hero scripts use the same namespacing convention** - write to `db.<Hero>.<key>` for state that should survive reloads (e.g., learned matchup behavior, last-fight timestamp, mana-budget tuning per session)
 - Use this beyond `CMenuBind` widget state and `Config.Read*`/`Write*` flat keys
 
 **Other categories visible (mostly base-subsystem, read-only for the brain):**
-- `db.auto_pick.{ban,pick}.*` — pre-game pick/ban automation
-- `db.mmr_tracker.last_pts`, `db.mmr_tracker.steamid` — MMR tracker
-- `db.protracker_shop.npc_dota_hero_*` — per-hero pro item-build cache (suggests `lib/build.lua` would duplicate a base subsystem)
-- `db.protracker_domain.last_used_domain_idx` — domain (Sanctus) tracker
-- `db.ic.*` — info-card UI panel state (`full_open`, `hide`, `map_open`, `position_percent`, `last_resolution`)
-- `db.radius_info`, `db.immortal_info.p_*` — UI/Dota-Plus state
-- `db.<HeroName>_autosave_<ability>.pos.*` — per-hero auto-save widget positions (Ringmaster_autosave_ringmaster_the_box, Marci_bodyguard, etc.)
+- `db.auto_pick.{ban,pick}.*` - pre-game pick/ban automation
+- `db.mmr_tracker.last_pts`, `db.mmr_tracker.steamid` - MMR tracker
+- `db.protracker_shop.npc_dota_hero_*` - per-hero pro item-build cache (suggests `lib/build.lua` would duplicate a base subsystem)
+- `db.protracker_domain.last_used_domain_idx` - domain (Sanctus) tracker
+- `db.ic.*` - info-card UI panel state (`full_open`, `hide`, `map_open`, `position_percent`, `last_resolution`)
+- `db.radius_info`, `db.immortal_info.p_*` - UI/Dota-Plus state
+- `db.<HeroName>_autosave_<ability>.pos.*` - per-hero auto-save widget positions (Ringmaster_autosave_ringmaster_the_box, Marci_bodyguard, etc.)
 
-### `inventory.json` — Steam cosmetic inventory cache
+### `inventory.json` - Steam cosmetic inventory cache
 
 ~760 lines. Maps Steam cosmetic item IDs → `[scope, slot_index, style_index, is_equipped]` where `scope` is either a hero ID (resolves via `npc_heroes.json` HeroID field) or the sentinel `1000` for universal cosmetics (couriers, wards, HUD skins, music kits, taunts, announcer packs). Example: `"22309": [45, 1, 0, true]` = item 22309 belongs to hero ID 45 (Pugna), slot 1, default style, currently equipped. Style sentinel `255` = "no special variant."
 
 **Brain relevance: minimal.** Cosmetics don't affect gameplay. Document existence; don't depend on it.
 
-### `local_cache.json` — server region preference
+### `local_cache.json` - server region preference
 
 4 lines, `{"server": {"de": 0}}`. Trivial. Not brain-relevant.
 
-### `dota.be` — opaque encrypted binary
+### `dota.be` - opaque encrypted binary
 
 ~19 MB, no recognizable magic bytes (first 16: `01 3b 0b 90 1c 48 bc 79 b6 36 c1 28 59 69 e2 74`), high-entropy content. Framework's internal runtime cache (modules, signatures, anti-tamper state). **Not brain-readable.** No tooling can decode this without the framework's encryption scheme. Skip entirely.
 

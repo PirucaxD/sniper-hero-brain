@@ -1,4 +1,4 @@
-# Defense categories — analysis of "separate anti-close-gap vs threat-stopper sections"
+# Defense categories - analysis of "separate anti-close-gap vs threat-stopper sections"
 
 Date: 2026-05-11
 Status: Categorization implemented in data; code-path separation deferred.
@@ -9,14 +9,14 @@ Status: Categorization implemented in data; code-path separation deferred.
 
 Two distinct response profiles:
 
-- **Anti-close-gap** — prevent the threat from connecting. Example: cancel Bara Charge before he reaches Sniper.
-- **Threat-stopper** — end an active threat. Example: break Pudge Dismember mid-channel.
+- **Anti-close-gap** - prevent the threat from connecting. Example: cancel Bara Charge before he reaches Sniper.
+- **Threat-stopper** - end an active threat. Example: break Pudge Dismember mid-channel.
 
 These differ in TIMING (when the save fires) and INTENT (prevent vs interrupt).
 
 ## What I built (v5.4)
 
-`ThreatData.THREAT_CATEGORY` — 9-value classification per threat:
+`ThreatData.THREAT_CATEGORY` - 9-value classification per threat:
 
 | Category | Examples | Best response | Save-fire path |
 | --- | --- | --- | --- |
@@ -30,11 +30,11 @@ These differ in TIMING (when the save fires) and INTENT (prevent vs interrupt).
 | `drain` | Razor Static Link, Lion Mana Drain | dispel or displacement out of tether range | `OnModifierCreate` |
 | `lockdown` | Legion Duel, Berserker's Call | Satanic lifesteal-through, Blade Mail return | `OnModifierCreate` |
 
-This is **data-level separation** — the brain logs the category alongside every save, and per-threat overrides (`SNIPER_SAVE_OVERRIDES[mod]`) express category-appropriate preferences.
+This is **data-level separation** - the brain logs the category alongside every save, and per-threat overrides (`SNIPER_SAVE_OVERRIDES[mod]`) express category-appropriate preferences.
 
 ## What I did NOT build (and why)
 
-**Code-path separation** — dedicated handlers per category — was deferred.
+**Code-path separation** - dedicated handlers per category - was deferred.
 
 If the brain had separate handlers:
 ```lua
@@ -68,7 +68,7 @@ Promote to code-level separation if any of these become true:
 
 ## How a hero would use this today
 
-The categorization is mostly **documentation** at this point — the brain reads `THREAT_CATEGORY` only for logging. But hero scripts can already react to it:
+The categorization is mostly **documentation** at this point - the brain reads `THREAT_CATEGORY` only for logging. But hero scripts can already react to it:
 
 ```lua
 -- Hypothetical: a hero that wants a tighter reaction window for close_gap
@@ -83,5 +83,5 @@ For Sniper v5.4 specifically: every override list is already CATEGORY-AWARE in i
 ## Summary
 
 - **Implemented**: THREAT_CATEGORY as a 9-value classification, logged in every layer2_save line, available as `TD.CategoryOf(mod)` for any hero code that needs it.
-- **Deferred**: separate code paths per category. Not needed yet — the per-threat override table already expresses category-appropriate preferences.
+- **Deferred**: separate code paths per category. Not needed yet - the per-threat override table already expresses category-appropriate preferences.
 - **Re-evaluate when**: per-category reaction windows / fallback chains / telemetry diverge meaningfully.
